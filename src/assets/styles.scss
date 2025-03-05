@@ -1,0 +1,18 @@
+/* You can add global styles to this file, and also import other style files */
+@use 'primeicons/primeicons.css';
+@use '@/assets/tailwind.css';
+@use '@/assets/layout/layout.scss';
+@use '@/assets/components/components.scss';
+@use '@/assets/demo/demo.scss';
+@import '@mdi/font/css/materialdesignicons.min.css';
+@font-face {
+    font-family: 'Nunito';
+    src: url('@/assets/fonts/Nunito-Regular.ttf') format('truetype');
+    font-weight: normal;
+  }
+  
+  @font-face {
+    font-family: 'Nunito';
+    src: url('@/assets/fonts/Nunito-Bold.ttf') format('truetype');
+    font-weight: bold;
+  }
