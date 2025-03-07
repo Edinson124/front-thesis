@@ -12,7 +12,8 @@ const model = ref([
                 icon: 'mdi mdi-shield-account',
                 items: [
                     {
-                        label: 'Variables globales'
+                        label: 'Variables globales',
+                        to: '/admin/variables'
                     },
                     {
                         label: 'Usuarios',
@@ -22,10 +23,12 @@ const model = ref([
                         label: 'Roles'
                     },
                     {
-                        label: 'Bancos de sangre'
+                        label: 'Bancos de sangre',
+                        to: '/admin/bancos'
                     },
                     {
-                        label: 'Redes'
+                        label: 'Redes',
+                        to: '/admin/redes'
                     }
                 ]
             },

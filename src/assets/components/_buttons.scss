@@ -18,3 +18,15 @@
     border-color: #66a5f7 !important;
   }
 }
+
+.btn-view{
+  background-color: #ffffff !important;
+  border-color: var(--primary-color) !important;
+  color: var(--primary-color) !important;
+
+  &:hover {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: #ffffff !important;
+  }
+}
