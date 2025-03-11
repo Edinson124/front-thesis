@@ -97,7 +97,7 @@ export default [
   },
   {
     path: '/auth/login',
-    name: 'login',
+    name: 'auth-login',
     component: () => import('@/views/template/pages/auth/Login.vue')
   },
   {

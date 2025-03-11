@@ -4,12 +4,12 @@ import Register from '@/views/auth/Register.vue';
 export default [
   {
     path: '/login',
-    name: 'usuarios',
+    name: 'login',
     component: Login
   },
   {
     path: '/register',
-    name: 'usuarios',
+    name: 'register',
     component: Register
   }
 ];
