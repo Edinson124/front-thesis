@@ -38,7 +38,7 @@ const register = async () => {
             <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Repetir contraseña</label>
             <Password id="password1" v-model="password_confirmed" placeholder="Repetir contraseña" :toggleMask="true" class="mb-8" fluid :feedback="false"></Password>
 
-            <Button label="Registrarse" class="w-full mb-8" as="router-link" to="/" @click.prevent="register"></Button>
+            <Button label="Registrarse" class="w-full mb-8 btn-primary" as="router-link" to="/" @click.prevent="register"></Button>
             <Button label="¿Ya tienes una cuenta? Inicia sesión" class="w-full" as="router-link" to="/login" severity="secondary" outlined></Button>
           </div>
         </div>

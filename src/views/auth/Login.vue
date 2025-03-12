@@ -1,9 +1,8 @@
 <script setup>
 import { useAuthStore } from '@/stores/auth';
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
 
-const router = useRouter();
+// const router = useRouter();
 const authStore = useAuthStore();
 
 const email = ref('');
@@ -13,7 +12,7 @@ const checked = ref(false);
 const login = async () => {
   const success = await authStore.login(email, password, checked);
   if (success) {
-    router.push('/');
+    // router.push('/');
   }
 };
 </script>
@@ -42,7 +41,7 @@ const login = async () => {
               </div>
               <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">¿Olvidaste tu contraseña?</span>
             </div>
-            <Button label="Iniciar sesión" class="w-full mb-8" as="router-link" to="/" @click.prevent="login"></Button>
+            <Button label="Iniciar sesión" class="w-full mb-8 btn-primary" @click.prevent="login"></Button>
             <Button label="Crear una cuenta nueva" class="w-full" as="router-link" to="/register" severity="secondary" outlined></Button>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import authService from '@/services-mock/auth'; // TODO: cambiar a '@/services/auth'
+import authService from '@/services/auth';
 import { defineStore } from 'pinia';
 import { computed, ref, watch } from 'vue';
 
@@ -13,12 +13,11 @@ export const useAuthStore = defineStore('auth', () => {
   });
 
   const login = async (username, password, checked) => {
-    console.log({ username, password, checked });
     loading.value = true;
     error.value = null;
 
     try {
-      const response = await authService.login(username, password);
+      const response = await authService.login(username.value, password.value);
 
       if (response && response.token && response.user) {
         user.value = response.user;

@@ -1,4 +1,3 @@
-
 .btn-clean {
   background-color: #c7c7c7 !important;
   border-color: #c7c7c7 !important;
@@ -9,9 +8,9 @@
   }
 }
 
-.btn-edit{
-  background-color: #A3CBFF !important;
-  border-color: #A3CBFF !important;
+.btn-edit {
+  background-color: #a3cbff !important;
+  border-color: #a3cbff !important;
 
   &:hover {
     background-color: #66a5f7 !important;
@@ -19,10 +18,22 @@
   }
 }
 
-.btn-view{
+.btn-view {
   background-color: #ffffff !important;
   border-color: var(--primary-color) !important;
   color: var(--primary-color) !important;
+
+  &:hover {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: #ffffff !important;
+  }
+}
+
+.btn-primary {
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+  color: #ffffff !important;
 
   &:hover {
     background-color: var(--primary-color) !important;

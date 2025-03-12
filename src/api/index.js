@@ -1,4 +1,4 @@
-export const apiUrl = 'http://localhost:80/api';
+export const apiUrl = 'http://localhost:8080';
 
 export async function api(url, method, body = null, options = null) {
   try {
@@ -12,9 +12,8 @@ export async function api(url, method, body = null, options = null) {
       body = body ? JSON.stringify(body) : undefined;
     }
 
-    if (localStorage.getItem('token')) {
-      const token = JSON.parse(localStorage.getItem('token') ?? '');
-      headers['Authorization'] = `Bearer ${token}`;
+    if (localStorage.getItem('token') !== null) {
+      headers['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
     }
 
     const response = await fetch(`${apiUrl}${url}`, {
