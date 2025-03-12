@@ -12,12 +12,13 @@ export async function api(url, method, body = null, options = null) {
       body = body ? JSON.stringify(body) : undefined;
     }
 
-    if (localStorage.getItem('token') !== null) {
-      headers['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
-    }
+    // if (localStorage.getItem('token') !== null) {
+    //   headers['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
+    // }
 
     const response = await fetch(`${apiUrl}${url}`, {
       method,
+      credentials: 'include',
       headers,
       body,
       ...options

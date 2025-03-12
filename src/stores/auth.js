@@ -18,13 +18,14 @@ export const useAuthStore = defineStore('auth', () => {
 
     try {
       const response = await authService.login(username.value, password.value);
+      console.log(response);
 
-      if (response && response.token && response.user) {
-        user.value = response.user;
-        token.value = response.token;
+      if (response && response.username) {
+        user.value = response.username;
+        // token.value = response.jwt;
 
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('user', JSON.stringify(response.user));
+        // localStorage.setItem('token', response.jwt);
+        localStorage.setItem('user', response.username);
         loading.value = false;
         return true;
       } else {
@@ -50,7 +51,7 @@ export const useAuthStore = defineStore('auth', () => {
         user.value = response.user;
         token.value = response.token;
 
-        localStorage.setItem('token', response.token);
+        // localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
         loading.value = false;
         return true;
@@ -70,7 +71,7 @@ export const useAuthStore = defineStore('auth', () => {
     await authService.logout();
     user.value = null;
     token.value = null;
-    localStorage.removeItem('token');
+    // localStorage.removeItem('token');
     localStorage.removeItem('user');
   };
 

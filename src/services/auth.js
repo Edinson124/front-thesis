@@ -3,7 +3,7 @@ import { post } from '@/api';
 const login = async (username, password) => {
   try {
     const response = await post('/auth/login', { username, password });
-    return response.data;
+    return response;
   } catch (error) {
     console.error('Error en login: ', error);
     return null;
