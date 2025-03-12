@@ -1,7 +1,30 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
+import { useAuthStore } from '@/stores/auth';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const { toggleMenu } = useLayout();
+
+const router = useRouter();
+const authStore = useAuthStore();
+const logout = async () => {
+  await authStore.logout();
+  router.push('/login');
+};
+
+const overlayMenuItems = ref([
+  {
+    label: 'Quit',
+    icon: 'pi pi-fw pi-sign-out',
+    command: logout
+  }
+]);
+
+const menu = ref(null);
+function toggleMenu2(event) {
+  menu.value.toggle(event);
+}
 </script>
 
 <template>
@@ -43,7 +66,8 @@ const { toggleMenu } = useLayout();
 
       <div class="layout-topbar-menu hidden lg:block">
         <div class="layout-topbar-menu-content">
-          <button type="button" class="layout-topbar-action">
+          <Menu ref="menu" :model="overlayMenuItems" :popup="true" />
+          <button type="button" class="layout-topbar-action" @click="toggleMenu2">
             <i class="pi pi-user"></i>
             <span>Profile</span>
           </button>

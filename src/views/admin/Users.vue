@@ -91,7 +91,9 @@ onMounted(() => {
           @page="filterUsers"
           :currentPageReportTemplate="'{currentPage} de {totalPages}'"
         >
-          <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" :style="`width: ${col.width}`"></Column>
+          <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" :style="`width: ${col.width}`">
+            <template v-if="col.field === 'name'" #body="slotProps"> {{ slotProps.data.firstNames }} {{ slotProps.data.lastName }} {{ slotProps.data.secondLastName }} </template>
+          </Column>
           <Column header="Acciones">
             <template #body="">
               <div class="flex flex-wrap w-full">

@@ -24,6 +24,10 @@ export async function api(url, method, body = null, options = null) {
       ...options
     });
 
+    if (response.status === 204) {
+      return null;
+    }
+
     if (!response.ok) {
       const data = await response.json();
       throw new Error(data.message || 'Error en la solicitud');

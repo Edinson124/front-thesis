@@ -21,7 +21,7 @@ const register = async (username, password, password_confirmed) => {
 };
 
 const logout = async () => {
-  await post('/logout');
+  await post('/auth/logout');
 };
 
 export default {

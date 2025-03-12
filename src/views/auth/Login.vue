@@ -1,18 +1,18 @@
 <script setup>
 import { useAuthStore } from '@/stores/auth';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
-// const router = useRouter();
+const router = useRouter();
 const authStore = useAuthStore();
 
 const email = ref('');
 const password = ref('');
-const checked = ref(false);
 
 const login = async () => {
-  const success = await authStore.login(email, password, checked);
+  const success = await authStore.login(email, password);
   if (success) {
-    // router.push('/');
+    router.push('/');
   }
 };
 </script>
@@ -34,11 +34,7 @@ const login = async () => {
             <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Contraseña</label>
             <Password id="password1" v-model="password" placeholder="Contraseña" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
 
-            <div class="flex items-center justify-between mt-2 mb-8 gap-8">
-              <div class="flex items-center">
-                <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
-                <label for="rememberme1">Recuerdame</label>
-              </div>
+            <div class="flex items-center justify-end mt-2 mb-8 gap-8">
               <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">¿Olvidaste tu contraseña?</span>
             </div>
             <Button label="Iniciar sesión" class="w-full mb-8 btn-primary" @click.prevent="login"></Button>

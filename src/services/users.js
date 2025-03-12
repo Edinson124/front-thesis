@@ -1,6 +1,6 @@
 import { get, post } from '@/api';
 
-const getUsers = async (filters = {}, page = 1) => {
+const getUsers = async (filters = {}, page = 0) => {
   try {
     let queryString = new URLSearchParams();
     queryString.append('page', page);
@@ -11,8 +11,8 @@ const getUsers = async (filters = {}, page = 1) => {
       }
     }
 
-    const response = await get(`/users/filter?${queryString.toString()}`);
-    return response.data;
+    const response = await get(`/users/paginated?${queryString.toString()}`);
+    return response;
   } catch (error) {
     console.error('Error al obtener usuarios: ', error);
     return [];
