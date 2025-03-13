@@ -11,7 +11,7 @@ const rolesStore = useRolesStore();
 
 const loading = ref(false);
 const filters = reactive({
-  name: '',
+  search: '',
   role: '',
   status: ''
 });
@@ -33,7 +33,7 @@ const filterUsers = async (event) => {
 };
 
 const resetFilters = () => {
-  filters.name = '';
+  filters.search = '';
   filters.role = '';
   filters.status = '';
   filterUsers();
@@ -60,7 +60,7 @@ const statusesOptions = statuses.map((status) => ({
       <div class="users-filters | flex flex-wrap gap-2 w-full md:w-[70%] mb-2 md:mb-0">
         <div class="users-filter | w-full md:w-1/2">
           <FloatLabel variant="on" class="w-full">
-            <InputText class="w-full" id="username" v-model="filters.name" aria-describedby="username-help" />
+            <InputText class="w-full" id="username" v-model="filters.search" aria-describedby="username-help" />
             <label for="username">Nombre</label>
           </FloatLabel>
         </div>
