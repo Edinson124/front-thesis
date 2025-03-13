@@ -1,4 +1,5 @@
 <script setup>
+import { MenuRoutes } from '@/enums/Menu';
 import { useLayout } from '@/layout/composables/layout';
 import Breadcrumb from 'primevue/breadcrumb';
 import { computed, ref, watch } from 'vue';
@@ -11,12 +12,24 @@ const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
 const home = ref({ icon: 'pi pi-home', to: '/' });
 
+function generateBreadcrumb(items, itemId) {
+  const breadcrumb = [];
+  let currentItem = items.find((item) => item.id === itemId);
+
+  while (currentItem) {
+    breadcrumb.unshift(currentItem);
+    currentItem = items.find((item) => item.id === currentItem.parentId);
+  }
+
+  return breadcrumb;
+}
+
 const route = useRoute();
 const pathItems = computed(() => {
-  return route.name
-    .substring(0)
-    .split('-')
-    .map((e) => ({ label: e.charAt(0).toUpperCase() + e.slice(1).toLowerCase() }));
+  const currentItem = MenuRoutes.find((item) => item.to === route.path);
+  const breadcrumb = currentItem ? generateBreadcrumb(MenuRoutes, currentItem.id) : [];
+  breadcrumb.shift(); // remove root item
+  return breadcrumb.map((item) => ({ label: item.label }));
 });
 
 const outsideClickListener = ref(null);

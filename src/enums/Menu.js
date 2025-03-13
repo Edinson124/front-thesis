@@ -1,110 +1,34 @@
-export const Menu = [
-  {
-    label: '',
-    items: [
-      {
-        label: 'Admin',
-        icon: 'mdi mdi-shield-account',
-        items: [
-          {
-            label: 'Variables globales',
-            to: '/admin/variables'
-          },
-          {
-            label: 'Usuarios',
-            to: '/admin/users'
-          },
-          {
-            label: 'Roles'
-          },
-          {
-            label: 'Bancos de sangre',
-            to: '/admin/bancos'
-          },
-          {
-            label: 'Redes',
-            to: '/admin/redes'
-          }
-        ]
-      },
-      {
-        label: 'Dashboards',
-        icon: 'mdi mdi-monitor-dashboard'
-      },
-      {
-        label: 'Donantes',
-        icon: 'mdi mdi-account-multiple-outline',
-        items: [
-          {
-            label: 'Registrar Donación'
-          },
-          {
-            label: 'Consultar donantes'
-          }
-        ]
-      },
-      {
-        label: 'Laboratorios',
-        icon: 'mdi mdi-test-tube',
-        items: [
-          {
-            label: 'Resultados de tamizaje'
-          },
-          {
-            label: 'Resultados pruebas cruzadas'
-          }
-        ]
-      },
-      {
-        label: 'Inventario',
-        icon: 'mdi mdi-database-outline',
-        items: [
-          {
-            label: 'Unidades en stock'
-          },
-          {
-            label: 'Unidades por vencer'
-          }
-        ]
-      },
-      {
-        label: 'Stock externo',
-        icon: 'mdi mdi-lan',
-        items: [
-          {
-            label: 'Consultar stock externo'
-          },
-          {
-            label: 'Solicitudes de apoyo'
-          },
-          {
-            label: 'Solicitudes de envio'
-          }
-        ]
-      },
-      {
-        label: 'Tranfusion',
-        icon: 'mdi mdi-needle',
-        items: [
-          {
-            label: 'Pacientes'
-          },
-          {
-            label: 'Solicitud de unidades'
-          }
-        ]
-      },
-      {
-        label: 'Interoperabilidad',
-        icon: 'mdi mdi-wan',
-        items: [
-          {
-            label: 'Comsulta información externa'
-          }
-        ]
-      }
-    ]
-  },
+export const MenuRoutes = [
+  { id: 'root', label: '' },
+  { id: 'admin', label: 'Admin', icon: 'mdi mdi-shield-account', parentId: 'root' },
+  { id: 'admin-variables', label: 'Variables globales', to: '/admin/variables', parentId: 'admin' },
+  { id: 'admin-users', label: 'Usuarios', to: '/admin/users', parentId: 'admin' },
+  { id: 'admin-roles', label: 'Roles', parentId: 'admin' },
+  { id: 'admin-bancos', label: 'Bancos de sangre', to: '/admin/bancos', parentId: 'admin' },
+  { id: 'admin-redes', label: 'Redes', to: '/admin/redes', parentId: 'admin' },
+  { id: 'dashboards', label: 'Dashboards', icon: 'mdi mdi-monitor-dashboard', parentId: 'root' },
+  { id: 'donantes', label: 'Donantes', icon: 'mdi mdi-account-multiple-outline', parentId: 'root' },
+  { id: 'donantes-registrar', label: 'Registrar Donación', parentId: 'donantes' },
+  { id: 'donantes-consultar', label: 'Consultar donantes', parentId: 'donantes' },
+  { id: 'laboratory', label: 'Laboratorios', icon: 'mdi mdi-test-tube', parentId: 'root' },
+  { id: 'laboratory-results', label: 'Resultados de tamizaje', parentId: 'laboratory' },
+  { id: 'laboratory-tests', label: 'Resultados pruebas cruzadas', parentId: 'laboratory' },
+  { id: 'inventory', label: 'Inventario', icon: 'mdi mdi-database-outline', parentId: 'root' },
+  { id: 'inventory-stock', label: 'Unidades en stock', parentId: 'inventory' },
+  { id: 'inventory-maturity', label: 'Unidades por vencer', parentId: 'inventory' },
+  { id: 'extern', label: 'Stock externo', icon: 'mdi mdi-lan', parentId: 'root' },
+  { id: 'extern-query', label: 'Consultar stock externo', parentId: 'extern' },
+  { id: 'extern-support', label: 'Solicitudes de apoyo', parentId: 'extern' },
+  { id: 'extern-shipment', label: 'Solicitudes de envio', parentId: 'extern' },
+  { id: 'transfusion', label: 'Transfusión', icon: 'mdi mdi-needle', parentId: 'root' },
+  { id: 'transfusion-patients', label: 'Pacientes', parentId: 'transfusion' },
+  { id: 'transfusion-units', label: 'Solicitud de unidades', parentId: 'transfusion' },
+  { id: 'interoperability', label: 'Interoperabilidad', icon: 'mdi mdi-wan', parentId: 'root' },
+  { id: 'interoperability-query', label: 'Consulta información externa', parentId: 'interoperability' }
+];
+
+//TODO: Remove template Menu
+export const TemplateMenu = [
   {
     label: 'UI Components',
     items: [
