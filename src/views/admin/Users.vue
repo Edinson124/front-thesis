@@ -1,9 +1,13 @@
 <script setup>
+import { Role } from '@/enums/Role';
+import { Status } from '@/enums/Status';
+import { useRolesStore } from '@/stores/roles';
 import { useUsersStore } from '@/stores/users';
 import { Button, FloatLabel, InputText, Select } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
 
 const userStore = useUsersStore();
+const rolesStore = useRolesStore();
 
 const loading = ref(false);
 const filters = reactive({
@@ -11,9 +15,6 @@ const filters = reactive({
   role: '',
   status: ''
 });
-
-const roles = reactive([{ name: 'Hematologo' }, { name: 'Administrador' }, { name: 'Coordinador' }, { name: 'Patólogo' }]);
-const status = reactive([{ name: 'Activo' }, { name: 'Inactivo' }, { name: 'Eliminado' }]);
 
 const columns = [
   { field: 'id', header: 'Id', width: '5%' },
@@ -38,9 +39,16 @@ const resetFilters = () => {
   filterUsers();
 };
 
-onMounted(() => {
-  filterUsers();
+onMounted(async () => {
+  await filterUsers();
+  await rolesStore.getRoles();
 });
+
+const statuses = ['ACTIVE', 'INACTIVE', 'ELIMINATED'];
+const statusesOptions = statuses.map((status) => ({
+  value: status,
+  label: Status[status]
+}));
 </script>
 
 <template>
@@ -58,13 +66,13 @@ onMounted(() => {
         </div>
         <div class="users-filter | w-full md:w-[23%]">
           <FloatLabel variant="on" class="w-full">
-            <Select class="w-full" v-model="filters.role" :options="roles" optionLabel="name" showClear />
+            <Select class="w-full" v-model="filters.role" :options="rolesStore.rolesOptions" optionLabel="label" optionValue="value" showClear />
             <label for="role">Rol</label>
           </FloatLabel>
         </div>
         <div class="users-filter | w-full md:w-[23%]">
           <FloatLabel variant="on" class="w-full">
-            <Select class="w-full" v-model="filters.status" :options="status" optionLabel="name" showClear />
+            <Select class="w-full" v-model="filters.status" :options="statusesOptions" optionLabel="label" optionValue="value" showClear />
             <label for="status">Estado</label>
           </FloatLabel>
         </div>
@@ -93,6 +101,8 @@ onMounted(() => {
         >
           <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" :style="`width: ${col.width}`">
             <template v-if="col.field === 'name'" #body="slotProps"> {{ slotProps.data.firstNames }} {{ slotProps.data.lastName }} {{ slotProps.data.secondLastName }} </template>
+            <template v-else-if="col.field === 'role'" #body="slotProps"> {{ Role[slotProps.data.role] }} </template>
+            <template v-else-if="col.field === 'status'" #body="slotProps"> {{ Status[slotProps.data.status] }} </template>
           </Column>
           <Column header="Acciones">
             <template #body="">
