@@ -95,6 +95,13 @@
         display: flex;
         gap: 1rem;
     }
+
+    .layout-topbar-account {
+        display: inline-flex;
+        align-items: center;
+        color: white;
+        text-transform: capitalize;
+    }
 }
 
 @media (max-width: 991px) {

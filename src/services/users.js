@@ -1,4 +1,4 @@
-import { get, post } from '@/api';
+import { get, patch, post } from '@/api';
 
 const getUsers = async (filters = {}, page = 0) => {
   try {
@@ -22,14 +22,36 @@ const getUsers = async (filters = {}, page = 0) => {
 const newUser = async (user) => {
   try {
     const response = await post('/users', { user });
-    return response.data;
+    return response;
   } catch (error) {
     console.error('Error al crear usuario: ', error);
     return null;
   }
 };
 
+const editUser = async (user) => {
+  try {
+    const response = await post(`/users/${user.id}`, { user });
+    return response;
+  } catch (error) {
+    console.error('Error al editar usuario: ', error);
+    return null;
+  }
+};
+
+const toogleStatusUser = async (userId) => {
+  try {
+    const response = await patch(`/users/status/${userId}`);
+    return response;
+  } catch (error) {
+    console.error('Error al cambiar de estado al usuario: ', error);
+    return null;
+  }
+};
+
 export default {
   getUsers,
-  newUser
+  newUser,
+  editUser,
+  toogleStatusUser
 };

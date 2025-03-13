@@ -13,9 +13,9 @@ const home = ref({ icon: 'pi pi-home', to: '/' });
 
 const route = useRoute();
 const pathItems = computed(() => {
-  return route.path
-    .substring(1)
-    .split('/')
+  return route.name
+    .substring(0)
+    .split('-')
     .map((e) => ({ label: e.charAt(0).toUpperCase() + e.slice(1).toLowerCase() }));
 });
 

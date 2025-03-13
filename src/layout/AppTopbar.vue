@@ -21,9 +21,9 @@ const overlayMenuItems = ref([
   }
 ]);
 
-const menu = ref(null);
-function toggleMenu2(event) {
-  menu.value.toggle(event);
+const userMenu = ref(null);
+function toggleUserMenu(event) {
+  userMenu.value.toggle(event);
 }
 </script>
 
@@ -66,8 +66,9 @@ function toggleMenu2(event) {
 
       <div class="layout-topbar-menu hidden lg:block">
         <div class="layout-topbar-menu-content">
-          <Menu ref="menu" :model="overlayMenuItems" :popup="true" />
-          <button type="button" class="layout-topbar-action" @click="toggleMenu2">
+          <span class="layout-topbar-account">{{ authStore.user }}</span>
+          <Menu ref="userMenu" :model="overlayMenuItems" :popup="true" />
+          <button type="button" class="layout-topbar-action" @click="toggleUserMenu">
             <i class="pi pi-user"></i>
             <span>Profile</span>
           </button>

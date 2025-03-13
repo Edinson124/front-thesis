@@ -49,6 +49,28 @@ const statusesOptions = statuses.map((status) => ({
   value: status,
   label: Status[status]
 }));
+
+const desactivateUserDialog = ref(false);
+const selectedUser = ref(null);
+const confirmDesactivateUser = (user) => {
+  selectedUser.value = user;
+  desactivateUserDialog.value = true;
+};
+const desactivateUser = () => {
+  userStore.toogleStatusUser(selectedUser.value.id);
+  desactivateUserDialog.value = false;
+  selectedUser.value = null;
+};
+const reactivateUserDialog = ref(false);
+const confirmReactivateUser = (user) => {
+  selectedUser.value = user;
+  reactivateUserDialog.value = true;
+};
+const reactivateUser = () => {
+  userStore.toogleStatusUser(selectedUser.value.id);
+  reactivateUserDialog.value = false;
+  selectedUser.value = null;
+};
 </script>
 
 <template>
@@ -105,15 +127,43 @@ const statusesOptions = statuses.map((status) => ({
             <template v-else-if="col.field === 'status'" #body="slotProps"> {{ Status[slotProps.data.status] }} </template>
           </Column>
           <Column header="Acciones">
-            <template #body="">
+            <template #body="slotProps">
               <div class="flex flex-wrap w-full">
                 <Button class="h-8 w-[6rem] mr-1 my-1 btn-edit" label="Editar" />
-                <Button class="h-8 w-[6rem] my-1" label="Eliminar" severity="danger" />
+                <Button v-if="slotProps.data.status === 'ACTIVE'" class="h-8 w-[6rem] my-1" label="Desactivar" severity="danger" @click="confirmDesactivateUser(slotProps.data)" />
+                <Button v-else class="h-8 w-[6rem] my-1" label="Activar" severity="success" @click="confirmReactivateUser(slotProps.data)" />
               </div>
             </template>
           </Column>
         </DataTable>
       </div>
+      <Dialog v-model:visible="desactivateUserDialog" :style="{ width: '450px' }" header="Desactivar usuario" :modal="true">
+        <div class="flex items-center gap-4">
+          <i class="pi pi-exclamation-triangle !text-3xl" />
+          <span v-if="selectedUser">
+            ¿Estás seguro de desactivar a <b>{{ selectedUser.firstNames }}</b
+            >?
+          </span>
+        </div>
+        <template #footer>
+          <Button label="Cancelar" text @click="desactivateUserDialog = false" />
+          <Button label="Desactivar" class="p-button-danger" @click="desactivateUser" />
+        </template>
+      </Dialog>
+
+      <Dialog v-model:visible="reactivateUserDialog" :style="{ width: '450px' }" header="Activar usuario" :modal="true">
+        <div class="flex items-center gap-4">
+          <i class="pi pi-exclamation-triangle !text-3xl" />
+          <span v-if="selectedUser">
+            ¿Estás seguro de activar a <b>{{ selectedUser.firstNames }}</b
+            >?
+          </span>
+        </div>
+        <template #footer>
+          <Button label="Cancelar" text @click="reactivateUserDialog = false" />
+          <Button label="Activar" class="p-button-success" @click="reactivateUser" />
+        </template>
+      </Dialog>
     </div>
   </div>
 </template>

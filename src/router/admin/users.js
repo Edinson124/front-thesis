@@ -1,9 +1,19 @@
-import Users from '@/views/admin/Users.vue';
+import Users from '@/views/admin/users/Users.vue';
 
 export default [
   {
-    path: '/admin/usuarios',
-    name: 'usuarios',
+    path: '/admin/users',
+    name: 'admin-usuarios',
+    component: Users
+  },
+  {
+    path: '/admin/users/new',
+    name: 'admin-usuarios-nuevo',
+    component: Users
+  },
+  {
+    path: '/admin/users/:id',
+    name: 'admin-usuarios-editar',
     component: Users
   }
 ];

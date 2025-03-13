@@ -56,3 +56,11 @@ export async function post(url, body = null, options = null) {
 export async function put(url, body = null, options = null) {
   return await api(url, 'PUT', body, options);
 }
+
+export async function patch(url, body = null, options = null) {
+  return await api(url, 'PATCH', body, options);
+}
+
+export async function del(url, options = null) {
+  return await api(url, 'DELETE', null, options);
+}
