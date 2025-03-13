@@ -44,7 +44,7 @@ onMounted(async () => {
   await rolesStore.getRoles();
 });
 
-const statuses = ['ACTIVE', 'INACTIVE', 'ELIMINATED'];
+const statuses = ['ACTIVE', 'INACTIVE'];
 const statusesOptions = statuses.map((status) => ({
   value: status,
   label: Status[status]
