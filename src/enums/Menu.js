@@ -27,6 +27,13 @@ export const MenuRoutes = [
   { id: 'interoperability-query', label: 'Consulta información externa', parentId: 'interoperability' }
 ];
 
+export const extraRoutes = [
+  { id: 'admin-users-new', label: 'Nuevo Usuario', to: '/admin/users/new', parentId: 'admin-users' },
+  { id: 'admin-users-edit', label: 'Editar Usuario', to: '/admin/users/edit', parentId: 'admin-users' }
+];
+
+export const breadcrumbs = [...MenuRoutes, ...extraRoutes];
+
 //TODO: Remove template Menu
 export const TemplateMenu = [
   {

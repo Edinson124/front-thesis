@@ -1,3 +1,4 @@
+import EditUser from '@/views/admin/users/EditUser.vue';
 import Users from '@/views/admin/users/Users.vue';
 
 export default [
@@ -9,11 +10,11 @@ export default [
   {
     path: '/admin/users/new',
     name: 'admin-users-new',
-    component: Users
+    component: EditUser
   },
   {
     path: '/admin/users/:id',
     name: 'admin-users-edit',
-    component: Users
+    component: EditUser
   }
 ];

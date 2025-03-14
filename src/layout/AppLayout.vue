@@ -1,5 +1,5 @@
 <script setup>
-import { MenuRoutes } from '@/enums/Menu';
+import { breadcrumbs } from '@/enums/Menu';
 import { useLayout } from '@/layout/composables/layout';
 import Breadcrumb from 'primevue/breadcrumb';
 import { computed, ref, watch } from 'vue';
@@ -26,8 +26,8 @@ function generateBreadcrumb(items, itemId) {
 
 const route = useRoute();
 const pathItems = computed(() => {
-  const currentItem = MenuRoutes.find((item) => item.to === route.path);
-  const breadcrumb = currentItem ? generateBreadcrumb(MenuRoutes, currentItem.id) : [];
+  const currentItem = breadcrumbs.find((item) => item.to === route.path);
+  const breadcrumb = currentItem ? generateBreadcrumb(breadcrumbs, currentItem.id) : [];
   breadcrumb.shift(); // remove root item
   return breadcrumb.map((item) => ({ label: item.label }));
 });
