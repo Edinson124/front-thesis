@@ -20,6 +20,16 @@ export const useUsersStore = defineStore('users', () => {
     }
   };
 
+  const getUser = async (userId) => {
+    try {
+      const response = await usersService.getUser(userId);
+      return response;
+    } catch (error) {
+      console.error('Error al crear usuario: ', error);
+      return null;
+    }
+  };
+
   const newUser = async (user) => {
     try {
       await usersService.newUser(user);
@@ -52,5 +62,5 @@ export const useUsersStore = defineStore('users', () => {
     }
   };
 
-  return { users, totalRecords, currentPage, getUsers, newUser, editUser, toogleStatusUser };
+  return { users, totalRecords, currentPage, getUsers, getUser, newUser, editUser, toogleStatusUser };
 });

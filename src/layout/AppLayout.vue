@@ -10,7 +10,7 @@ import AppTopbar from './AppTopbar.vue';
 
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
-const home = ref({ icon: 'pi pi-home', to: '/' });
+const home = ref({ icon: 'pi pi-home', to: '#' });
 
 function generateBreadcrumb(items, itemId) {
   const breadcrumb = [];
@@ -26,7 +26,7 @@ function generateBreadcrumb(items, itemId) {
 
 const route = useRoute();
 const pathItems = computed(() => {
-  const currentItem = breadcrumbs.find((item) => item.to === route.path);
+  const currentItem = breadcrumbs.find((item) => item.id === route.name);
   const breadcrumb = currentItem ? generateBreadcrumb(breadcrumbs, currentItem.id) : [];
   breadcrumb.shift(); // remove root item
   return breadcrumb.map((item) => ({ label: item.label }));

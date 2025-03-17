@@ -8,17 +8,17 @@ export default [
   },
   {
     path: '/admin/variables',
-    name: 'configuración variables',
+    name: 'admin-variables',
     component: () => import('@/views/admin/GlobalVariables.vue')
   },
   {
     path: '/admin/bancos',
-    name: 'bancos de sangre',
+    name: 'admin-bancos',
     component: () => import('@/views/admin/BloodBanks.vue')
   },
   {
     path: '/admin/redes',
-    name: 'redes',
+    name: 'admin-redes',
     component: () => import('@/views/admin/BloodBankNetworks.vue')
   },
   ...usersRoutes

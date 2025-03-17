@@ -29,7 +29,7 @@ export const MenuRoutes = [
 
 export const extraRoutes = [
   { id: 'admin-users-new', label: 'Nuevo Usuario', to: '/admin/users/new', parentId: 'admin-users' },
-  { id: 'admin-users-edit', label: 'Editar Usuario', to: '/admin/users/edit', parentId: 'admin-users' }
+  { id: 'admin-users-edit', label: 'Editar Usuario', to: '/admin/users/:id', parentId: 'admin-users' }
 ];
 
 export const breadcrumbs = [...MenuRoutes, ...extraRoutes];

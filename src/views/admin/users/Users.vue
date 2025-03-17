@@ -82,7 +82,7 @@ const reactivateUser = () => {
       <div class="users-filters | flex flex-wrap gap-2 w-full md:w-[70%] mb-2 md:mb-0">
         <div class="users-filter | w-full md:w-1/2">
           <FloatLabel variant="on" class="w-full">
-            <InputText class="w-full" id="username" v-model="filters.search" aria-describedby="username-help" />
+            <InputText class="w-full" id="username" v-model="filters.search" aria-describedby="username" />
             <label for="username">Nombre</label>
           </FloatLabel>
         </div>
@@ -129,7 +129,7 @@ const reactivateUser = () => {
           <Column header="Acciones">
             <template #body="slotProps">
               <div class="flex flex-wrap w-full">
-                <Button class="h-8 w-[6rem] mr-1 my-1 btn-edit" label="Editar" />
+                <Button class="h-8 w-[6rem] mr-1 my-1 btn-edit" label="Editar" as="router-link" :to="`/admin/users/${slotProps.data.id}`" />
                 <Button v-if="slotProps.data.status === 'ACTIVE'" class="h-8 w-[6rem] my-1" label="Desactivar" severity="danger" @click="confirmDesactivateUser(slotProps.data)" />
                 <Button v-else class="h-8 w-[6rem] my-1" label="Activar" severity="success" @click="confirmReactivateUser(slotProps.data)" />
               </div>
