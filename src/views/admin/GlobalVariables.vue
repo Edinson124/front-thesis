@@ -43,9 +43,16 @@ const edit = (item) => {
 };
 
 // Función para confirmar la edición
-const confirmEdition = () => {
-  initialValues.value[variableSelected.value.id] = variableSelected.value.value;
-  showModal.value = false;
+const confirmEdition = async () => {
+  try {
+    await globalVariablesService.updateVariable(variableSelected.value.id, variableSelected.value.value);
+
+    // Actualizar valores locales después de la actualización exitosa
+    initialValues.value[variableSelected.value.id] = variableSelected.value.value;
+    showModal.value = false;
+  } catch (error) {
+    console.error('Error en la actualización:', error);
+  }
 };
 
 const cancelEdition = () => {

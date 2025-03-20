@@ -1,4 +1,4 @@
-import { get } from '@/api';
+import { get, patch } from '@/api';
 
 const getGroupedGlobalVariables = async () => {
   try {
@@ -10,6 +10,16 @@ const getGroupedGlobalVariables = async () => {
   }
 };
 
+const updateVariable = async (id, value) => {
+  try {
+    return await patch(`/variables/${id}`, { value });
+  } catch (error) {
+    console.error('Error al actualizar variable: ', error);
+    throw error;
+  }
+};
+
 export default {
+  updateVariable,
   getGroupedGlobalVariables
 };
