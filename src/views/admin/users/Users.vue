@@ -122,7 +122,7 @@ const reactivateUser = () => {
           :currentPageReportTemplate="'{currentPage} de {totalPages}'"
         >
           <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" :style="`width: ${col.width}`">
-            <template v-if="col.field === 'name'" #body="slotProps"> {{ slotProps.data.firstNames }} {{ slotProps.data.lastName }} {{ slotProps.data.secondLastName }} </template>
+            <template v-if="col.field === 'name'" #body="slotProps"> {{ slotProps.data.firstName }} {{ slotProps.data.lastName }} {{ slotProps.data.secondLastName }} </template>
             <template v-else-if="col.field === 'role'" #body="slotProps"> {{ Role[slotProps.data.role] }} </template>
             <template v-else-if="col.field === 'status'" #body="slotProps"> {{ Status[slotProps.data.status] }} </template>
           </Column>
@@ -141,7 +141,7 @@ const reactivateUser = () => {
         <div class="flex items-center gap-4">
           <i class="pi pi-exclamation-triangle !text-3xl" />
           <span v-if="selectedUser">
-            ¿Estás seguro de desactivar a <b>{{ selectedUser.firstNames }}</b
+            ¿Estás seguro de desactivar a <b>{{ selectedUser.firstName }}</b
             >?
           </span>
         </div>
@@ -155,7 +155,7 @@ const reactivateUser = () => {
         <div class="flex items-center gap-4">
           <i class="pi pi-exclamation-triangle !text-3xl" />
           <span v-if="selectedUser">
-            ¿Estás seguro de activar a <b>{{ selectedUser.firstNames }}</b
+            ¿Estás seguro de activar a <b>{{ selectedUser.firstName }}</b
             >?
           </span>
         </div>

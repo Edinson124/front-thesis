@@ -8,6 +8,7 @@ export const useRolesStore = defineStore('roles', () => {
 
   const rolesOptions = computed(() => {
     return roles.map((role) => ({
+      id: role.id,
       value: role.name,
       label: Role[role.name]
     }));

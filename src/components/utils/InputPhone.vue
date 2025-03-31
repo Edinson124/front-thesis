@@ -9,7 +9,11 @@ const props = defineProps({
   },
   id: String,
   code_label: String,
-  label: String
+  label: String,
+  invalid: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -74,7 +78,7 @@ const checkDigit = (event) => {
 <template>
   <InputGroup class="">
     <FloatLabel variant="on" class="!flex-[0_1_auto] !w-3/12">
-      <Select id="code" v-model="selectedCountry" :options="countryList" optionLabel="name" filter>
+      <Select id="code" v-model="selectedCountry" :options="countryList" optionLabel="name" filter :invalid="invalid">
         <template #value="slotProps">
           <div v-if="slotProps.value" class="flex items-center">{{ slotProps.value.emoji }} {{ slotProps.value.dialCode }}</div>
           <span v-else> -- </span>
@@ -86,7 +90,7 @@ const checkDigit = (event) => {
       <label for="code">{{ code_label }}</label>
     </FloatLabel>
     <FloatLabel variant="on">
-      <InputText :id="id" class="" v-model="internalValue" @keydown="checkDigit" @input="formatInput" inputmode="numeric" />
+      <InputText :id="id" class="" v-model="internalValue" @keydown="checkDigit" @input="formatInput" inputmode="numeric" :invalid="invalid" />
       <label :for="id">{{ label }}</label>
     </FloatLabel>
   </InputGroup>

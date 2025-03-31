@@ -3,33 +3,39 @@ import InputPhone from '@/components/utils/InputPhone.vue';
 import { DocumentTypes } from '@/enums/DocumentTypes';
 import { Status } from '@/enums/Status';
 import ubicationService from '@/services/ubication';
+import { useRolesStore } from '@/stores/roles';
 import { useUsersStore } from '@/stores/users';
+import { email, minLength, required, requiredIf } from '@/validation/validators';
+import { useVuelidate } from '@vuelidate/core';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
 const usersStore = useUsersStore();
+const rolesStore = useRolesStore();
 
 const isNewUser = ref(true);
 const loadingUser = ref(false);
 const user = reactive({
   documentType: '',
   documentNumber: '',
-  firstNames: '',
+  firstName: '',
   lastName: '',
   secondLastName: '',
-  birthday: null,
+  birthDate: null,
   email: '',
   phone: '',
-  department: null,
+  region: null,
   province: null,
-  distrito: null,
+  district: null,
   address: '',
   status: 'ACTIVE',
-  bloodBank: '',
-  bloodBankRole: ''
+  bloodBank: null,
+  profileImageUrl: ''
 });
+const bloodBankRole = ref(null);
+const roleIds = computed(() => (bloodBankRole.value ? [bloodBankRole.value.id] : []));
 
 const maxDate = ref(new Date());
 
@@ -58,9 +64,17 @@ const handleImageChange = (event) => {
   }
 };
 
-function calculateAge(birthday) {
+function stringToDate(fechaString) {
+  const partes = fechaString.split('/');
+  const dia = parseInt(partes[0], 10);
+  const mes = parseInt(partes[1], 10) - 1;
+  const anio = parseInt(partes[2], 10);
+
+  return new Date(anio, mes, dia);
+}
+
+function calculateAge(birthDate) {
   const today = new Date();
-  const birthDate = new Date(birthday);
 
   let years = today.getFullYear() - birthDate.getFullYear();
   let months = today.getMonth() - birthDate.getMonth();
@@ -81,8 +95,8 @@ function calculateAge(birthday) {
 }
 
 const years = computed(() => {
-  if (!user.birthday) return '';
-  const age = calculateAge(user.birthday);
+  if (!user.birthDate) return '';
+  const age = calculateAge(user.birthDate);
   return `${age.years} años ${age.months} meses ${age.days} días`;
 });
 
@@ -99,7 +113,28 @@ onMounted(async () => {
     isNewUser.value = false;
     const userResponse = await usersStore.getUser(userId);
     Object.assign(user, { ...user, ...userResponse });
+
+    if (user.birthDate) {
+      user.birthDate = stringToDate(user.birthDate);
+    }
   }
+
+  if (user.region) {
+    loadingProvinces.value = true;
+    const provincesResponse = await ubicationService.getProvinces(user.region);
+    provinces.splice(0, provinces.length, ...provincesResponse);
+    loadingProvinces.value = false;
+  }
+
+  if (user.province) {
+    loadingDistritos.value = true;
+    const distritosResponse = await ubicationService.getDistritos(user.region, user.province);
+    distritos.splice(0, distritos.length, ...distritosResponse);
+    loadingDistritos.value = false;
+  }
+
+  await rolesStore.getRoles();
+
   loadingUser.value = false;
 });
 
@@ -117,7 +152,7 @@ const onSelectProvince = async (event) => {
   loadingDistritos.value = true;
   let distritosResponse = [];
   if (event.value !== null) {
-    distritosResponse = await ubicationService.getDistritos(user.department, event.value);
+    distritosResponse = await ubicationService.getDistritos(user.region, event.value);
   }
   distritos.splice(0, distritos.length, ...distritosResponse);
   loadingDistritos.value = false;
@@ -129,9 +164,31 @@ const statusesOptions = statuses.map((status) => ({
   label: Status[status]
 }));
 
+const rules = computed(() => ({
+  documentType: { required: required('Tipo de documento') },
+  documentNumber: { required: required('Número de documento') },
+  firstName: { required: required('Nombres'), minLength: minLength('Nombres', 2) },
+  lastName: { required: required('Apellido paterno'), minLength: minLength('Apellido paterno', 2) },
+  secondLastName: { minLength: minLength('Apellido materno', 2) },
+  birthDate: { required: required('Fecha de nacimiento') },
+  email: { required: required('Correo electrónico'), email: email('Correo electrónico') },
+  phone: { required: required('Teléfono') },
+  region: { required: required('Región') },
+  province: { requiredIf: requiredIf('Provincia', () => user.region) },
+  district: { requiredIf: requiredIf('Distrito', () => user.province) },
+  address: { required: required('Dirección'), minLength: minLength('Dirección', 5) },
+  status: {},
+  bloodBank: { required: required('Banco de sangre') },
+  profileImageUrl: {}
+}));
+const v$ = useVuelidate(rules, user);
+
 const saveUser = async () => {
+  const isValid = await v$.value.$validate();
+  if (!isValid) return;
+
   const saveMethod = isNewUser.value ? usersStore.newUser : usersStore.editUser;
-  const success = await saveMethod(user);
+  const success = await saveMethod({ user, roleIds: roleIds.value });
   if (success) {
     router.push('/admin/users');
   }
@@ -157,7 +214,7 @@ const saveUser = async () => {
       <Skeleton width="8rem" height="2rem"></Skeleton>
     </div>
   </div>
-  <div class="card" v-else>
+  <form class="card" v-if="!loadingUser" @submit.prevent="saveUser">
     <div class="page-title | mb-8">
       <h3 v-if="isNewUser">Registro de nuevo usuario</h3>
       <h3 v-else>Editar usuario</h3>
@@ -189,75 +246,113 @@ const saveUser = async () => {
           <div class="flex flex-col gap-4 w-full | mb-8">
             <div class="font-semibold text-xl">Información personal</div>
             <div class="grid grid-cols-12 gap-4">
-              <FloatLabel variant="on" class="w-full col-span-12 mb-2 md:col-span-2 md:mb-0">
-                <Select id="documentType" v-model="user.documentType" :options="documentTypesOptions" optionLabel="label" optionValue="value" showClear aria-describedby="documentType" />
-                <label for="documentType">Tipo Documento</label>
-              </FloatLabel>
-              <FloatLabel variant="on" class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
-                <InputText id="documentNumber" v-model="user.documentNumber" aria-describedby="documentNumber" />
-                <label for="documentNumber">Nro Documento</label>
-              </FloatLabel>
+              <span class="w-full col-span-12 mb-2 md:col-span-3 md:mb-0">
+                <FloatLabel variant="on" class="w-full">
+                  <Select id="documentType" v-model="user.documentType" :options="documentTypesOptions" optionLabel="label" optionValue="value" showClear aria-describedby="documentType" :invalid="v$.documentType?.$error" />
+                  <label for="documentType">Tipo Documento</label>
+                </FloatLabel>
+                <Message v-if="v$.documentType?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.documentType.$errors[0].$message }}</Message>
+              </span>
+              <span class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
+                <FloatLabel variant="on" class="w-full">
+                  <InputText id="documentNumber" v-model="user.documentNumber" aria-describedby="documentNumber" :invalid="v$.documentNumber?.$error" />
+                  <label for="documentNumber">Nro Documento</label>
+                </FloatLabel>
+                <Message v-if="v$.documentNumber?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.documentNumber.$errors[0].$message }}</Message>
+              </span>
             </div>
 
             <div class="grid grid-cols-12 gap-4">
-              <FloatLabel variant="on" class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
-                <InputText id="firstNames" v-model="user.firstNames" aria-describedby="firstNames" />
-                <label for="firstNames">Nombres</label>
-              </FloatLabel>
+              <span class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
+                <FloatLabel variant="on" class="w-full">
+                  <InputText id="firstName" v-model="user.firstName" aria-describedby="firstName" :invalid="v$.firstName?.$error" />
+                  <label for="firstName">Nombres</label>
+                </FloatLabel>
+                <Message v-if="v$.firstName?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.firstName.$errors[0].$message }}</Message>
+              </span>
 
-              <FloatLabel variant="on" class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
-                <InputText id="lastName" v-model="user.lastName" aria-describedby="lastName" />
-                <label for="lastName">Apellido paterno</label>
-              </FloatLabel>
+              <span class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
+                <FloatLabel variant="on" class="w-full">
+                  <InputText id="lastName" v-model="user.lastName" aria-describedby="lastName" :invalid="v$.lastName?.$error" />
+                  <label for="lastName">Apellido paterno</label>
+                </FloatLabel>
+                <Message v-if="v$.lastName?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.lastName.$errors[0].$message }}</Message>
+              </span>
 
-              <FloatLabel variant="on" class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
-                <InputText id="secondLastName" v-model="user.secondLastName" aria-describedby="secondLastName" />
-                <label for="secondLastName">Apellido materno</label>
-              </FloatLabel>
+              <span class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
+                <FloatLabel variant="on" class="w-full">
+                  <InputText id="secondLastName" v-model="user.secondLastName" aria-describedby="secondLastName" :invalid="v$.secondLastName?.$error" />
+                  <label for="secondLastName">Apellido materno</label>
+                </FloatLabel>
+                <Message v-if="v$.secondLastName?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.secondLastName.$errors[0].$message }}</Message>
+              </span>
             </div>
 
             <div class="grid grid-cols-12 gap-4">
-              <FloatLabel variant="on" class="w-full col-span-12 mb-2 md:col-span-2 md:mb-0">
-                <DatePicker id="birthday" v-model="user.birthday" showIcon iconDisplay="input" dateFormat="dd/mm/yy" :maxDate="maxDate" aria-describedby="birthday" />
-                <label for="birthday">Fecha de nacimiento</label>
-              </FloatLabel>
+              <span class="w-full col-span-12 mb-2 md:col-span-3 md:mb-0">
+                <FloatLabel variant="on" class="w-full">
+                  <DatePicker id="birthDate" v-model="user.birthDate" showIcon iconDisplay="input" dateFormat="dd/mm/yy" :maxDate="maxDate" aria-describedby="birthDate" :invalid="v$.birthDate?.$error" />
+                  <label for="birthDate">Fecha de nacimiento</label>
+                </FloatLabel>
+                <Message v-if="v$.birthDate?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.birthDate.$errors[0].$message }}</Message>
+              </span>
 
-              <FloatLabel variant="on" class="w-full col-span-12 mb-2 md:col-span-2 md:mb-0">
-                <InputText id="years" v-model="years" aria-describedby="years" disabled />
-                <label for="years">Edad</label>
-              </FloatLabel>
+              <span class="w-full col-span-12 mb-2 md:col-span-3 md:mb-0">
+                <FloatLabel variant="on" class="w-full">
+                  <InputText id="years" v-model="years" aria-describedby="years" disabled />
+                  <label for="years">Edad</label>
+                </FloatLabel>
+              </span>
             </div>
 
             <div class="grid grid-cols-12 gap-4">
-              <FloatLabel variant="on" class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
-                <InputText id="email" v-model="user.email" aria-describedby="email" />
-                <label for="email">Email</label>
-              </FloatLabel>
+              <span class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
+                <FloatLabel variant="on" class="w-full">
+                  <InputText id="email" v-model="user.email" aria-describedby="email" :invalid="v$.email?.$error" />
+                  <label for="email">Email</label>
+                </FloatLabel>
+                <Message v-if="v$.email?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.email.$errors[0].$message }}</Message>
+              </span>
 
-              <InputPhone class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0" id="phone" label="Teléfono" code_label="Código" v-model="user.phone" />
+              <span class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
+                <InputPhone class="w-full" id="phone" label="Teléfono" code_label="Código" v-model="user.phone" :invalid="v$.phone?.$error" />
+                <Message v-if="v$.phone?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.phone.$errors[0].$message }}</Message>
+              </span>
             </div>
 
             <div class="grid grid-cols-12 gap-4">
-              <FloatLabel variant="on" class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
-                <Select id="id_department" v-model="user.department" :options="departments" showClear filter @change="onSelectDepartment" :loading="loadingDeparments" />
-                <label for="id_department">Departamento</label>
-              </FloatLabel>
+              <span class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
+                <FloatLabel variant="on" class="w-full">
+                  <Select id="id_region" v-model="user.region" :options="departments" showClear filter @change="onSelectDepartment" :loading="loadingDeparments" :invalid="v$.region?.$error" />
+                  <label for="id_region">Departamento</label>
+                </FloatLabel>
+                <Message v-if="v$.region?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.region.$errors[0].$message }}</Message>
+              </span>
 
-              <FloatLabel variant="on" class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
-                <Select id="id_province" v-model="user.province" :options="provinces" showClear filter @change="onSelectProvince" :disabled="user.department === null" :loading="loadingProvinces" />
-                <label for="id_province">Provincia</label>
-              </FloatLabel>
+              <span class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
+                <FloatLabel variant="on" class="w-full">
+                  <Select id="id_province" v-model="user.province" :options="provinces" showClear filter @change="onSelectProvince" :disabled="user.region === null" :loading="loadingProvinces" :invalid="v$.province?.$error" />
+                  <label for="id_province">Provincia</label>
+                </FloatLabel>
+                <Message v-if="v$.province?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.province.$errors[0].$message }}</Message>
+              </span>
 
-              <FloatLabel variant="on" class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
-                <Select id="id_distrito" v-model="user.distrito" :options="distritos" showClear filter :disabled="user.province === null" :loading="loadingDistritos" />
-                <label for="id_distrito">Distrito</label>
-              </FloatLabel>
+              <span class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
+                <FloatLabel variant="on" class="w-full">
+                  <Select id="id_district" v-model="user.district" :options="distritos" showClear filter :disabled="user.province === null" :loading="loadingDistritos" :invalid="v$.district?.$error" />
+                  <label for="id_district">Distrito</label>
+                </FloatLabel>
+                <Message v-if="v$.district?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.district.$errors[0].$message }}</Message>
+              </span>
             </div>
 
-            <FloatLabel variant="on" class="w-full col-span-12 mb-2 md:mb-0">
-              <InputText id="address" v-model="user.address" aria-describedby="address" />
-              <label for="address">Dirección</label>
-            </FloatLabel>
+            <span class="w-full col-span-12 mb-2 md:mb-0">
+              <FloatLabel variant="on" class="w-full">
+                <InputText id="address" v-model="user.address" aria-describedby="address" :invalid="v$.address?.$error" />
+                <label for="address">Dirección</label>
+              </FloatLabel>
+              <Message v-if="v$.address?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.address.$errors[0].$message }}</Message>
+            </span>
 
             <div class="grid grid-cols-12 gap-4">
               <FloatLabel variant="on" class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
@@ -277,7 +372,7 @@ const saveUser = async () => {
             <div class="grid grid-cols-12 gap-2">
               <label for="email3" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Rol que desempeña</label>
               <div class="col-span-12 md:col-span-4">
-                <Select class="" v-model="user.bloodBankRole" :options="[]" optionLabel="label" optionValue="value" showClear />
+                <Select class="" v-model="bloodBankRole" :options="rolesStore.rolesOptions" optionLabel="label" showClear />
               </div>
             </div>
           </div>
@@ -286,7 +381,7 @@ const saveUser = async () => {
     </Fluid>
     <div class="w-full flex items-denter justify-end mb-4 gap-4">
       <Button class="min-w-40" label="Cancelar" text />
-      <Button class="min-w-40 p-button-success" label="Guardar" @click="saveUser" />
+      <Button class="min-w-40 p-button-success" label="Guardar" type="submit" />
     </div>
-  </div>
+  </form>
 </template>

@@ -29,9 +29,9 @@ const getUser = async (userId) => {
   }
 };
 
-const newUser = async (user) => {
+const newUser = async ({ user, roleIds }) => {
   try {
-    const response = await post('/users', user);
+    const response = await post('/users', { user, roleIds });
     return response;
   } catch (error) {
     console.error('Error al crear usuario: ', error);
@@ -39,9 +39,9 @@ const newUser = async (user) => {
   }
 };
 
-const editUser = async (user) => {
+const editUser = async ({ user, rolesIds }) => {
   try {
-    const response = await put(`/users/${user.id}`, user);
+    const response = await put(`/users/${user.id}`, { user, rolesIds });
     return response;
   } catch (error) {
     console.error('Error al editar usuario: ', error);
