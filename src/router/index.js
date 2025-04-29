@@ -3,18 +3,25 @@ import { useAuthStore } from '@/stores/auth';
 import { createRouter, createWebHistory } from 'vue-router';
 import adminRoutes from './admin';
 import authRoutes from './auth';
+import donationRoutes from './donations';
 import templateRoutes from './template';
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    ...authRoutes,
     {
       path: '/',
       component: AppLayout,
       children: adminRoutes,
       meta: { requiresAuth: true }
     },
-    ...authRoutes,
+    {
+      path: '/',
+      component: AppLayout,
+      children: donationRoutes,
+      meta: { requiresAuth: true }
+    },
     /**
      * TODO: Borrar rutas de la plantilla
      */

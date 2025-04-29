@@ -30,7 +30,10 @@ function toggleUserMenu(event) {
 <template>
   <div class="layout-topbar">
     <div class="layout-topbar-logo-container">
-      <button class="layout-menu-button layout-topbar-action" @click="toggleMenu">
+      <button class="layout-menu-button layout-topbar-action !block lg:!hidden" @click="toggleMenu">
+        <i class="pi pi-bars"></i>
+      </button>
+      <button class="layout-menu-button layout-topbar-action !hidden lg:!block">
         <i class="pi pi-bars"></i>
       </button>
       <router-link to="/" class="layout-topbar-logo">
