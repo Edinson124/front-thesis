@@ -147,6 +147,7 @@ const cancel = () => {
                 <Message v-if="v$.district?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.district.$errors[0].$message }}</Message>
               </span>
             </div>
+
             <div class="grid grid-cols-12 gap-4">
               <span class="w-full col-span-12 mb-2 md:mb-0">
                 <FloatLabel variant="on" class="w-full">
@@ -155,6 +156,20 @@ const cancel = () => {
                 </FloatLabel>
                 <Message v-if="v$.address?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.address.$errors[0].$message }}</Message>
               </span>
+            </div>
+
+            <div class="grid grid-cols-12 gap-4">
+              <FloatLabel variant="on" class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
+                <Select id="status" v-model="bloodBank.type" :options="bloodBankTypeOptions" optionLabel="label" optionValue="value" />
+                <label for="status">Tipo de banco de sangre</label>
+              </FloatLabel>
+            </div>
+
+            <div class="grid grid-cols-12 gap-4">
+              <FloatLabel variant="on" class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
+                <Select id="status" v-model="bloodBank.status" :options="statusesOptions" optionLabel="label" optionValue="value" disabled />
+                <label for="status">Estado</label>
+              </FloatLabel>
             </div>
           </div>
           <div class="flex flex-col gap-4 w-full"></div>

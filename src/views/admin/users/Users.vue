@@ -106,7 +106,7 @@ const reactivateUser = () => {
       </div>
     </div>
     <div class="users-list | w-full">
-      <div class="btn-new | w-full md:w-[50%] mb-4">
+      <div class="btn-new | w-full mb-4 flex justify-end">
         <Button class="h-8 w-full md:w-[50%] md:max-w-[16rem]" label="Nuevo Usuario" icon="pi pi-plus" severity="success" as="router-link" to="/admin/users/new" />
       </div>
       <div class="users-table">

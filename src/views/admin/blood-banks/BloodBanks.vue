@@ -118,7 +118,7 @@ const reactivate = () => {
     <div class="bloodbanks-title | mb-8">
       <h3>Administración de Bancos de sangre</h3>
     </div>
-    <div class="bloodbank-filters-container | mb-8 w-full flex flex-col lg:flex-row">
+    <div class="bloodbank-filters-container | mb-4 w-full flex flex-col lg:flex-row">
       <div class="bloodbank-filters | flex flex-wrap gap-2 w-full lg:w-[70%] mb-2 lg:mb-0">
         <div class="bloodbank-filter | w-full md:w-[35%]">
           <FloatLabel variant="on" class="w-full">
@@ -150,7 +150,7 @@ const reactivate = () => {
         <Button class="h-8 w-full md:grow btn-clean" label="Limpiar" @click="resetFilters()" />
       </div>
     </div>
-    <div class="btn-new-bloodbank | w-full md:w-[50%] mb-4">
+    <div class="btn-new-bloodbank | w-full mb-4 flex justify-end">
       <Button class="h-8 w-full md:w-[62%] lg:w-[50%] md:max-w-[16rem]" label="Nuevo Banco de Sangre" icon="pi pi-plus" severity="success" />
     </div>
     <DataView :value="bloodBankStore.bloodBanks" layout="grid" paginator :rows="6" :totalRecords="bloodBankStore.totalRecords" @page="filter">
