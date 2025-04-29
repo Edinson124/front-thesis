@@ -193,6 +193,10 @@ const saveUser = async () => {
     router.push('/admin/users');
   }
 };
+
+const cancel = () => {
+  router.push('/admin/users');
+};
 </script>
 
 <template>
@@ -231,7 +235,7 @@ const saveUser = async () => {
             <input type="file" ref="imageInput" @change="handleImageChange" style="display: none" accept="image/*" />
             <Button class="h-8 w-full md:mr-2 mb-2 md:mb-0" label="Editar Imagen" severity="info" @click="onUploadImage" />
           </div>
-          <Message severity="error">
+          <!-- <Message severity="error">
             <div class="flex flex-col">
               <h5 class="text-inherit text-center mb-6">Reestablecimiento de contraseña</h5>
               <span class="flex justify-center items-center gap-4 mb-6">
@@ -240,7 +244,7 @@ const saveUser = async () => {
               </span>
               <Button class="h-8 w-full md:mr-2 mb-2 md:mb-0" label="Enviar contraseña" severity="danger" />
             </div>
-          </Message>
+          </Message> -->
         </div>
         <div class="md:grow">
           <div class="flex flex-col gap-4 w-full | mb-8">
@@ -380,7 +384,7 @@ const saveUser = async () => {
       </div>
     </Fluid>
     <div class="w-full flex items-denter justify-end mb-4 gap-4">
-      <Button class="min-w-40" label="Cancelar" text />
+      <Button class="min-w-40" label="Cancelar" text @click.prevent="cancel" />
       <Button class="min-w-40 p-button-success" label="Guardar" type="submit" />
     </div>
   </form>

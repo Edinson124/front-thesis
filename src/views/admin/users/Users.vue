@@ -61,6 +61,7 @@ const desactivateUser = () => {
   desactivateUserDialog.value = false;
   selectedUser.value = null;
 };
+
 const reactivateUserDialog = ref(false);
 const confirmReactivateUser = (user) => {
   selectedUser.value = user;
@@ -121,6 +122,10 @@ const reactivateUser = () => {
           @page="filterUsers"
           :currentPageReportTemplate="'{currentPage} de {totalPages}'"
         >
+          <template #empty>
+            <p class="text-gray-600 text-lg py-4">No encontramos coincidencias. Intenta con otros términos o ajusta los filtros.</p>
+          </template>
+
           <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" :style="`width: ${col.width}`">
             <template v-if="col.field === 'name'" #body="slotProps"> {{ slotProps.data.firstName }} {{ slotProps.data.lastName }} {{ slotProps.data.secondLastName }} </template>
             <template v-else-if="col.field === 'role'" #body="slotProps"> {{ Role[slotProps.data.role] }} </template>

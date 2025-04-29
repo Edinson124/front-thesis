@@ -3,8 +3,8 @@ export const MenuRoutes = [
   { id: 'admin', label: 'Admin', icon: 'mdi mdi-shield-account', parentId: 'root' },
   { id: 'admin-variables', label: 'Variables globales', to: '/admin/variables', parentId: 'admin' },
   { id: 'admin-users', label: 'Usuarios', to: '/admin/users', parentId: 'admin' },
-  { id: 'admin-roles', label: 'Roles', parentId: 'admin' },
-  { id: 'admin-bancos', label: 'Bancos de sangre', to: '/admin/bancos', parentId: 'admin' },
+  { id: 'admin-roles', label: 'Roles', to: '/admin/roles', parentId: 'admin' },
+  { id: 'admin-blood-banks', label: 'Bancos de sangre', to: '/admin/blood-banks', parentId: 'admin' },
   { id: 'admin-redes', label: 'Redes', to: '/admin/redes', parentId: 'admin' },
   { id: 'dashboards', label: 'Dashboards', icon: 'mdi mdi-monitor-dashboard', parentId: 'root' },
   { id: 'donantes', label: 'Donantes', icon: 'mdi mdi-account-multiple-outline', parentId: 'root' },
@@ -29,7 +29,9 @@ export const MenuRoutes = [
 
 export const extraRoutes = [
   { id: 'admin-users-new', label: 'Nuevo Usuario', to: '/admin/users/new', parentId: 'admin-users' },
-  { id: 'admin-users-edit', label: 'Editar Usuario', to: '/admin/users/:id', parentId: 'admin-users' }
+  { id: 'admin-users-edit', label: 'Editar Usuario', to: '/admin/users/:id', parentId: 'admin-users' },
+  { id: 'admin-roles-edit', label: 'Editar Rol', to: '/admin/roles/:id', parentId: 'admin-roles' },
+  { id: 'admin-blood-banks-edit', label: 'Editar Banco de Sangre', to: '/admin/blood-banks/:id', parentId: 'admin-blood-banks' }
 ];
 
 export const breadcrumbs = [...MenuRoutes, ...extraRoutes];
