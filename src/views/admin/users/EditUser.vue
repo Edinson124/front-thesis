@@ -39,7 +39,7 @@ const roleIds = computed(() => (bloodBankRole.value ? [bloodBankRole.value.id] :
 
 const maxDate = ref(new Date());
 
-const documentTypes = ['DNI', 'CE', 'PASSPORT', 'OTHERS'];
+const documentTypes = ['DNI', 'CE'];
 const documentTypesOptions = documentTypes.map((type) => ({
   value: type,
   label: DocumentTypes[type]
@@ -197,6 +197,8 @@ const saveUser = async () => {
 const cancel = () => {
   router.push('/admin/users');
 };
+
+const verifyDocumentNumber = () => {};
 </script>
 
 <template>
@@ -235,16 +237,6 @@ const cancel = () => {
             <input type="file" ref="imageInput" @change="handleImageChange" style="display: none" accept="image/*" />
             <Button class="h-8 w-full md:mr-2 mb-2 md:mb-0" label="Editar Imagen" severity="info" @click="onUploadImage" />
           </div>
-          <!-- <Message severity="error">
-            <div class="flex flex-col">
-              <h5 class="text-inherit text-center mb-6">Reestablecimiento de contraseña</h5>
-              <span class="flex justify-center items-center gap-4 mb-6">
-                <span class="p-message-icon pi pi-exclamation-triangle" data-pc-section="icon"> </span>
-                <span>Se enviaará una contraseña generada al correro registrado del usuario, podrá cambiarla al ingresar</span>
-              </span>
-              <Button class="h-8 w-full md:mr-2 mb-2 md:mb-0" label="Enviar contraseña" severity="danger" />
-            </div>
-          </Message> -->
         </div>
         <div class="md:grow">
           <div class="flex flex-col gap-4 w-full | mb-8">
@@ -258,10 +250,13 @@ const cancel = () => {
                 <Message v-if="v$.documentType?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.documentType.$errors[0].$message }}</Message>
               </span>
               <span class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
-                <FloatLabel variant="on" class="w-full">
-                  <InputText id="documentNumber" v-model="user.documentNumber" aria-describedby="documentNumber" :invalid="v$.documentNumber?.$error" />
-                  <label for="documentNumber">Nro Documento</label>
-                </FloatLabel>
+                <InputGroup>
+                  <FloatLabel variant="on" class="w-full">
+                    <InputText id="documentNumber" v-model="user.documentNumber" aria-describedby="documentNumber" :invalid="v$.documentNumber?.$error" />
+                    <label for="documentNumber">Nro Documento</label>
+                  </FloatLabel>
+                  <InputGroupAddon><Button icon="pi pi-search" severity="secondary" variant="text" @click="verifyDocumentNumber" /></InputGroupAddon>
+                </InputGroup>
                 <Message v-if="v$.documentNumber?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.documentNumber.$errors[0].$message }}</Message>
               </span>
             </div>

@@ -151,7 +151,7 @@ const reactivate = () => {
       </div>
     </div>
     <div class="btn-new-bloodbank | w-full mb-4 flex justify-end">
-      <Button class="h-8 w-full md:w-[62%] lg:w-[50%] md:max-w-[16rem]" label="Nuevo Banco de Sangre" icon="pi pi-plus" severity="success" />
+      <Button class="h-8 w-full md:w-[62%] lg:w-[50%] md:max-w-[16rem]" label="Nuevo Banco de Sangre" icon="pi pi-plus" severity="success" as="router-link" to="/admin/blood-banks/new" />
     </div>
     <DataView :value="bloodBankStore.bloodBanks" layout="grid" paginator :rows="6" :totalRecords="bloodBankStore.totalRecords" @page="filter">
       <template #empty>

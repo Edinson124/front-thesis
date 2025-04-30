@@ -8,6 +8,13 @@ export const useAuthStore = defineStore('auth', () => {
   const error = ref(null);
 
   const isLoggedIn = computed(() => {
+    const sessionTime = localStorage.getItem('session_time');
+    const isSessionExpired = Date.now() >= parseInt(sessionTime, 10);
+    if (isSessionExpired) {
+      user.value = null;
+      localStorage.removeItem('user');
+      localStorage.removeItem('session_time');
+    }
     return !!user.value;
   });
 
@@ -22,6 +29,7 @@ export const useAuthStore = defineStore('auth', () => {
         user.value = response.username;
 
         localStorage.setItem('user', response.username);
+        localStorage.setItem('session_time', response.session_time?.toString());
         loading.value = false;
         return true;
       } else {

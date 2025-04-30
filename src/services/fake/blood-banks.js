@@ -146,7 +146,7 @@ const getBloodBanks = async (filters = {}, page = 0) => {
 };
 
 const getBloodBank = async (bloodBankId) => {
-  const role = fakeBloodBanks.find((r) => r.id === parseInt(bloodBankId));
+  const role = fakeBloodBanks.find((r) => r.id === bloodBankId);
   return role;
 };
 

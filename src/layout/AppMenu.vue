@@ -1,6 +1,6 @@
 <script setup>
 import { MenuRoutes, TemplateMenu } from '@/enums/Menu';
-import { reactive } from 'vue';
+import { onMounted, reactive } from 'vue';
 
 import AppMenuItem from './AppMenuItem.vue';
 
@@ -20,8 +20,13 @@ function generateMenu(items, parentId = null) {
     });
 }
 
-//TODO: Remove template Menu
-const menu = reactive([...generateMenu(MenuRoutes), ...TemplateMenu]);
+const menu = reactive([...generateMenu(MenuRoutes)]);
+
+onMounted(() => {
+  if (import.meta.env.VITE_SHOW_UI_COMPONENTS === 'true') {
+    menu.push(...TemplateMenu);
+  }
+});
 </script>
 
 <template>

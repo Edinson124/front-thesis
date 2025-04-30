@@ -31,6 +31,7 @@ export const extraRoutes = [
   { id: 'admin-users-new', label: 'Nuevo Usuario', to: '/admin/users/new', parentId: 'admin-users' },
   { id: 'admin-users-edit', label: 'Editar Usuario', to: '/admin/users/:id', parentId: 'admin-users' },
   { id: 'admin-roles-edit', label: 'Editar Rol', to: '/admin/roles/:id', parentId: 'admin-roles' },
+  { id: 'admin-blood-banks-new', label: 'Nuevo Banco de Sangre', to: '/admin/blood-banks/new', parentId: 'admin-blood-banks' },
   { id: 'admin-blood-banks-edit', label: 'Editar Banco de Sangre', to: '/admin/blood-banks/:id', parentId: 'admin-blood-banks' }
 ];
 

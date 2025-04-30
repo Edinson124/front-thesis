@@ -20,6 +20,16 @@ export const useUsersStore = defineStore('users', () => {
     }
   };
 
+  const verifyUser = async (documentNumber) => {
+    try {
+      const response = await usersService.verifyUser(documentNumber);
+      return response;
+    } catch (error) {
+      console.error('Error al verificar usuario: ', error);
+      return null;
+    }
+  };
+
   const getUser = async (userId) => {
     try {
       const response = await usersService.getUser(userId);
@@ -62,5 +72,5 @@ export const useUsersStore = defineStore('users', () => {
     }
   };
 
-  return { users, totalRecords, currentPage, getUsers, getUser, newUser, editUser, toogleStatusUser };
+  return { users, totalRecords, currentPage, getUsers, getUser, verifyUser, newUser, editUser, toogleStatusUser };
 });

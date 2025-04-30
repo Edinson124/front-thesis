@@ -8,6 +8,11 @@ export default [
     component: BloodBanks
   },
   {
+    path: '/admin/blood-banks/new',
+    name: 'admin-blood-banks-new',
+    component: EditBloodBank
+  },
+  {
     path: '/admin/blood-banks/:id',
     name: 'admin-blood-banks-edit',
     component: EditBloodBank

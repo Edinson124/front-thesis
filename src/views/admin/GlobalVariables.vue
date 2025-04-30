@@ -1,7 +1,5 @@
 <script setup>
 import globalVariablesService from '@/services/globalVariables';
-import { InputNumber, Tab, TabPanel, TabPanels, Tabs } from 'primevue';
-import Button from 'primevue/button';
 import { computed, onMounted, ref } from 'vue';
 
 const groupedVariables = ref({});

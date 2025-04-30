@@ -1,5 +1,6 @@
 <script setup>
 import { Status } from '@/enums/Status';
+import ubicationService from '@/services/ubication';
 import { useBloodBanksStore } from '@/stores/blodd-banks';
 import useVuelidate from '@vuelidate/core';
 import { computed, onMounted, reactive, ref } from 'vue';
@@ -16,12 +17,15 @@ const bloodBank = reactive({
   name: '',
   address: '',
   location: '',
+  department: null,
+  province: null,
+  district: null,
   coordinator: '',
   type: '',
   status: 'ACTIVE'
 });
 
-const bloodBankImage = ref('/src/assets/images/profile.png');
+const bloodBankImage = ref('/src/assets/images/blood-bank.png');
 const imageInput = ref(null);
 const onUploadImage = () => {
   imageInput.value.click();
@@ -33,6 +37,13 @@ const handleImageChange = (event) => {
   }
 };
 
+const departments = reactive([]);
+const loadingDeparments = ref(false);
+const provinces = reactive([]);
+const loadingProvinces = ref(false);
+const distritos = reactive([]);
+const loadingDistritos = ref(false);
+
 onMounted(async () => {
   loading.value = true;
 
@@ -43,8 +54,46 @@ onMounted(async () => {
     Object.assign(bloodBank, { ...bloodBank, ...roleResponse });
   }
 
+  const departmentsResponse = await ubicationService.getDepartments();
+  departments.splice(0, departments.length, ...departmentsResponse);
+  loadingDeparments.value = false;
+
+  if (bloodBank.department) {
+    loadingProvinces.value = true;
+    const provincesResponse = await ubicationService.getProvinces(bloodBank.department);
+    provinces.splice(0, provinces.length, ...provincesResponse);
+    loadingProvinces.value = false;
+  }
+
+  if (bloodBank.province) {
+    loadingDistritos.value = true;
+    const distritosResponse = await ubicationService.getDistritos(bloodBank.department, bloodBank.province);
+    distritos.splice(0, distritos.length, ...distritosResponse);
+    loadingDistritos.value = false;
+  }
+
   loading.value = false;
 });
+
+const onSelectDepartment = async (event) => {
+  loadingProvinces.value = true;
+  let provincesResponse = [];
+  if (event.value !== null) {
+    provincesResponse = await ubicationService.getProvinces(event.value);
+  }
+  provinces.splice(0, provinces.length, ...provincesResponse);
+  loadingProvinces.value = false;
+};
+
+const onSelectProvince = async (event) => {
+  loadingDistritos.value = true;
+  let distritosResponse = [];
+  if (event.value !== null) {
+    distritosResponse = await ubicationService.getDistritos(bloodBank.department, event.value);
+  }
+  distritos.splice(0, distritos.length, ...distritosResponse);
+  loadingDistritos.value = false;
+};
 
 const statuses = ['ACTIVE', 'INACTIVE'];
 const statusesOptions = statuses.map((status) => ({
@@ -72,7 +121,7 @@ const cancel = () => {
 </script>
 
 <template>
-  <div class="card" v-if="loadingUser">
+  <div class="card" v-if="loading">
     <div class="flex flex-row gap-8 mb-8">
       <div class="md:w-1/5">
         <div class="w-full aspect-square mb-8">
@@ -101,7 +150,7 @@ const cancel = () => {
           <div class="flex flex-col justify-center w-full gap-4 mb-8">
             <Image class="w-full aspect-square" alt="Image">
               <template #image>
-                <img class="w-full object-cover aspect-square rounded-full" :src="bloodBankImage" alt="Image" />
+                <img class="w-full object-cover aspect-square" :src="bloodBankImage" alt="Image" />
               </template>
             </Image>
             <input type="file" ref="imageInput" @change="handleImageChange" style="display: none" accept="image/*" />
@@ -125,15 +174,15 @@ const cancel = () => {
             <div class="grid grid-cols-12 gap-4">
               <span class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
                 <FloatLabel variant="on" class="w-full">
-                  <Select id="id_region" v-model="bloodBank.region" :options="departments" showClear filter @change="onSelectDepartment" :loading="loadingDeparments" :invalid="v$.region?.$error" />
+                  <Select id="id_region" v-model="bloodBank.department" :options="departments" showClear filter @change="onSelectDepartment" :loading="loadingDeparments" :invalid="v$.department?.$error" />
                   <label for="id_region">Departamento</label>
                 </FloatLabel>
-                <Message v-if="v$.region?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.region.$errors[0].$message }}</Message>
+                <Message v-if="v$.department?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.department.$errors[0].$message }}</Message>
               </span>
 
               <span class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
                 <FloatLabel variant="on" class="w-full">
-                  <Select id="id_province" v-model="bloodBank.province" :options="provinces" showClear filter @change="onSelectProvince" :disabled="bloodBank.region === null" :loading="loadingProvinces" :invalid="v$.province?.$error" />
+                  <Select id="id_province" v-model="bloodBank.province" :options="provinces" showClear filter @change="onSelectProvince" :disabled="bloodBank.department === null" :loading="loadingProvinces" :invalid="v$.province?.$error" />
                   <label for="id_province">Provincia</label>
                 </FloatLabel>
                 <Message v-if="v$.province?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.province.$errors[0].$message }}</Message>
@@ -172,7 +221,15 @@ const cancel = () => {
               </FloatLabel>
             </div>
           </div>
-          <div class="flex flex-col gap-4 w-full"></div>
+          <div class="flex flex-col gap-4 w-full">
+            <div class="font-semibold text-xl">Coordinador</div>
+            <div class="grid grid-cols-12 gap-2">
+              <label for="name3" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Coordinador de banco de sangre</label>
+              <div class="col-span-12 md:col-span-4">
+                <Select class="" v-model="bloodBank.coordinator" :options="[]" optionLabel="label" optionValue="value" showClear />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </Fluid>

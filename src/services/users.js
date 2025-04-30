@@ -29,6 +29,16 @@ const getUser = async (userId) => {
   }
 };
 
+const verifyUser = async (documentNumber) => {
+  try {
+    const response = await get(`/users/verify?documentNumber=${documentNumber}`);
+    return response;
+  } catch (error) {
+    console.error('Error al verificar usuario: ', error);
+    return null;
+  }
+};
+
 const newUser = async ({ user, roleIds }) => {
   try {
     const response = await post('/users', { user, roleIds });
@@ -61,6 +71,7 @@ const toogleStatusUser = async (userId) => {
 
 export default {
   getUsers,
+  verifyUser,
   getUser,
   newUser,
   editUser,
