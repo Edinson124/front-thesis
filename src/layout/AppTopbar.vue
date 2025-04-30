@@ -55,7 +55,7 @@ function toggleUserMenu(event) {
           </g>
         </svg>
 
-        <span>SAKAI</span>
+        <span>Banco</span>
       </router-link>
     </div>
 

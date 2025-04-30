@@ -19,7 +19,7 @@
         />
       </g>
     </svg>
-    <span class="font-medium text-2xl leading-normal mr-20">SAKAI</span>
+    <span class="font-medium text-2xl leading-normal mr-20">Banco</span>
   </a>
   <Button class="lg:!hidden" text severity="secondary" rounded v-styleclass="{ selector: '@next', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }">
     <i class="pi pi-bars !text-2xl"></i>
