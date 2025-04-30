@@ -26,6 +26,19 @@ const getRoles = async (filters = {}, page = 0) => {
   }
 };
 
+const getRolesOptions = async () => {
+  try {
+    const response = await get(`/roles/select`);
+    return response;
+  } catch (error) {
+    if (FAKE_MODE) {
+      return fakeService.getAllPermissions();
+    }
+    console.error('Error al obtener permisos de roles: ', error);
+    return null;
+  }
+};
+
 const getAllPermissions = async () => {
   try {
     const response = await get(`/permissions`);
@@ -81,6 +94,7 @@ const toogleStatusRole = async (roleId) => {
 
 export default {
   getRoles,
+  getRolesOptions,
   getAllPermissions,
   getRole,
   editRole,

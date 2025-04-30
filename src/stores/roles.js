@@ -1,21 +1,13 @@
-import { Role } from '@/enums/Role';
 import rolesService from '@/services/roles';
 import { defineStore } from 'pinia';
-import { computed, reactive, ref } from 'vue';
+import { reactive, ref } from 'vue';
 
 export const useRolesStore = defineStore('roles', () => {
   const roles = reactive([]);
+  const rolesOptions = reactive([]);
   const allPermissions = reactive([]);
   const totalRecords = ref(0);
   const currentPage = ref(0);
-
-  const rolesOptions = computed(() => {
-    return roles.map((role) => ({
-      id: role.id,
-      value: role.name,
-      label: Role[role.name]
-    }));
-  });
 
   const getRoles = async (filters = {}, page = 0) => {
     try {
@@ -26,6 +18,17 @@ export const useRolesStore = defineStore('roles', () => {
       return true;
     } catch (error) {
       console.error('Error al obtener roles: ', error);
+      return false;
+    }
+  };
+
+  const getRolesOptions = async () => {
+    try {
+      const response = await rolesService.getRolesOptions();
+      rolesOptions.splice(0, rolesOptions.length, ...response);
+      return true;
+    } catch (error) {
+      console.error('Error al obtener bancos de sangre: ', error);
       return false;
     }
   };
@@ -73,5 +76,5 @@ export const useRolesStore = defineStore('roles', () => {
     }
   };
 
-  return { roles, totalRecords, currentPage, rolesOptions, allPermissions, getRoles, getAllPermissions, getRole, editRole, toogleStatus };
+  return { roles, totalRecords, currentPage, rolesOptions, allPermissions, getRolesOptions, getRoles, getAllPermissions, getRole, editRole, toogleStatus };
 });

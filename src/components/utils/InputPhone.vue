@@ -77,7 +77,7 @@ const checkDigit = (event) => {
 
 <template>
   <InputGroup class="">
-    <FloatLabel variant="on" class="!flex-[0_1_auto] !w-3/12">
+    <FloatLabel variant="on" class="!flex-[0_1_auto] !w-4/12">
       <Select id="code" v-model="selectedCountry" :options="countryList" optionLabel="name" filter :invalid="invalid">
         <template #value="slotProps">
           <div v-if="slotProps.value" class="flex items-center">{{ slotProps.value.emoji }} {{ slotProps.value.dialCode }}</div>

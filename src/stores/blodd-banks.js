@@ -4,6 +4,7 @@ import { reactive, ref } from 'vue';
 
 export const useBloodBanksStore = defineStore('blood-banks', () => {
   const bloodBanks = reactive([]);
+  const bloodBanksOptions = reactive([]);
   const totalRecords = ref(0);
   const currentPage = ref(0);
 
@@ -13,6 +14,17 @@ export const useBloodBanksStore = defineStore('blood-banks', () => {
       bloodBanks.splice(0, bloodBanks.length, ...response.content);
       totalRecords.value = response.totalElements;
       currentPage.value = page;
+      return true;
+    } catch (error) {
+      console.error('Error al obtener bancos de sangre: ', error);
+      return false;
+    }
+  };
+
+  const getBloodBanksOptions = async () => {
+    try {
+      const response = await bloodBanksService.getBloodBanksOptions();
+      bloodBanksOptions.splice(0, bloodBanksOptions.length, ...response);
       return true;
     } catch (error) {
       console.error('Error al obtener bancos de sangre: ', error);
@@ -43,5 +55,5 @@ export const useBloodBanksStore = defineStore('blood-banks', () => {
     }
   };
 
-  return { bloodBanks, totalRecords, currentPage, getBloodBanks, getBloodBank, toogleStatus };
+  return { bloodBanks, totalRecords, currentPage, bloodBanksOptions, getBloodBanks, getBloodBanksOptions, getBloodBank, toogleStatus };
 });

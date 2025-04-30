@@ -45,8 +45,8 @@ export async function api(url, method, body = null, options = null) {
   }
 }
 
-export async function get(url) {
-  return await api(url, 'GET');
+export async function get(url, options = null) {
+  return await api(url, 'GET', null, options);
 }
 
 export async function post(url, body = null, options = null) {

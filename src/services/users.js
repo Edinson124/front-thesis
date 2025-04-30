@@ -29,9 +29,9 @@ const getUser = async (userId) => {
   }
 };
 
-const verifyUser = async (documentNumber) => {
+const verifyUser = async (documentNumber, documentType) => {
   try {
-    const response = await get(`/users/verify?documentNumber=${documentNumber}`);
+    const response = await post(`/users/exists`, { documentNumber, documentType });
     return response;
   } catch (error) {
     console.error('Error al verificar usuario: ', error);
@@ -39,9 +39,10 @@ const verifyUser = async (documentNumber) => {
   }
 };
 
-const newUser = async ({ user, roleIds }) => {
+const newUser = async (user) => {
   try {
-    const response = await post('/users', { user, roleIds });
+    console.log('service', user);
+    const response = await post('/users', user);
     return response;
   } catch (error) {
     console.error('Error al crear usuario: ', error);
@@ -49,9 +50,10 @@ const newUser = async ({ user, roleIds }) => {
   }
 };
 
-const editUser = async ({ user, rolesIds }) => {
+const editUser = async (user) => {
   try {
-    const response = await put(`/users/${user.id}`, { user, rolesIds });
+    console.log('serviceed', user);
+    const response = await put(`/users/${user.id}`, user);
     return response;
   } catch (error) {
     console.error('Error al editar usuario: ', error);

@@ -26,6 +26,16 @@ const getBloodBanks = async (filters = {}, page = 0) => {
   }
 };
 
+const getBloodBanksOptions = async () => {
+  try {
+    const response = await get(`/blood-bank/select`);
+    return response;
+  } catch (error) {
+    console.error('Error al obtener opciones de banco de sangre: ', error);
+    return null;
+  }
+};
+
 const getBloodBank = async (bloodBankId) => {
   try {
     const response = await get(`/blood-banks/${bloodBankId}`);
@@ -54,6 +64,7 @@ const toogleStatusBloodBank = async (bloodBankId) => {
 
 export default {
   getBloodBanks,
+  getBloodBanksOptions,
   getBloodBank,
   toogleStatusBloodBank
 };

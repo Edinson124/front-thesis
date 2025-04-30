@@ -1,19 +1,21 @@
 <script setup>
 import InputPhone from '@/components/utils/InputPhone.vue';
 import { DocumentTypes } from '@/enums/DocumentTypes';
+import { Gender } from '@/enums/Gender';
 import { Status } from '@/enums/Status';
 import ubicationService from '@/services/ubication';
 import { useRolesStore } from '@/stores/roles';
 import { useUsersStore } from '@/stores/users';
+import { useBloodBanksStore } from '@/stores/blodd-banks';
 import { email, minLength, required, requiredIf } from '@/validation/validators';
 import { useVuelidate } from '@vuelidate/core';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-
 const route = useRoute();
 const router = useRouter();
 const usersStore = useUsersStore();
 const rolesStore = useRolesStore();
+const bloodBanksStore = useBloodBanksStore();
 
 const isNewUser = ref(true);
 const loadingUser = ref(false);
@@ -24,6 +26,7 @@ const user = reactive({
   lastName: '',
   secondLastName: '',
   birthDate: null,
+  gender: '',
   email: '',
   phone: '',
   region: null,
@@ -31,18 +34,20 @@ const user = reactive({
   district: null,
   address: '',
   status: 'ACTIVE',
-  bloodBank: null,
+  bloodBankId: null,
   profileImageUrl: ''
 });
-const bloodBankRole = ref(null);
-const roleIds = computed(() => (bloodBankRole.value ? [bloodBankRole.value.id] : []));
 
 const maxDate = ref(new Date());
 
-const documentTypes = ['DNI', 'CE'];
-const documentTypesOptions = documentTypes.map((type) => ({
-  value: type,
-  label: DocumentTypes[type]
+const documentTypesOptions = Object.entries(DocumentTypes).map(([value, label]) => ({
+  value,
+  label
+}));
+
+const genderOptions = Object.entries(Gender).map(([value, label]) => ({
+  value,
+  label
 }));
 
 const departments = reactive([]);
@@ -133,7 +138,8 @@ onMounted(async () => {
     loadingDistritos.value = false;
   }
 
-  await rolesStore.getRoles();
+  await rolesStore.getRolesOptions();
+  await bloodBanksStore.getBloodBanksOptions();
 
   loadingUser.value = false;
 });
@@ -172,13 +178,14 @@ const rules = computed(() => ({
   secondLastName: { minLength: minLength('Apellido materno', 2) },
   birthDate: { required: required('Fecha de nacimiento') },
   email: { required: required('Correo electrónico'), email: email('Correo electrónico') },
+  gender: { required: required('Género') },
   phone: { required: required('Teléfono') },
   region: { required: required('Región') },
   province: { requiredIf: requiredIf('Provincia', () => user.region) },
   district: { requiredIf: requiredIf('Distrito', () => user.province) },
   address: { required: required('Dirección'), minLength: minLength('Dirección', 5) },
   status: {},
-  bloodBank: { required: required('Banco de sangre') },
+  bloodBankId: { required: required('Banco de sangre') },
   profileImageUrl: {}
 }));
 const v$ = useVuelidate(rules, user);
@@ -190,7 +197,8 @@ const saveUser = async () => {
   if (!isValid || !documentNumberVerified.value) return;
 
   const saveMethod = isNewUser.value ? usersStore.newUser : usersStore.editUser;
-  const success = await saveMethod({ user, roleIds: roleIds.value });
+  console.log('user', user);
+  const success = await saveMethod(user);
   if (success) {
     router.push('/admin/users');
   }
@@ -201,7 +209,7 @@ const cancel = () => {
 };
 
 const verifyDocumentNumber = async () => {
-  const response = await usersStore.verifyUser(user.documentNumber);
+  const response = await usersStore.verifyUser(user.documentNumber, user.documentType);
   documentNumberVerified.value = response;
 };
 </script>
@@ -309,6 +317,13 @@ const verifyDocumentNumber = async () => {
                   <label for="years">Edad</label>
                 </FloatLabel>
               </span>
+              <span class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
+                <FloatLabel variant="on" class="w-full">
+                  <Select id="id_gender" v-model="user.gender" :options="genderOptions" optionLabel="label" optionValue="value" showClear :invalid="v$.gender?.$error" />
+                  <label for="id_gender">Género</label>
+                </FloatLabel>
+                <Message v-if="v$.gender?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.gender.$errors[0].$message }}</Message>
+              </span>
             </div>
 
             <div class="grid grid-cols-12 gap-4">
@@ -372,14 +387,12 @@ const verifyDocumentNumber = async () => {
             <div class="grid grid-cols-12 gap-2">
               <label for="name3" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Banco de sangre donde trabaja</label>
               <div class="col-span-12 md:col-span-4">
-                <Select class="" v-model="user.bloodBank" :options="[]" optionLabel="label" optionValue="value" showClear />
+                <Select class="" v-model="user.bloodBankId" :options="bloodBanksStore.bloodBanksOptions" optionLabel="name" optionValue="id" showClear />
               </div>
             </div>
             <div class="grid grid-cols-12 gap-2">
               <label for="email3" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Rol que desempeña</label>
-              <div class="col-span-12 md:col-span-4">
-                <Select class="" v-model="bloodBankRole" :options="rolesStore.rolesOptions" optionLabel="label" showClear />
-              </div>
+              <div class="col-span-12 md:col-span-4"><Select class="" v-model="user.roleId" :options="rolesStore.rolesOptions" optionLabel="name" optionValue="id" showClear /></div>
             </div>
           </div>
         </div>
