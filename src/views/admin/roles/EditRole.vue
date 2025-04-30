@@ -139,7 +139,7 @@ const cancel = () => {
       </div>
     </Fluid>
     <div class="w-full flex items-denter justify-end mb-4 gap-4">
-      <Button class="min-w-40" label="Cancelar" text @click.prevent="cancel" />
+      <Button class="min-w-40 btn-clean" label="Cancelar" @click.prevent="cancel" />
       <Button class="min-w-40 p-button-success" label="Guardar" type="submit" />
     </div>
   </form>

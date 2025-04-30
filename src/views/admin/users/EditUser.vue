@@ -182,10 +182,12 @@ const rules = computed(() => ({
   profileImageUrl: {}
 }));
 const v$ = useVuelidate(rules, user);
+const documentNumberVerified = ref(null);
 
 const saveUser = async () => {
   const isValid = await v$.value.$validate();
-  if (!isValid) return;
+  await verifyDocumentNumber();
+  if (!isValid || !documentNumberVerified.value) return;
 
   const saveMethod = isNewUser.value ? usersStore.newUser : usersStore.editUser;
   const success = await saveMethod({ user, roleIds: roleIds.value });
@@ -198,7 +200,10 @@ const cancel = () => {
   router.push('/admin/users');
 };
 
-const verifyDocumentNumber = () => {};
+const verifyDocumentNumber = async () => {
+  const response = await usersStore.verifyUser(user.documentNumber);
+  documentNumberVerified.value = response;
+};
 </script>
 
 <template>
@@ -252,11 +257,13 @@ const verifyDocumentNumber = () => {};
               <span class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
                 <InputGroup>
                   <FloatLabel variant="on" class="w-full">
-                    <InputText id="documentNumber" v-model="user.documentNumber" aria-describedby="documentNumber" :invalid="v$.documentNumber?.$error" />
+                    <InputText id="documentNumber" v-model="user.documentNumber" aria-describedby="documentNumber" :invalid="v$.documentNumber?.$error || documentNumberVerified === false" @focusout="verifyDocumentNumber" />
                     <label for="documentNumber">Nro Documento</label>
                   </FloatLabel>
                   <InputGroupAddon><Button icon="pi pi-search" severity="secondary" variant="text" @click="verifyDocumentNumber" /></InputGroupAddon>
                 </InputGroup>
+                <Message v-if="documentNumberVerified === true" severity="success" size="small" variant="simple" class="pt-1">El documento ingresado está disponible</Message>
+                <Message v-else-if="documentNumberVerified === false" severity="error" size="small" variant="simple" class="pt-1">El documento ingresado no está disponible</Message>
                 <Message v-if="v$.documentNumber?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.documentNumber.$errors[0].$message }}</Message>
               </span>
             </div>
@@ -288,7 +295,7 @@ const verifyDocumentNumber = () => {};
             </div>
 
             <div class="grid grid-cols-12 gap-4">
-              <span class="w-full col-span-12 mb-2 md:col-span-3 md:mb-0">
+              <span class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
                 <FloatLabel variant="on" class="w-full">
                   <DatePicker id="birthDate" v-model="user.birthDate" showIcon iconDisplay="input" dateFormat="dd/mm/yy" :maxDate="maxDate" aria-describedby="birthDate" :invalid="v$.birthDate?.$error" />
                   <label for="birthDate">Fecha de nacimiento</label>
@@ -296,7 +303,7 @@ const verifyDocumentNumber = () => {};
                 <Message v-if="v$.birthDate?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.birthDate.$errors[0].$message }}</Message>
               </span>
 
-              <span class="w-full col-span-12 mb-2 md:col-span-3 md:mb-0">
+              <span class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
                 <FloatLabel variant="on" class="w-full">
                   <InputText id="years" v-model="years" aria-describedby="years" disabled />
                   <label for="years">Edad</label>
@@ -379,7 +386,7 @@ const verifyDocumentNumber = () => {};
       </div>
     </Fluid>
     <div class="w-full flex items-denter justify-end mb-4 gap-4">
-      <Button class="min-w-40" label="Cancelar" text @click.prevent="cancel" />
+      <Button class="min-w-40 btn-clean" label="Cancelar" @click.prevent="cancel" />
       <Button class="min-w-40 p-button-success" label="Guardar" type="submit" />
     </div>
   </form>
