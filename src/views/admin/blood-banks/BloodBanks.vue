@@ -115,7 +115,7 @@ const reactivate = () => {
 
 <template>
   <div class="p-4 card">
-    <div class="bloodbanks-title | mb-8">
+    <div class="bloodbanks-title | mb-4">
       <h3>Administración de Bancos de sangre</h3>
     </div>
     <div class="bloodbank-filters-container | mb-4 w-full flex flex-col lg:flex-row">
@@ -162,7 +162,7 @@ const reactivate = () => {
           <div v-for="(item, index) in bloodBankStore.bloodBanks" :key="index" class="col-span-12 lg:col-span-4 p-4 border border-surface-100 white shadow-[0px_0px_1px_0px_rgba(0,_0,_0,_0.1)] rounded-lg flex flex-col h-full">
             <div class="flex items-center">
               <div class="h-[250px] w-full sm:w-[60%] mr-8 items-center">
-                <img src="https://primefaces.org/cdn/primevue/images/product/black-watch.jpg" alt="Banco de sangre" class="h-full w-auto object-cover rounded-lg" />
+                <img src="/src/assets/images/blood-bank.png" alt="Banco de sangre" class="h-full w-auto object-cover rounded-lg" />
               </div>
               <div class="h-full w-full sm:grow flex flex-col justify-between">
                 <div class="">

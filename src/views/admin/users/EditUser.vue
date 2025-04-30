@@ -4,13 +4,14 @@ import { DocumentTypes } from '@/enums/DocumentTypes';
 import { Gender } from '@/enums/Gender';
 import { Status } from '@/enums/Status';
 import ubicationService from '@/services/ubication';
+import { useBloodBanksStore } from '@/stores/blodd-banks';
 import { useRolesStore } from '@/stores/roles';
 import { useUsersStore } from '@/stores/users';
-import { useBloodBanksStore } from '@/stores/blodd-banks';
 import { email, minLength, required, requiredIf } from '@/validation/validators';
 import { useVuelidate } from '@vuelidate/core';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+
 const route = useRoute();
 const router = useRouter();
 const usersStore = useUsersStore();
@@ -178,7 +179,7 @@ const rules = computed(() => ({
   secondLastName: { minLength: minLength('Apellido materno', 2) },
   birthDate: { required: required('Fecha de nacimiento') },
   email: { required: required('Correo electrónico'), email: email('Correo electrónico') },
-  gender: { required: required('Género') },
+  gender: { required: required('Sexo') },
   phone: { required: required('Teléfono') },
   region: { required: required('Región') },
   province: { requiredIf: requiredIf('Provincia', () => user.region) },
@@ -199,7 +200,6 @@ const saveUser = async () => {
   if (!isValid || !documentNumberVerified.value) return;
 
   const saveMethod = isNewUser.value ? usersStore.newUser : usersStore.editUser;
-  console.log('user', user);
   const success = await saveMethod(user);
   if (success) {
     router.push('/admin/users');
@@ -307,7 +307,7 @@ const verifyDocumentNumber = async () => {
             <div class="grid grid-cols-12 gap-4">
               <span class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
                 <FloatLabel variant="on" class="w-full">
-                  <DatePicker id="birthDate" v-model="user.birthDate" showIcon iconDisplay="input" dateFormat="dd/mm/yy" :maxDate="maxDate" aria-describedby="birthDate" :invalid="v$.birthDate?.$error" />
+                  <DatePicker id="birthDate" v-model="user.birthDate" showIcon fluid dateFormat="dd/mm/yy" :maxDate="maxDate" aria-describedby="birthDate" :invalid="v$.birthDate?.$error" />
                   <label for="birthDate">Fecha de nacimiento</label>
                 </FloatLabel>
                 <Message v-if="v$.birthDate?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.birthDate.$errors[0].$message }}</Message>
@@ -322,7 +322,7 @@ const verifyDocumentNumber = async () => {
               <span class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
                 <FloatLabel variant="on" class="w-full">
                   <Select id="id_gender" v-model="user.gender" :options="genderOptions" optionLabel="label" optionValue="value" showClear :invalid="v$.gender?.$error" />
-                  <label for="id_gender">Género</label>
+                  <label for="id_gender">Sexo</label>
                 </FloatLabel>
                 <Message v-if="v$.gender?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.gender.$errors[0].$message }}</Message>
               </span>

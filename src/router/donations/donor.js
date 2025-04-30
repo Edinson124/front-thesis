@@ -1,9 +1,9 @@
-import NewDonor from '@/views/donations/NewDonor.vue';
+import EditDonor from '@/views/donations/EditDonor.vue';
 
 export default [
   {
     path: '/donation/donor/new',
     name: 'donantes-registrar',
-    component: NewDonor
+    component: EditDonor
   }
 ];
