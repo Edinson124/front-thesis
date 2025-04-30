@@ -5,22 +5,18 @@ const FAKE_MODE = import.meta.env.VITE_FAKE_API === 'true';
 
 const getRoles = async (filters = {}, page = 0) => {
   try {
-    throw new Error('No roles paginated');
-    // let queryString = new URLSearchParams();
-    // queryString.append('page', page);
+    let queryString = new URLSearchParams();
+    queryString.append('page', page);
 
-    // for (const key in filters) {
-    //   if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
-    //     queryString.append(key, filters[key]);
-    //   }
-    // }
-
-    // const response = await get(`/roles?${queryString.toString()}`);
-    // return response;
-  } catch (error) {
-    if (FAKE_MODE) {
-      return fakeService.getRoles(filters, page);
+    for (const key in filters) {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        queryString.append(key, filters[key]);
+      }
     }
+
+    const response = await get(`/roles/paginated?${queryString.toString()}`);
+    return response;
+  } catch (error) {
     console.error('Error al obtener roles: ', error);
     return [];
   }

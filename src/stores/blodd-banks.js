@@ -5,6 +5,7 @@ import { reactive, ref } from 'vue';
 export const useBloodBanksStore = defineStore('blood-banks', () => {
   const bloodBanks = reactive([]);
   const bloodBanksOptions = reactive([]);
+  const bloodBanksTypes = reactive([]);
   const totalRecords = ref(0);
   const currentPage = ref(0);
 
@@ -42,10 +43,40 @@ export const useBloodBanksStore = defineStore('blood-banks', () => {
     }
   };
 
+  const newBloodBank = async (user) => {
+    try {
+      await bloodBanksService.newBloodBank(user);
+      return true;
+    } catch (error) {
+      console.error('Error al crear usuario: ', error);
+      return false;
+    }
+  };
+
+  const editBloodBank = async (user) => {
+    try {
+      await bloodBanksService.editBloodBank(user);
+      return true;
+    } catch (error) {
+      console.error('Error al crear usuario: ', error);
+      return false;
+    }
+  };
+
+  const getBloodBankTypes = async () => {
+    try {
+      const response = await bloodBanksService.getTypesBloodBank();
+      bloodBanksTypes.splice(0, bloodBanksTypes.length, ...response);
+      return true;
+    } catch (error) {
+      console.error('Error al obtener banco de sangre: ', error);
+      return null;
+    }
+  };
+
   const toogleStatus = async (bloodBankId) => {
     try {
       const response = await bloodBanksService.toogleStatusBloodBank(bloodBankId);
-      console.log(response);
       const index = bloodBanks.findIndex((u) => u.id === bloodBankId);
       bloodBanks[index] = response;
       return true;
@@ -55,5 +86,5 @@ export const useBloodBanksStore = defineStore('blood-banks', () => {
     }
   };
 
-  return { bloodBanks, totalRecords, currentPage, bloodBanksOptions, getBloodBanks, getBloodBanksOptions, getBloodBank, toogleStatus };
+  return { bloodBanks, bloodBanksTypes, totalRecords, currentPage, bloodBanksOptions, getBloodBanks, newBloodBank, editBloodBank, getBloodBanksOptions, getBloodBankTypes, getBloodBank, toogleStatus };
 });

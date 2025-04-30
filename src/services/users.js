@@ -29,9 +29,9 @@ const getUser = async (userId) => {
   }
 };
 
-const verifyUser = async (documentNumber, documentType) => {
+const verifyUser = async (userId, documentNumber) => {
   try {
-    const response = await post(`/users/exists`, { documentNumber, documentType });
+    const response = await post(`/users/exists`, { userId, documentNumber });
     return response;
   } catch (error) {
     console.error('Error al verificar usuario: ', error);
@@ -41,7 +41,6 @@ const verifyUser = async (documentNumber, documentType) => {
 
 const newUser = async (user) => {
   try {
-    console.log('service', user);
     const response = await post('/users', user);
     return response;
   } catch (error) {
@@ -52,11 +51,20 @@ const newUser = async (user) => {
 
 const editUser = async (user) => {
   try {
-    console.log('serviceed', user);
     const response = await put(`/users/${user.id}`, user);
     return response;
   } catch (error) {
     console.error('Error al editar usuario: ', error);
+    return null;
+  }
+};
+
+const getUserMedicByBloodBank = async (bloodBankId) => {
+  try {
+    const response = await get(`/users/medic/${bloodBankId}`);
+    return response;
+  } catch (error) {
+    console.error('Error al crear usuario: ', error);
     return null;
   }
 };
@@ -77,5 +85,6 @@ export default {
   getUser,
   newUser,
   editUser,
+  getUserMedicByBloodBank,
   toogleStatusUser
 };

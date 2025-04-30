@@ -20,9 +20,9 @@ export const useUsersStore = defineStore('users', () => {
     }
   };
 
-  const verifyUser = async (documentNumber, documentType) => {
+  const verifyUser = async (userId, documentNumber) => {
     try {
-      const response = await usersService.verifyUser(documentNumber, documentType);
+      const response = await usersService.verifyUser(userId, documentNumber);
       return !response.exists;
     } catch (error) {
       console.error('Error al verificar usuario: ', error);
@@ -42,7 +42,6 @@ export const useUsersStore = defineStore('users', () => {
 
   const newUser = async (user) => {
     try {
-      console.log('store', user);
       await usersService.newUser(user);
       return true;
     } catch (error) {
@@ -53,7 +52,6 @@ export const useUsersStore = defineStore('users', () => {
 
   const editUser = async (user) => {
     try {
-      console.log('store', user);
       await usersService.editUser(user);
       return true;
     } catch (error) {

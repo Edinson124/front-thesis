@@ -1,6 +1,7 @@
 <script setup>
 import { Status } from '@/enums/Status';
 import ubicationService from '@/services/ubication';
+import userService from '@/services/users';
 import { useBloodBanksStore } from '@/stores/blodd-banks';
 import useVuelidate from '@vuelidate/core';
 import { computed, onMounted, reactive, ref } from 'vue';
@@ -16,12 +17,9 @@ const loading = ref(false);
 const bloodBank = reactive({
   name: '',
   address: '',
-  location: '',
-  department: null,
+  region: null,
   province: null,
   district: null,
-  coordinator: '',
-  type: '',
   status: 'ACTIVE'
 });
 
@@ -43,31 +41,42 @@ const provinces = reactive([]);
 const loadingProvinces = ref(false);
 const distritos = reactive([]);
 const loadingDistritos = ref(false);
-
+const medicUsers = ref([]);
+const getMedicOptionsCoordinator = async (bloodBankId) => {
+  try {
+    const response = await userService.getUserMedicByBloodBank(bloodBankId);
+    medicUsers.value = response;
+  } catch (error) {
+    console.error('Error obteniendo variables:', error);
+  }
+};
 onMounted(async () => {
   loading.value = true;
+
+  await bloodBankStore.getBloodBankTypes();
 
   const bloodBankId = route.params.id;
   if (bloodBankId) {
     isNewBloodBank.value = false;
     const roleResponse = await bloodBankStore.getBloodBank(bloodBankId);
     Object.assign(bloodBank, { ...bloodBank, ...roleResponse });
+    await getMedicOptionsCoordinator(bloodBankId);
   }
 
   const departmentsResponse = await ubicationService.getDepartments();
   departments.splice(0, departments.length, ...departmentsResponse);
   loadingDeparments.value = false;
 
-  if (bloodBank.department) {
+  if (bloodBank.region) {
     loadingProvinces.value = true;
-    const provincesResponse = await ubicationService.getProvinces(bloodBank.department);
+    const provincesResponse = await ubicationService.getProvinces(bloodBank.region);
     provinces.splice(0, provinces.length, ...provincesResponse);
     loadingProvinces.value = false;
   }
 
   if (bloodBank.province) {
     loadingDistritos.value = true;
-    const distritosResponse = await ubicationService.getDistritos(bloodBank.department, bloodBank.province);
+    const distritosResponse = await ubicationService.getDistritos(bloodBank.region, bloodBank.province);
     distritos.splice(0, distritos.length, ...distritosResponse);
     loadingDistritos.value = false;
   }
@@ -89,7 +98,7 @@ const onSelectProvince = async (event) => {
   loadingDistritos.value = true;
   let distritosResponse = [];
   if (event.value !== null) {
-    distritosResponse = await ubicationService.getDistritos(bloodBank.department, event.value);
+    distritosResponse = await ubicationService.getDistritos(bloodBank.region, event.value);
   }
   distritos.splice(0, distritos.length, ...distritosResponse);
   loadingDistritos.value = false;
@@ -174,7 +183,7 @@ const cancel = () => {
             <div class="grid grid-cols-12 gap-4">
               <span class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
                 <FloatLabel variant="on" class="w-full">
-                  <Select id="id_region" v-model="bloodBank.department" :options="departments" showClear filter @change="onSelectDepartment" :loading="loadingDeparments" :invalid="v$.department?.$error" />
+                  <Select id="id_region" v-model="bloodBank.region" :options="departments" showClear filter @change="onSelectDepartment" :loading="loadingDeparments" :invalid="v$.department?.$error" />
                   <label for="id_region">Departamento</label>
                 </FloatLabel>
                 <Message v-if="v$.department?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.department.$errors[0].$message }}</Message>
@@ -209,7 +218,7 @@ const cancel = () => {
 
             <div class="grid grid-cols-12 gap-4">
               <FloatLabel variant="on" class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
-                <Select id="status" v-model="bloodBank.type" :options="bloodBankTypeOptions" optionLabel="label" optionValue="value" />
+                <Select id="status" v-model="bloodBank.idType" :options="bloodBankStore.bloodBanksTypes" optionLabel="name" optionValue="id" />
                 <label for="status">Tipo de banco de sangre</label>
               </FloatLabel>
             </div>
@@ -226,7 +235,7 @@ const cancel = () => {
             <div class="grid grid-cols-12 gap-2">
               <label for="name3" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Coordinador de banco de sangre</label>
               <div class="col-span-12 md:col-span-4">
-                <Select class="" v-model="bloodBank.coordinator" :options="[]" optionLabel="label" optionValue="value" showClear />
+                <Select class="" v-model="bloodBank.idCoordinator" :options="medicUsers" optionLabel="fullName" optionValue="id" showClear />
               </div>
             </div>
           </div>

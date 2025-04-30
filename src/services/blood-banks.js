@@ -1,26 +1,22 @@
-import { get, patch } from '@/api';
+import { get, patch, post, put } from '@/api';
 import fakeService from '@/services/fake/blood-banks';
 
 const FAKE_MODE = import.meta.env.VITE_FAKE_API === 'true';
 
 const getBloodBanks = async (filters = {}, page = 0) => {
   try {
-    throw new Error('No roles paginated');
-    // let queryString = new URLSearchParams();
-    // queryString.append('page', page);
+    let queryString = new URLSearchParams();
+    queryString.append('page', page);
 
-    // for (const key in filters) {
-    //   if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
-    //     queryString.append(key, filters[key]);
-    //   }
-    // }
-
-    // const response = await get(`/blood-banks?${queryString.toString()}`);
-    // return response;
-  } catch (error) {
-    if (FAKE_MODE) {
-      return fakeService.getBloodBanks(filters, page);
+    for (const key in filters) {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        queryString.append(key, filters[key]);
+      }
     }
+
+    const response = await get(`/blood-bank/paginated?${queryString.toString()}`);
+    return response;
+  } catch (error) {
     console.error('Error al obtener bancos de sangre: ', error);
     return [];
   }
@@ -38,7 +34,7 @@ const getBloodBanksOptions = async () => {
 
 const getBloodBank = async (bloodBankId) => {
   try {
-    const response = await get(`/blood-banks/${bloodBankId}`);
+    const response = await get(`/blood-bank/${bloodBankId}`);
     return response;
   } catch (error) {
     if (FAKE_MODE) {
@@ -49,9 +45,39 @@ const getBloodBank = async (bloodBankId) => {
   }
 };
 
+const newBloodBank = async (user) => {
+  try {
+    const response = await post('/blood-bank', user);
+    return response;
+  } catch (error) {
+    console.error('Error al crear usuario: ', error);
+    return null;
+  }
+};
+
+const editBloodBank = async (user) => {
+  try {
+    const response = await put(`/blood-bank/${user.id}`, user);
+    return response;
+  } catch (error) {
+    console.error('Error al editar usuario: ', error);
+    return null;
+  }
+};
+
+const getTypesBloodBank = async () => {
+  try {
+    const response = await get(`/blood-bank-type`);
+    return response;
+  } catch (error) {
+    console.error('Error al crear banco de sangre: ', error);
+    return null;
+  }
+};
+
 const toogleStatusBloodBank = async (bloodBankId) => {
   try {
-    const response = await patch(`/blood-banks/status/${bloodBankId}`);
+    const response = await patch(`/blood-bank/status/${bloodBankId}`);
     return response;
   } catch (error) {
     if (FAKE_MODE) {
@@ -66,5 +92,8 @@ export default {
   getBloodBanks,
   getBloodBanksOptions,
   getBloodBank,
+  newBloodBank,
+  editBloodBank,
+  getTypesBloodBank,
   toogleStatusBloodBank
 };

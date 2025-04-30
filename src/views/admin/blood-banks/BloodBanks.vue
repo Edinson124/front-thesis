@@ -8,7 +8,7 @@ const bloodBankStore = useBloodBanksStore();
 const loading = ref(false);
 const filters = reactive({
   search: '',
-  department: null,
+  region: null,
   province: null,
   district: null,
   status: ''
@@ -23,15 +23,15 @@ const filter = async (event) => {
 
 const resetFilters = () => {
   filters.search = '';
-  filters.department = null;
+  filters.region = null;
   filters.province = null;
   filters.district = null;
   filters.status = '';
   filter();
 };
 
-const departments = reactive([]);
-const loadingDeparments = ref(false);
+const regions = reactive([]);
+const loadingRegions = ref(false);
 const provinces = reactive([]);
 const loadingProvinces = ref(false);
 const distritos = reactive([]);
@@ -40,20 +40,20 @@ const loadingDistritos = ref(false);
 onMounted(async () => {
   loading.value = true;
 
-  const departmentsResponse = await ubicationService.getDepartments();
-  departments.splice(0, departments.length, ...departmentsResponse);
-  loadingDeparments.value = false;
+  const regionsResponse = await ubicationService.getDepartments();
+  regions.splice(0, regions.length, ...regionsResponse);
+  loadingRegions.value = false;
 
-  if (filters.department) {
+  if (filters.region) {
     loadingProvinces.value = true;
-    const provincesResponse = await ubicationService.getProvinces(filters.department);
+    const provincesResponse = await ubicationService.getProvinces(filters.region);
     provinces.splice(0, provinces.length, ...provincesResponse);
     loadingProvinces.value = false;
   }
 
   if (filters.province) {
     loadingDistritos.value = true;
-    const distritosResponse = await ubicationService.getDistritos(filters.department, filters.province);
+    const distritosResponse = await ubicationService.getDistritos(filters.region, filters.province);
     distritos.splice(0, distritos.length, ...distritosResponse);
     loadingDistritos.value = false;
   }
@@ -63,7 +63,7 @@ onMounted(async () => {
   await filter();
 });
 
-const onSelectDepartment = async (event) => {
+const onSelectRegion = async (event) => {
   loadingProvinces.value = true;
   let provincesResponse = [];
   if (event.value !== null) {
@@ -77,7 +77,7 @@ const onSelectProvince = async (event) => {
   loadingDistritos.value = true;
   let distritosResponse = [];
   if (event.value !== null) {
-    distritosResponse = await ubicationService.getDistritos(filters.department, event.value);
+    distritosResponse = await ubicationService.getDistritos(filters.region, event.value);
   }
   distritos.splice(0, distritos.length, ...distritosResponse);
   loadingDistritos.value = false;
@@ -128,13 +128,13 @@ const reactivate = () => {
         </div>
         <div class="bloodbank-filter | w-full md:w-[20%]">
           <FloatLabel variant="on" class="w-full">
-            <Select id="id_region" class="w-full" v-model="filters.department" :options="departments" showClear filter @change="onSelectDepartment" :loading="loadingDeparments" />
+            <Select id="id_region" class="w-full" v-model="filters.region" :options="regions" showClear filter @change="onSelectRegion" :loading="loadingRegions" />
             <label for="id_region">Departamento</label>
           </FloatLabel>
         </div>
         <div class="bloodbank-filter | w-full md:w-[20%]">
           <FloatLabel variant="on" class="w-full">
-            <Select id="id_province" class="w-full" v-model="filters.province" :options="provinces" showClear filter @change="onSelectProvince" :disabled="filters.department === null" :loading="loadingProvinces" />
+            <Select id="id_province" class="w-full" v-model="filters.province" :options="provinces" showClear filter @change="onSelectProvince" :disabled="filters.region === null" :loading="loadingProvinces" />
             <label for="id_province">Provincia</label>
           </FloatLabel>
         </div>
@@ -158,7 +158,7 @@ const reactivate = () => {
         <p class="text-gray-600 text-lg py-4">No encontramos coincidencias. Intenta con otros términos o ajusta los filtros.</p>
       </template>
       <template #grid>
-        <div class="grid grid-cols-12 gap-4 py-4">
+        <div class="grid grid-cols-8 gap-4 py-4">
           <div v-for="(item, index) in bloodBankStore.bloodBanks" :key="index" class="col-span-12 lg:col-span-4 p-4 border border-surface-100 white shadow-[0px_0px_1px_0px_rgba(0,_0,_0,_0.1)] rounded-lg flex flex-col h-full">
             <div class="flex items-center">
               <div class="h-[250px] w-full sm:w-[60%] mr-8 items-center">
@@ -168,8 +168,8 @@ const reactivate = () => {
                 <div class="">
                   <h4 class="font-bold">{{ item.name }}</h4>
                   <p><strong>Dirección:</strong> {{ item.address }}</p>
-                  <p><strong>Ubicación:</strong> {{ item.location }}</p>
-                  <p><strong>Coordinador:</strong> {{ item.coordinator }}</p>
+                  <p><strong>Ubicación:</strong> {{ item.region }} / {{ item.province }} /{{ item.district }}</p>
+                  <p><strong>Coordinador:</strong> {{ item.fullNameCoordinator }}</p>
                   <p><strong>Tipo:</strong> {{ item.type }}</p>
                 </div>
                 <div class="flex gap-2 mt-2 justify-center">

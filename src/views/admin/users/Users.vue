@@ -1,5 +1,4 @@
 <script setup>
-import { Role } from '@/enums/Role';
 import { Status } from '@/enums/Status';
 import { useRolesStore } from '@/stores/roles';
 import { useUsersStore } from '@/stores/users';
@@ -17,11 +16,11 @@ const filters = reactive({
 });
 
 const columns = [
-  { field: 'id', header: 'Id', width: '5%' },
-  { field: 'name', header: 'Nombre Completo', width: '30%' },
+  { field: 'documentNumber', header: 'N° doc', width: '7%' },
+  { field: 'name', header: 'Nombre Completo', width: '24%' },
   { field: 'email', header: 'Correo', width: '15%' },
   { field: 'phone', header: 'Telefono', width: '10%' },
-  { field: 'role', header: 'Rol', width: '15%' },
+  { field: 'role', header: 'Rol', width: '13%' },
   { field: 'status', header: 'Estado', width: '10%' }
 ];
 
@@ -41,7 +40,7 @@ const resetFilters = () => {
 
 onMounted(async () => {
   await filterUsers();
-  await rolesStore.getRoles();
+  await rolesStore.getRolesOptions();
 });
 
 const statuses = ['ACTIVE', 'INACTIVE'];
@@ -84,12 +83,12 @@ const reactivateUser = () => {
         <div class="users-filter | w-full md:w-1/2">
           <FloatLabel variant="on" class="w-full">
             <InputText class="w-full" id="username" v-model="filters.search" aria-describedby="username" />
-            <label for="username">Nombre</label>
+            <label for="username">Nombre o N. Documento</label>
           </FloatLabel>
         </div>
         <div class="users-filter | w-full md:w-[23%]">
           <FloatLabel variant="on" class="w-full">
-            <Select class="w-full" v-model="filters.role" :options="rolesStore.rolesOptions" optionLabel="label" optionValue="value" showClear />
+            <Select class="w-full" v-model="filters.role" :options="rolesStore.rolesOptions" optionLabel="name" optionValue="id" showClear />
             <label for="role">Rol</label>
           </FloatLabel>
         </div>
@@ -128,7 +127,6 @@ const reactivateUser = () => {
 
           <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" :style="`width: ${col.width}`">
             <template v-if="col.field === 'name'" #body="slotProps"> {{ slotProps.data.firstName }} {{ slotProps.data.lastName }} {{ slotProps.data.secondLastName }} </template>
-            <template v-else-if="col.field === 'role'" #body="slotProps"> {{ Role[slotProps.data.role] }} </template>
             <template v-else-if="col.field === 'status'" #body="slotProps"> {{ Status[slotProps.data.status] }} </template>
           </Column>
           <Column header="Acciones">

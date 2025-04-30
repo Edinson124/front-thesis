@@ -98,8 +98,7 @@ const reactivate = () => {
         </template>
 
         <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" :style="`width: ${col.width}`">
-          <template v-if="col.field === 'name'" #body="slotProps"> {{ Role[slotProps.data.name] }} </template>
-          <template v-else-if="col.field === 'status'" #body="slotProps"> {{ Status[slotProps.data.status] }} </template>
+          <template v-if="col.field === 'status'" #body="slotProps"> {{ Status[slotProps.data.status] }} </template>
         </Column>
         <Column header="Acciones">
           <template #body="slotProps">

@@ -185,7 +185,9 @@ const rules = computed(() => ({
   district: { requiredIf: requiredIf('Distrito', () => user.province) },
   address: { required: required('Dirección'), minLength: minLength('Dirección', 5) },
   status: {},
-  bloodBankId: { required: required('Banco de sangre') },
+  bloodBankId: {
+    requiredIf: requiredIf('Banco de sangre', () => user.roleId !== 1) // Cambia 1 por el ID real de "Administrador"
+  },
   profileImageUrl: {}
 }));
 const v$ = useVuelidate(rules, user);
@@ -209,7 +211,7 @@ const cancel = () => {
 };
 
 const verifyDocumentNumber = async () => {
-  const response = await usersStore.verifyUser(user.documentNumber, user.documentType);
+  const response = await usersStore.verifyUser(user.id, user.documentNumber);
   documentNumberVerified.value = response;
 };
 </script>
