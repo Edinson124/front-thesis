@@ -33,7 +33,7 @@ export const extraRoutes = [
   { id: 'admin-roles-edit', label: 'Editar Rol', to: '/admin/roles/:id', parentId: 'admin-roles' },
   { id: 'admin-blood-banks-new', label: 'Nuevo Banco de Sangre', to: '/admin/blood-banks/new', parentId: 'admin-blood-banks' },
   { id: 'admin-blood-banks-edit', label: 'Editar Banco de Sangre', to: '/admin/blood-banks/:id', parentId: 'admin-blood-banks' },
-  { id: 'donante-view', label: 'Visualizar donante', to: '/donation/donor/view', parentId: 'donor-search' }
+  { id: 'donor-view', label: 'Visualizar donante', to: '/donation/donor/:type/:doc', parentId: 'donor-search' }
 ];
 
 export const breadcrumbs = [...MenuRoutes, ...extraRoutes];

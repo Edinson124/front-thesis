@@ -1,9 +1,7 @@
 import donorService from '@/services/donations/donor';
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
 
 export const useDonorStore = defineStore('donor', () => {
-  const searchedDonor = ref(null);
   const verifyDonor = async (donorId, documentNumber, documentType) => {
     try {
       const response = await donorService.verifyDonor(donorId, documentNumber, documentType);
@@ -16,7 +14,6 @@ export const useDonorStore = defineStore('donor', () => {
   const getDonor = async (documentNumber, documentType) => {
     try {
       const response = await donorService.getDonor(documentNumber, documentType);
-      searchedDonor.value = response;
       return response;
     } catch (error) {
       console.error('Error al obtener banco de sangre: ', error);
@@ -45,7 +42,6 @@ export const useDonorStore = defineStore('donor', () => {
   };
 
   return {
-    searchedDonor,
     getDonor,
     newDonor,
     editDonor,

@@ -121,8 +121,8 @@ onMounted(async () => {
   const donorId = route.params.id;
   if (donorId) {
     isNewDonor.value = false;
-    const userResponse = await useDonorStore.getDonor(donorId);
-    Object.assign(donor, { ...donor, ...userResponse });
+    const donorResponse = await useDonorStore.getDonor(donorId);
+    Object.assign(donor, { ...donor, ...donorResponse });
 
     if (donor.birthDate) {
       donor.birthDate = stringToDate(donor.birthDate);

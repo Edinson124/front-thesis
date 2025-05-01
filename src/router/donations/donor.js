@@ -14,7 +14,7 @@ export default [
     component: SearchDonor
   },
   {
-    path: '/donation/donor/view',
+    path: '/donation/donor/:type/:doc',
     name: 'donor-view',
     component: ViewDonor
   }

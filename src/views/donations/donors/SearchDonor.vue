@@ -39,10 +39,10 @@ const searchDonor = async () => {
 
   loading.value = true;
   errorMessage.value = false;
-  const response = await donorStore.getDonor(donor.documentNumber, donor.documentType);
+  const response = await donorStore.verifyDonor(null, donor.documentNumber, donor.documentType);
   console.log('response', response);
-  if (response) {
-    router.push(`/donation/donor/view`);
+  if (!response) {
+    router.push(`/donation/donor/${donor.documentType}/${donor.documentNumber}`);
   } else {
     errorMessage.value = true;
   }
@@ -86,7 +86,7 @@ watch(
           </div>
         </div>
         <!-- Mensaje si no se encuentra el donante -->
-        <div v-if="errorMessage" class="text-red-600 mt-2 text-center">No se encontró ningún donante registrado con ese número de documento.</div>
+        <div v-if="errorMessage" class="text-red-600 mt-2 text-center">No se encontró ningún donante registrado con el tipo y número de documento.</div>
 
         <div class="flex justify-center gap-4 mt-4">
           <Button class="h-8 w-40 btn-clean" label="Limpiar" @click="resetFilters()" />
