@@ -1,11 +1,11 @@
-import { get, post, put } from '@/api';
+import { post, put } from '@/api';
 
-const getDonor = async (donorId) => {
+const getDonor = async (documentNumber, documentType) => {
   try {
-    const response = await get(`/donors/${donorId}`);
+    const response = await post(`/donors/search`, { documentNumber, documentType });
     return response;
   } catch (error) {
-    console.error('Error al crear banco de sangre: ', error);
+    console.error('Error al obtener donante: ', error);
     return null;
   }
 };
@@ -15,7 +15,7 @@ const newDonor = async (donor) => {
     const response = await post('/donors', donor);
     return response;
   } catch (error) {
-    console.error('Error al crear usuario: ', error);
+    console.error('Error al crear donante: ', error);
     return null;
   }
 };
@@ -25,7 +25,7 @@ const editDonor = async (donor) => {
     const response = await put(`/donors/${donor.id}`, donor);
     return response;
   } catch (error) {
-    console.error('Error al editar usuario: ', error);
+    console.error('Error al editar donante: ', error);
     return null;
   }
 };
@@ -34,7 +34,7 @@ const verifyDonor = async (donorId, documentNumber, documentType) => {
     const response = await post(`/donors/exists`, { donorId, documentNumber, documentType });
     return response;
   } catch (error) {
-    console.error('Error al verificar usuario: ', error);
+    console.error('Error al verificar doante: ', error);
     return null;
   }
 };

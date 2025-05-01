@@ -8,8 +8,8 @@ export const MenuRoutes = [
   { id: 'admin-redes', label: 'Redes', to: '/admin/redes', parentId: 'admin' },
   { id: 'dashboards', label: 'Estadísticas', icon: 'mdi mdi-monitor-dashboard', parentId: 'root' },
   { id: 'donación', label: 'Donaciones', icon: 'mdi mdi-account-multiple-outline', parentId: 'root' },
-  { id: 'donantes-registrar', label: 'Registrar Donantes', to: '/donation/donor/new', parentId: 'donación' },
-  { id: 'donantes-consultar', label: 'Consultar donantes', parentId: 'donantes' },
+  { id: 'donor-new', label: 'Registrar donante', to: '/donation/donor/new', parentId: 'donación' },
+  { id: 'donor-search', label: 'Consultar donante', to: '/donation/donor/search', parentId: 'donación' },
   { id: 'laboratory', label: 'Laboratorio', icon: 'mdi mdi-test-tube', parentId: 'root' },
   { id: 'laboratory-results', label: 'Resultados de tamizaje', parentId: 'laboratory' },
   { id: 'laboratory-tests', label: 'Resultados pruebas cruzadas', parentId: 'laboratory' },
@@ -32,7 +32,8 @@ export const extraRoutes = [
   { id: 'admin-users-edit', label: 'Editar Usuario', to: '/admin/users/:id', parentId: 'admin-users' },
   { id: 'admin-roles-edit', label: 'Editar Rol', to: '/admin/roles/:id', parentId: 'admin-roles' },
   { id: 'admin-blood-banks-new', label: 'Nuevo Banco de Sangre', to: '/admin/blood-banks/new', parentId: 'admin-blood-banks' },
-  { id: 'admin-blood-banks-edit', label: 'Editar Banco de Sangre', to: '/admin/blood-banks/:id', parentId: 'admin-blood-banks' }
+  { id: 'admin-blood-banks-edit', label: 'Editar Banco de Sangre', to: '/admin/blood-banks/:id', parentId: 'admin-blood-banks' },
+  { id: 'donante-view', label: 'Visualizar donante', to: '/donation/donor/view', parentId: 'donor-search' }
 ];
 
 export const breadcrumbs = [...MenuRoutes, ...extraRoutes];
