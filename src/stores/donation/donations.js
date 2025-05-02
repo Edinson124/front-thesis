@@ -1,4 +1,4 @@
-import donationService from '@/services/donations/donations';
+import donationService from '@/services/donation/donations';
 import { defineStore } from 'pinia';
 import { reactive, ref } from 'vue';
 
@@ -19,10 +19,21 @@ export const useDonationStore = defineStore('donation', () => {
     }
   };
 
+  const newDonation = async (donation) => {
+    try {
+      const response = await donationService.newDonation(donation);
+      return response;
+    } catch (error) {
+      console.error('Error al crear una donación: ', error);
+      return null;
+    }
+  };
+
   return {
     donationsByDonor,
     totalRecordsDonationsByDonor,
     currentPageDonationsByDonor,
-    getDonationsByDocumentDonor
+    getDonationsByDocumentDonor,
+    newDonation
   };
 });

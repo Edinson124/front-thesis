@@ -1,9 +1,9 @@
 <script setup>
 import { DocumentTypes } from '@/enums/DocumentTypes';
-import { Gender } from '@/enums/Gender';
+import { genderOptions } from '@/enums/Gender';
 import { MaritalStatus } from '@/enums/MaritalStatus';
 import ubicationService from '@/services/ubication';
-import { useDonorStore } from '@/stores/donations/donor';
+import { useDonorStore } from '@/stores/donation/donor';
 import { email, minLength, required, requiredIf } from '@/validation/validators';
 import { useVuelidate } from '@vuelidate/core';
 import { computed, onMounted, reactive, ref } from 'vue';
@@ -41,11 +41,6 @@ const donor = reactive({
 const maxDate = ref(new Date());
 
 const documentTypesOptions = Object.entries(DocumentTypes).map(([value, label]) => ({
-  value,
-  label
-}));
-
-const genderOptions = Object.entries(Gender).map(([value, label]) => ({
   value,
   label
 }));

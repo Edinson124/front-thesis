@@ -1,6 +1,6 @@
 <script setup>
-import { DocumentTypes } from '@/enums/DocumentTypes';
-import { useDonorStore } from '@/stores/donations/donor';
+import { documentTypesDonorOptions } from '@/enums/DocumentTypes';
+import { useDonorStore } from '@/stores/donation/donor';
 import { required } from '@/validation/validators';
 import { useVuelidate } from '@vuelidate/core';
 import { computed, reactive, ref, watch } from 'vue';
@@ -21,11 +21,6 @@ const rules = computed(() => ({
 }));
 
 const v$ = useVuelidate(rules, donor);
-
-const documentTypesOptions = Object.entries(DocumentTypes).map(([value, label]) => ({
-  value,
-  label
-}));
 
 const resetFilters = () => {
   donor.documentNumber = '';
@@ -66,7 +61,7 @@ watch(
           </div>
           <div class="md:col-span-5">
             <FloatLabel variant="on">
-              <Select id="documentType" v-model="donor.documentType" :options="documentTypesOptions" optionLabel="label" optionValue="value" class="w-full" :invalid="v$.documentType?.$error" />
+              <Select id="documentType" v-model="donor.documentType" :options="documentTypesDonorOptions" optionLabel="label" optionValue="value" class="w-full" :invalid="v$.documentType?.$error" />
               <label for="documentType">Tipo Documento</label>
             </FloatLabel>
             <Message v-if="v$.documentType?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.documentType.$errors[0].$message }}</Message>

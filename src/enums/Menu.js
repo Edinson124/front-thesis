@@ -7,9 +7,10 @@ export const MenuRoutes = [
   { id: 'admin-blood-banks', label: 'Bancos de sangre', to: '/admin/blood-banks', parentId: 'admin' },
   { id: 'admin-redes', label: 'Redes', to: '/admin/redes', parentId: 'admin' },
   { id: 'dashboards', label: 'Estadísticas', icon: 'mdi mdi-monitor-dashboard', parentId: 'root' },
-  { id: 'donación', label: 'Donaciones', icon: 'mdi mdi-account-multiple-outline', parentId: 'root' },
-  { id: 'donor-new', label: 'Registrar donante', to: '/donation/donor/new', parentId: 'donación' },
-  { id: 'donor-search', label: 'Consultar donante', to: '/donation/donor/search', parentId: 'donación' },
+  { id: 'donation', label: 'Donaciones', icon: 'mdi mdi-account-multiple-outline', parentId: 'root' },
+  { id: 'donor-new', label: 'Registrar donante', to: '/donation/donor/new', parentId: 'donation' },
+  { id: 'donor-search', label: 'Consultar donante', to: '/donation/donor/search', parentId: 'donation' },
+  { id: 'donation-search-donor', label: 'Nueva donación', to: '/donation/search/donor', parentId: 'donation' },
   { id: 'laboratory', label: 'Laboratorio', icon: 'mdi mdi-test-tube', parentId: 'root' },
   { id: 'laboratory-results', label: 'Resultados de tamizaje', parentId: 'laboratory' },
   { id: 'laboratory-tests', label: 'Resultados pruebas cruzadas', parentId: 'laboratory' },
@@ -33,7 +34,8 @@ export const extraRoutes = [
   { id: 'admin-roles-edit', label: 'Editar Rol', to: '/admin/roles/:id', parentId: 'admin-roles' },
   { id: 'admin-blood-banks-new', label: 'Nuevo Banco de Sangre', to: '/admin/blood-banks/new', parentId: 'admin-blood-banks' },
   { id: 'admin-blood-banks-edit', label: 'Editar Banco de Sangre', to: '/admin/blood-banks/:id', parentId: 'admin-blood-banks' },
-  { id: 'donor-view', label: 'Visualizar donante', to: '/donation/donor/:type/:doc', parentId: 'donor-search' }
+  { id: 'donor-view', label: 'Visualizar donante', to: '/donation/donor/:type/:doc', parentId: 'donor-search' },
+  { id: 'donation-new', label: 'Registrar donación', to: '/donation/new/:type/:doc', parentId: 'donation-search-donor' }
 ];
 
 export const breadcrumbs = [...MenuRoutes, ...extraRoutes];

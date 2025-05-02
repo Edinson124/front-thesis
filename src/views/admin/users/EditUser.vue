@@ -1,7 +1,7 @@
 <script setup>
 import InputPhone from '@/components/utils/InputPhone.vue';
 import { DocumentTypes } from '@/enums/DocumentTypes';
-import { Gender } from '@/enums/Gender';
+import { genderOptions } from '@/enums/Gender';
 import { Status } from '@/enums/Status';
 import ubicationService from '@/services/ubication';
 import { useBloodBanksStore } from '@/stores/blodd-banks';
@@ -42,11 +42,6 @@ const user = reactive({
 const maxDate = ref(new Date());
 
 const documentTypesOptions = Object.entries(DocumentTypes).map(([value, label]) => ({
-  value,
-  label
-}));
-
-const genderOptions = Object.entries(Gender).map(([value, label]) => ({
   value,
   label
 }));

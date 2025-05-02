@@ -1,4 +1,4 @@
-import { get } from '@/api';
+import { get, post } from '@/api';
 
 const getDonations = async (documentNumber, documentType, page = 0) => {
   try {
@@ -15,6 +15,18 @@ const getDonations = async (documentNumber, documentType, page = 0) => {
     return null;
   }
 };
+
+const newDonation = async (donation) => {
+  try {
+    const response = await post(`/donation`, donation);
+    const donationId = response?.payload?.id ?? null;
+    return donationId;
+  } catch (error) {
+    console.error('Error al obtener donaciones: ', error);
+    return null;
+  }
+};
 export default {
-  getDonations
+  getDonations,
+  newDonation
 };

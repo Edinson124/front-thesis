@@ -1,4 +1,4 @@
-import donorService from '@/services/donations/donor';
+import donorService from '@/services/donation/donor';
 import { defineStore } from 'pinia';
 
 export const useDonorStore = defineStore('donor', () => {

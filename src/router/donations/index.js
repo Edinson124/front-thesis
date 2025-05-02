@@ -1,3 +1,4 @@
-import donationsRoutes from './donor';
+import donationRoutes from './donations';
+import donorRoutes from './donor';
 
-export default [...donationsRoutes];
+export default [...donationRoutes, ...donorRoutes];
