@@ -1,5 +1,6 @@
 <script setup>
 import { Gender } from '@/enums/Gender';
+import { DonorStatus } from '@/enums/Status';
 import { computed } from 'vue';
 
 const props = defineProps({
@@ -31,6 +32,10 @@ const STATUS_STYLES = {
   }
 };
 
+const enrichedStatus = computed(() => {
+  return DonorStatus[props.status] || { label: props.status, enableToNewDonation: false };
+});
+
 function necesitaAdvertenciaPorDonacion() {
   if (props.status !== 'Apto' || !props.lastDonationDate || !props.gender) return false;
 
@@ -57,7 +62,6 @@ const statusStyle = computed(() => {
   );
 });
 </script>
-
 <template>
   <div :class="['text-white p-4 rounded-md mb-4 flex items-center', statusStyle.bgColor]">
     <div class="mr-2 mt-1">
@@ -65,16 +69,17 @@ const statusStyle = computed(() => {
     </div>
     <div>
       <div class="font-semibold text-lg">Documento del donante: {{ documentNumber }}</div>
-      <div class="font-semibold text-lg">Estado del donante: {{ status }}</div>
+      <div class="font-semibold text-lg">Estado del donante: {{ enrichedStatus.label }}</div>
 
-      <div v-if="status === 'Diferido temporalmente'" class="text-md">
+      <div v-if="enrichedStatus.label === 'Diferido temporalmente'" class="text-lg">
         Fecha final de diferimiento: <span class="font-semibold">{{ deferralEndDate }}</span>
       </div>
 
-      <div v-if="status === 'Diferido temporalmente' || status === 'Diferido permanentemente'" class="text-md">
+      <div v-if="enrichedStatus.label === 'Diferido temporalmente' || enrichedStatus.label === 'Diferido permanentemente'" class="text-lg">
         Motivo del diferimiento: <span class="font-semibold">{{ deferralReason }}</span>
       </div>
-      <div v-if="status === 'Apto' && necesitaAdvertenciaPorDonacion()" class="text-md">
+
+      <div v-if="enrichedStatus.label === 'Apto' && necesitaAdvertenciaPorDonacion()" class="text-lg">
         Fecha de última donación: <span class="font-semibold">{{ lastDonationDate }} </span> — Próxima fecha disponible: <span class="font-semibold">{{ dateEnabled }}</span>
       </div>
     </div>
