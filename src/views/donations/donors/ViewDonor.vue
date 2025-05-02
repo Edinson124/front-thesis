@@ -74,11 +74,11 @@ onMounted(async () => {
       <!-- Tabla de donaciones -->
       <div class="w-full">
         <DataTable
-          :value="donorStore.donationsByDonor"
+          :value="donationStore.donationsByDonor"
           tableStyle="min-width: 50rem"
           paginator
           :rows="10"
-          :totalRecords="donorStore.totalRecordsDonationsByDonor"
+          :totalRecords="donationStore.totalRecordsDonationsByDonor"
           lazy
           :loading="loading"
           showGridlines
@@ -88,13 +88,11 @@ onMounted(async () => {
             <p class="text-gray-600 text-lg py-4">No encontramos donaciones para este donante.</p>
           </template>
 
-          <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" :style="`width: ${col.width}`">
-            <template v-if="col.field === 'status'" #body="slotProps"> {{ Status[slotProps.data.status] }} </template>
-          </Column>
+          <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" :style="`width: ${col.width}`"> </Column>
           <Column header="Acciones">
             <template #body="slotProps">
               <div class="flex flex-wrap w-full">
-                <Button class="h-8 w-[6rem] mr-1 my-1 btn-view" label="Visualizar" as="router-link" :to="`/admin/users/${slotProps.data.id}`" />
+                <Button class="h-8 w-[6rem] mr-1 my-1 btn-view" label="Visualizar" />
               </div>
             </template>
           </Column>
