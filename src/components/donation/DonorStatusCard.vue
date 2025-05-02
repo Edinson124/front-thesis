@@ -8,7 +8,8 @@ const props = defineProps({
   deferralEndDate: String,
   deferralReason: String,
   gender: String,
-  lastDonationDate: String
+  lastDonationDate: String,
+  dateEnabled: String
 });
 
 const STATUS_STYLES = {
@@ -20,11 +21,11 @@ const STATUS_STYLES = {
     bgColor: 'bg-yellow-500',
     icon: 'mdi mdi-alert-circle'
   },
-  'Diferido Temporalmente': {
+  'Diferido temporalmente': {
     bgColor: 'bg-yellow-500',
     icon: 'mdi mdi-alert-circle'
   },
-  'Diferido Permanentemente': {
+  'Diferido permanentemente': {
     bgColor: 'bg-red-500',
     icon: 'mdi mdi-close-circle'
   }
@@ -66,12 +67,15 @@ const statusStyle = computed(() => {
       <div class="font-semibold text-lg">Documento del donante: {{ documentNumber }}</div>
       <div class="font-semibold text-lg">Estado del donante: {{ status }}</div>
 
-      <div v-if="status === 'Diferido Temporalmente'" class="text-md">
+      <div v-if="status === 'Diferido temporalmente'" class="text-md">
         Fecha final de diferimiento: <span class="font-semibold">{{ deferralEndDate }}</span>
       </div>
 
-      <div v-if="status === 'Diferido Temporalmente' || status === 'Diferido Permanentemente'" class="text-md">
+      <div v-if="status === 'Diferido temporalmente' || status === 'Diferido permanentemente'" class="text-md">
         Motivo del diferimiento: <span class="font-semibold">{{ deferralReason }}</span>
+      </div>
+      <div v-if="status === 'Apto' && necesitaAdvertenciaPorDonacion()" class="text-md">
+        Fecha de última donación: <span class="font-semibold">{{ lastDonationDate }} </span> — Próxima fecha disponible: <span class="font-semibold">{{ dateEnabled }}</span>
       </div>
     </div>
   </div>

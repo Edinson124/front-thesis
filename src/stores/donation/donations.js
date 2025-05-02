@@ -29,11 +29,33 @@ export const useDonationStore = defineStore('donation', () => {
     }
   };
 
+  const getActualDonation = async (documentNumber, documentType) => {
+    try {
+      const response = await donationService.getActualDonation(documentNumber, documentType);
+      return response;
+    } catch (error) {
+      console.error('Error al obtener donación actual del donante: ', error);
+      return null;
+    }
+  };
+
+  const getLastDateDonation = async (documentNumber, documentType) => {
+    try {
+      const response = await donationService.getLastDateDonation(documentNumber, documentType);
+      return response;
+    } catch (error) {
+      console.error('Error al obtener donación actual del donante: ', error);
+      return null;
+    }
+  };
+
   return {
     donationsByDonor,
     totalRecordsDonationsByDonor,
     currentPageDonationsByDonor,
     getDonationsByDocumentDonor,
-    newDonation
+    newDonation,
+    getActualDonation,
+    getLastDateDonation
   };
 });

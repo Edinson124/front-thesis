@@ -1,9 +1,10 @@
 <script setup>
-import DonorStatus from '@/components/donation/DonorStatus.vue';
+import DonorStatusCard from '@/components/donation/DonorStatusCard.vue';
 import InfoDonor from '@/components/donation/InfoDonor.vue';
 import { documentTypesPatientOptions } from '@/enums/DocumentTypes';
 import { componentDonationOptions } from '@/enums/Donation';
 import { DonorType, donorTypesOptions } from '@/enums/Donor';
+import { DonorStatus } from '@/enums/Status';
 import { useDonationStore } from '@/stores/donation/donations';
 import { useDonorStore } from '@/stores/donation/donor';
 import { usePatientStore } from '@/stores/transfusion/patient';
@@ -23,6 +24,10 @@ const tipoDocumentoPacienteBuscado = ref('');
 const numeroDocumentoPacienteBuscado = ref('');
 const showSuccessModal = ref(false);
 const createdDonationId = ref(null);
+
+const actuadlDonationId = ref(null);
+const lastDonationDateDetail = ref(null);
+const canDonateDateLastDonation = ref(true);
 
 const nombrePaciente = ref('');
 const pacienteBuscado = ref(false);
@@ -97,6 +102,9 @@ const validatePatient = async () => {
     nombrePaciente.value = '';
   }
 };
+const isEnableDonationToStatus = computed(() => {
+  return DonorStatus[donor.status]?.enableToNewDonation === true;
+});
 
 const requiresPaciente = computed(() => {
   return DonorType[donation.donationPurpose]?.requiredPacient === true;
@@ -150,15 +158,29 @@ const confirmSuccess = () => {
   showSuccessModal.value = false;
   router.push('/donation/search/donor');
 };
+const cancelSave = () => {
+  router.push('/donation/search/donor');
+};
 
 onMounted(async () => {
   const documentNumber = route.params.doc;
   const documentType = route.params.type;
-  await donationStore.getDonationsByDocumentDonor(documentNumber, documentType);
+
   const donorResponse = await donorStore.getDonor(documentNumber, documentType);
   Object.assign(donor, { ...donor, ...donorResponse });
+
   donation.documentTypeDonor = donor.documentType;
   donation.documentNumberDonor = donor.documentNumber;
+
+  const actualDonationResponse = await donationStore.getActualDonation(documentNumber, documentType);
+  //Id actual donación en proceso
+  actuadlDonationId.value = actualDonationResponse ? actualDonationResponse.id : null;
+
+  const lastDonationDateDetailResponse = await donationStore.getLastDateDonation(documentNumber, documentType);
+  //Detalle de fecha de ultima donación
+  lastDonationDateDetail.value = lastDonationDateDetailResponse;
+  //Si puedes donar despues del tiempo de la última donación
+  canDonateDateLastDonation.value = lastDonationDateDetailResponse ? lastDonationDateDetailResponse.isEnableDonation : true;
 });
 </script>
 <template>
@@ -166,7 +188,15 @@ onMounted(async () => {
     <div class="mb-4">
       <h3>Registrar Donación</h3>
     </div>
-    <DonorStatus :document-number="donor.documentNumber" :status="donor.status" :deferral-end-date="donor.deferralEndDate" :deferral-reason="donor.deferralReason" :gender="donor.gender" :last-donation-date="donor.lastDonationDate" />
+    <DonorStatusCard
+      :document-number="donor.documentNumber"
+      :status="donor.status"
+      :deferral-end-date="donor.deferralEndDate"
+      :deferral-reason="donor.deferralReason"
+      :gender="donor.gender"
+      :last-donation-date="lastDonationDateDetail?.dateDonation || null"
+      :date-enabled="lastDonationDateDetail?.dateEnabledDonation || null"
+    />
 
     <!-- Datos generales del donante -->
     <Fieldset legend="Datos generales del donante" class="!mb-4">
@@ -175,87 +205,122 @@ onMounted(async () => {
       </div>
     </Fieldset>
 
-    <!-- Sección de Donaciones -->
-    <div>
-      <div class="flex justify-between items-center mb-3">
-        <h2 class="text-xl">Nueva Donación</h2>
+    <div v-if="isEnableDonationToStatus">
+      <!-- Si ya existe una donación activa, muestra el mensaje -->
+      <div v-if="actuadlDonationId != null" class="text-center py-10">
+        <div class="flex justify-between items-center mb-3">
+          <h2 class="text-xl">Nueva Donación</h2>
+        </div>
+        <div>
+          <p class="text-lg font-semibold text-red-600 mb-2">Ya existe una donación en proceso.</p>
+          <p class="text-gray-700">
+            Código de la donación: <span class="font-bold">{{ actuadlDonationId }}</span>
+          </p>
+        </div>
+        <div class="flex justify-end mt-4 gap-2">
+          <Button class="min-w-40 btn-clean" label="Cancelar" @click="cancelSave" />
+        </div>
       </div>
-    </div>
-
-    <!-- Sección de Registro de Donación -->
-    <form @submit.prevent="saveDonation">
-      <div class="border border-gray-300 rounded-md p-5 bg-white mb-6">
-        <div class="mb-6">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <FloatLabel variant="on">
-                <Select id="donationPurpose" v-model="donation.donationPurpose" :options="donorTypesOptions" optionLabel="label" optionValue="value" class="w-full" :invalid="v$.donationPurpose?.$error" />
-                <label for="donationPurpose">Tipo de donante</label>
-              </FloatLabel>
-              <Message v-if="v$.donationPurpose?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.donationPurpose.$errors[0].$message }}</Message>
-            </div>
-            <div>
-              <FloatLabel variant="on">
-                <Select id="bloodComponent" v-model="donation.bloodComponent" :options="componentDonationOptions" optionLabel="label" optionValue="value" class="w-full" :invalid="v$.bloodComponent?.$error" />
-                <label for="bloodComponent">Componente donado</label>
-              </FloatLabel>
-              <Message v-if="v$.bloodComponent?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.bloodComponent.$errors[0].$message }}</Message>
-            </div>
-          </div>
+      <!-- Sección de Donaciones -->
+      <div v-else-if="canDonateDateLastDonation">
+        <div class="flex justify-between items-center mb-3">
+          <h2 class="text-xl">Nueva Donación</h2>
         </div>
 
-        <!-- Paciente asignado -->
-        <div class="mb-6" v-if="requiresPaciente">
-          <h3 class="text-base mb-4">Paciente asignado (en caso requiera)</h3>
-
-          <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4 items-center">
-            <div class="md:col-span-3">
-              <FloatLabel variant="on">
-                <Select id="documentTypePatient" v-model="donation.documentTypePatient" :options="documentTypesPatientOptions" optionLabel="label" optionValue="value" class="w-full" :disabled="isSameDonor" :invalid="v$.documentTypePatient?.$error" />
-                <label for="documentTypePatient">Tipo Documento</label>
-              </FloatLabel>
-              <Message v-if="v$.documentTypePatient?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.documentTypePatient.$errors[0].$message }}</Message>
-            </div>
-            <div class="md:col-span-3">
-              <div class="flex">
-                <span class="w-full mr-2">
+        <div class="border border-gray-300 rounded-md p-5 bg-white mb-6">
+          <form @submit.prevent="saveDonation">
+            <div class="mb-6">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
                   <FloatLabel variant="on">
-                    <InputText id="documentNumberPatient" v-model="donation.documentNumberPatient" class="w-full" :disabled="isSameDonor" :invalid="v$.documentNumberPatient?.$error" />
-                    <label for="documentNumberPatient">Nro Documento</label>
+                    <Select id="donationPurpose" v-model="donation.donationPurpose" :options="donorTypesOptions" optionLabel="label" optionValue="value" class="w-full" :invalid="v$.donationPurpose?.$error" />
+                    <label for="donationPurpose">Tipo de donante</label>
                   </FloatLabel>
-                  <Message v-if="v$.documentNumberPatient?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.documentNumberPatient.$errors[0].$message }}</Message>
-                </span>
+                  <Message v-if="v$.donationPurpose?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.donationPurpose.$errors[0].$message }}</Message>
+                </div>
+                <div>
+                  <FloatLabel variant="on">
+                    <Select id="bloodComponent" v-model="donation.bloodComponent" :options="componentDonationOptions" optionLabel="label" optionValue="value" class="w-full" :invalid="v$.bloodComponent?.$error" />
+                    <label for="bloodComponent">Componente donado</label>
+                  </FloatLabel>
+                  <Message v-if="v$.bloodComponent?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.bloodComponent.$errors[0].$message }}</Message>
+                </div>
               </div>
             </div>
-            <div class="md:col-span-2">
-              <Button class="h-8 w-full md:mr-2 mb-2 md:mb-0" label="Validar" severity="info" @click="validatePatient()" />
+
+            <!-- Paciente asignado -->
+            <div class="mb-6" v-if="requiresPaciente">
+              <h3 class="text-base mb-4">Paciente asignado (en caso requiera)</h3>
+
+              <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4 items-center">
+                <div class="md:col-span-3">
+                  <FloatLabel variant="on">
+                    <Select
+                      id="documentTypePatient"
+                      v-model="donation.documentTypePatient"
+                      :options="documentTypesPatientOptions"
+                      optionLabel="label"
+                      optionValue="value"
+                      class="w-full"
+                      :disabled="isSameDonor"
+                      :invalid="v$.documentTypePatient?.$error"
+                    />
+                    <label for="documentTypePatient">Tipo Documento</label>
+                  </FloatLabel>
+                  <Message v-if="v$.documentTypePatient?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.documentTypePatient.$errors[0].$message }}</Message>
+                </div>
+                <div class="md:col-span-3">
+                  <div class="flex">
+                    <span class="w-full mr-2">
+                      <FloatLabel variant="on">
+                        <InputText id="documentNumberPatient" v-model="donation.documentNumberPatient" class="w-full" :disabled="isSameDonor" :invalid="v$.documentNumberPatient?.$error" />
+                        <label for="documentNumberPatient">Nro Documento</label>
+                      </FloatLabel>
+                      <Message v-if="v$.documentNumberPatient?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.documentNumberPatient.$errors[0].$message }}</Message>
+                    </span>
+                  </div>
+                </div>
+                <div class="md:col-span-2">
+                  <Button class="h-8 w-full md:mr-2 mb-2 md:mb-0" label="Validar" severity="info" @click="validatePatient()" />
+                </div>
+              </div>
+
+              <div class="mb-4" v-if="pacienteBuscado">
+                <div v-if="pacienteEncontrado" class="mb-2"><span class="font-medium">Nombre del paciente:</span> {{ nombrePaciente }}</div>
+                <div v-else class="mb-2 text-red-600">
+                  <span class="font-medium">Nombre del paciente:</span>
+                  Paciente no encontrado con documento {{ tipoDocumentoPacienteBuscado || '' }} - {{ numeroDocumentoPacienteBuscado }}
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div class="mb-4" v-if="pacienteBuscado">
-            <div v-if="pacienteEncontrado" class="mb-2"><span class="font-medium">Nombre del paciente:</span> {{ nombrePaciente }}</div>
-            <div v-else class="mb-2 text-red-600">
-              <span class="font-medium">Nombre del paciente:</span>
-              Paciente no encontrado con documento {{ tipoDocumentoPacienteBuscado || '' }} - {{ numeroDocumentoPacienteBuscado }}
+            <!-- Observaciones -->
+            <div class="mb-6">
+              <FloatLabel variant="on">
+                <Textarea id="observation" v-model="donation.observation" rows="5" class="w-full resize-none" />
+                <label for="observation">Observacioness</label>
+              </FloatLabel>
             </div>
-          </div>
-        </div>
 
-        <!-- Observaciones -->
-        <div class="mb-6">
-          <FloatLabel variant="on">
-            <Textarea id="observation" v-model="donation.observation" rows="5" class="w-full resize-none" />
-            <label for="observation">Observacioness</label>
-          </FloatLabel>
-        </div>
-
-        <!-- Botones de acción -->
-        <div class="flex justify-end mt-4 gap-2">
-          <Button class="min-w-40 btn-clean" label="Cancelar" />
-          <Button class="min-w-40 p-button-success" label="Guardar" type="submit" />
+            <!-- Botones de acción -->
+            <div class="flex justify-end mt-4 gap-2">
+              <Button class="min-w-40 btn-clean" label="Cancelar" @click="cancelSave" />
+              <Button class="min-w-40 p-button-success" label="Guardar" type="submit" />
+            </div>
+          </form>
         </div>
       </div>
-    </form>
+      <div v-else>
+        <div class="flex justify-end mt-4 gap-2">
+          <Button class="min-w-40 btn-clean" label="Cancelar" @click="cancelSave" />
+        </div>
+      </div>
+    </div>
+    <div v-else>
+      <div class="flex justify-end mt-4 gap-2">
+        <Button class="min-w-40 btn-clean" label="Cancelar" @click="cancelSave" />
+      </div>
+    </div>
     <Dialog v-model:visible="showModalDocument" header="Validación de documento de paciente" :modal="true" :closable="false" width="400px">
       <p>No se ha encontrado un paciente con el documento ingresado.</p>
       <template #footer>

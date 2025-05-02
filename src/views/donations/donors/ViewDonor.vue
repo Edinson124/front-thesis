@@ -1,5 +1,5 @@
 <script setup>
-import DonorStatus from '@/components/donation/DonorStatus.vue';
+import DonorStatusCard from '@/components/donation/DonorStatusCard.vue';
 import InfoDonor from '@/components/donation/InfoDonor.vue';
 import { useDonationStore } from '@/stores/donation/donations';
 import { useDonorStore } from '@/stores/donation/donor';
@@ -55,7 +55,7 @@ onMounted(async () => {
     <div class="mb-4">
       <h3>Visualizar Donante</h3>
     </div>
-    <DonorStatus :document-number="donor.documentNumber" :status="donor.status" :deferral-end-date="donor.deferralEndDate" :deferral-reason="donor.deferralReason" :gender="donor.gender" :last-donation-date="donor.lastDonationDate" />
+    <DonorStatusCard :document-number="donor.documentNumber" :status="donor.status" :deferral-end-date="donor.deferralEndDate" :deferral-reason="donor.deferralReason" :gender="donor.gender" :last-donation-date="donor.lastDonationDate" />
 
     <!-- Datos generales del donante -->
     <Fieldset legend="Datos generales del donante" class="!mb-4">

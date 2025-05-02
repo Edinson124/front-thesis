@@ -26,7 +26,28 @@ const newDonation = async (donation) => {
     return null;
   }
 };
+
+const getActualDonation = async (documentNumber, documentType) => {
+  try {
+    const response = await post(`/donation/actual`, { documentType, documentNumber });
+    return response;
+  } catch (error) {
+    console.error('Error al obtener donación actual del donante: ', error);
+    return null;
+  }
+};
+const getLastDateDonation = async (documentNumber, documentType) => {
+  try {
+    const response = await post(`/donation/last/date`, { documentType, documentNumber });
+    return response;
+  } catch (error) {
+    console.error('Error al obtener donación actual del donante: ', error);
+    return null;
+  }
+};
 export default {
   getDonations,
-  newDonation
+  newDonation,
+  getActualDonation,
+  getLastDateDonation
 };

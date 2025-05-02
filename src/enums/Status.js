@@ -3,8 +3,8 @@ export const Status = {
   INACTIVE: 'Desactivado'
 };
 
-export const donorStatus = {
-  Apto: 'Apto',
-  'Diferido Temporalmente': 'Diferido Temporalmente',
-  'Diferido Permanentemente': 'Diferido Permanentemente'
+export const DonorStatus = {
+  Apto: { label: 'Apto', enableToNewDonation: true },
+  'Diferido temporalmente': { label: 'Diferido temporalmente', enableToNewDonation: false },
+  'Diferido permanentemente': { label: 'Diferido permanentemente', enableToNewDonation: false }
 };
