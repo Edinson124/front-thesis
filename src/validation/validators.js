@@ -11,3 +11,7 @@ export const numeric = (fieldName) => v.helpers.withMessage(`"${fieldName}" debe
 export const minLength = (fieldName, length) => v.helpers.withMessage(`"${fieldName}" debe tener al menos ${length} caracteres`, v.minLength(length));
 
 export const maxLength = (fieldName, length) => v.helpers.withMessage(`"${fieldName}" no puede exceder ${length} caracteres`, v.maxLength(length));
+
+export const requiredMessage = (message) => v.helpers.withMessage(message, v.required);
+
+export const requiredIfMessage = (message, condition) => v.helpers.withMessage(message, v.requiredIf(condition));

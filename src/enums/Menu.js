@@ -11,6 +11,7 @@ export const MenuRoutes = [
   { id: 'donor-new', label: 'Registrar donante', to: '/donation/donor/new', parentId: 'donation' },
   { id: 'donor-search', label: 'Consultar donante', to: '/donation/donor/search', parentId: 'donation' },
   { id: 'donation-search-donor', label: 'Nueva donación', to: '/donation/search/donor', parentId: 'donation' },
+  { id: 'donation-interview', label: 'Entrevista', to: '/donation/interview', parentId: 'donation' },
   { id: 'laboratory', label: 'Laboratorio', icon: 'mdi mdi-test-tube', parentId: 'root' },
   { id: 'laboratory-results', label: 'Resultados de tamizaje', parentId: 'laboratory' },
   { id: 'laboratory-tests', label: 'Resultados pruebas cruzadas', parentId: 'laboratory' },
