@@ -41,13 +41,43 @@ const getLastDateDonation = async (documentNumber, documentType) => {
     const response = await post(`/donation/last/date`, { documentType, documentNumber });
     return response;
   } catch (error) {
-    console.error('Error al obtener donación actual del donante: ', error);
+    console.error('Error al obtener última donación del donante: ', error);
+    return null;
+  }
+};
+const verifyDonationByCode = async (id) => {
+  try {
+    const response = await get(`/donation/exists/${id}`);
+    return response;
+  } catch (error) {
+    console.error('Error al verificar donación por código: ', error);
+    return null;
+  }
+};
+const verifyDonationByDonor = async (documentNumber, documentType) => {
+  try {
+    const response = await post(`/donation/exists`, { documentType, documentNumber });
+    return response;
+  } catch (error) {
+    console.error('Error al verificar donación por donante: ', error);
+    return null;
+  }
+};
+const getDonation = async (id) => {
+  try {
+    const response = await get(`/donation/${id}`);
+    return response;
+  } catch (error) {
+    console.error('Error al obtener donación: ', error);
     return null;
   }
 };
 export default {
+  getDonation,
   getDonations,
   newDonation,
   getActualDonation,
-  getLastDateDonation
+  getLastDateDonation,
+  verifyDonationByCode,
+  verifyDonationByDonor
 };

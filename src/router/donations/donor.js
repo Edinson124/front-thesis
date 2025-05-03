@@ -1,8 +1,8 @@
+import Extraction from '@/views/donations/donations/Extraction.vue';
+import Interview from '@/views/donations/donations/Interview.vue';
 import EditDonor from '@/views/donations/donors/EditDonor.vue';
 import SearchDonor from '@/views/donations/donors/SearchDonor.vue';
 import ViewDonor from '@/views/donations/donors/ViewDonor.vue';
-import Extraction from '@/views/donations/Extraction.vue';
-import Interview from '@/views/donations/Interview.vue';
 
 export default [
   {

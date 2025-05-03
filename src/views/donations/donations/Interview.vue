@@ -66,8 +66,9 @@ const handleSave = async () => {
 
 <template>
   <div class="card">
-    <div class="mb-4 flex justify-end">
-      <Button class="h-8 w-full md:grow md:max-w-[16rem]" label="Diferir donante" severity="danger" @click="() => {}" />
+    <div class="mb-4 flex flex-wrap justify-between items-center gap-2">
+      <h3 class="min-w-[10rem] !mt-2">Entrevista de donación</h3>
+      <Button class="h-8 w-full md:grow max-w-[16rem] md:max-w-[16rem]" label="Diferir donante" severity="danger" @click="() => {}" />
     </div>
 
     <Tabs :value="DonorInterviewQuestions.sections[0].id">

@@ -50,15 +50,16 @@ const handleSave = async () => {
 
 <template>
   <div class="card">
+    <h3 class="min-w-[10rem] !mt-2">Extracción de la donación</h3>
     <!-- <div class="mb-4 flex justify-end">
       <Button class="h-8 w-full md:grow md:max-w-[16rem]" label="Diferir donante" severity="danger" @click="() => {}" />
     </div> -->
 
-    <Panel header="Datos de la extracción">
+    <Fieldset legend="Datos de la extracción">
       <div class="flex items-center justify-between gap-4 px-8 mt-6 mb-2">
         <span class="w-full md:w-1/4">
           <FloatLabel variant="on" class="w-full">
-            <DatePicker v-model="extraction.startDate" class="w-full" showIcon fluid iconDisplay="input" />
+            <DatePicker v-model="extraction.startDate" class="w-full" showIcon fluid />
             <label for="startDate">Fecha de Inicio</label>
           </FloatLabel>
           <Message v-if="v$.extraction.startDate?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.extraction.startDate.$errors[0].$message }}</Message>
@@ -66,7 +67,7 @@ const handleSave = async () => {
 
         <span class="w-full md:w-1/4">
           <FloatLabel variant="on" class="w-full">
-            <DatePicker v-model="extraction.startTime" class="w-full" showIcon fluid iconDisplay="input" timeOnly>
+            <DatePicker v-model="extraction.startTime" class="w-full" showIcon fluid timeOnly>
               <template #inputicon="slotProps">
                 <i class="pi pi-clock" @click="slotProps.clickCallback" />
               </template>
@@ -79,7 +80,7 @@ const handleSave = async () => {
         </span>
 
         <FloatLabel variant="on" class="w-full md:w-1/4">
-          <DatePicker disabled class="w-full" showIcon fluid iconDisplay="input" />
+          <DatePicker disabled class="w-full" showIcon fluid />
           <label for="endDate">Fecha y Hora Final</label>
         </FloatLabel>
       </div>
@@ -202,9 +203,9 @@ const handleSave = async () => {
 
       <div class="flex flex-col items-start gap-4 px-8 mt-10 mb-6">
         <span class="w-full md:max-w-[50%]">Observaciones</span>
-        <Textarea v-model="extraction.observations" class="w-full md:grow" rows="8" />
+        <Textarea v-model="extraction.observations" class="w-full md:grow resize-none" rows="5" />
       </div>
-    </Panel>
+    </Fieldset>
 
     <div class="flex justify-end px-8 my-8 gap-4">
       <Button class="h-10 w-full md:max-w-[16rem] btn-clean" label="Cancelar" @click="router.back()" />

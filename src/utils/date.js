@@ -27,9 +27,9 @@ function stringToDate(fechaString) {
   return new Date(anio, mes, dia);
 }
 
-export const getStringFormatAge = (birthDate) => {
-  if (!birthDate) return '';
-  const birthDateString = stringToDate(birthDate);
-  const age = calculateAge(birthDateString);
+export const getStringFormatAge = (birthDateString) => {
+  if (!birthDateString) return '';
+  const birthDate = stringToDate(birthDateString);
+  const age = calculateAge(birthDate);
   return `${age.years} años ${age.months} meses ${age.days} días`;
 };

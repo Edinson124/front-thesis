@@ -48,6 +48,34 @@ export const useDonationStore = defineStore('donation', () => {
       return null;
     }
   };
+  const verifyDonationByCode = async (id) => {
+    try {
+      const response = await donationService.verifyDonationByCode(id);
+      return response;
+    } catch (error) {
+      console.error('Error al verificar usuario: ', error);
+      return null;
+    }
+  };
+
+  const verifyDonationByDonor = async (documentNumber, documentType) => {
+    try {
+      const response = await donationService.verifyDonationByDonor(documentNumber, documentType);
+      return response;
+    } catch (error) {
+      console.error('Error al verificar usuario: ', error);
+      return null;
+    }
+  };
+  const getDonation = async (donation) => {
+    try {
+      const response = await donationService.getDonation(donation);
+      return response;
+    } catch (error) {
+      console.error('Error al obtener una donación: ', error);
+      return null;
+    }
+  };
 
   return {
     donationsByDonor,
@@ -56,6 +84,9 @@ export const useDonationStore = defineStore('donation', () => {
     getDonationsByDocumentDonor,
     newDonation,
     getActualDonation,
-    getLastDateDonation
+    getLastDateDonation,
+    verifyDonationByCode,
+    verifyDonationByDonor,
+    getDonation
   };
 });

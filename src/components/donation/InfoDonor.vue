@@ -1,14 +1,16 @@
 <script setup>
 import { getStringFormatAge } from '@/utils/date';
-import { onMounted, ref } from 'vue';
-const years = ref(null);
+import { computed } from 'vue';
 const props = defineProps({
   donor: Object,
   isEditable: Boolean
 });
 
-onMounted(() => {
-  years.value = getStringFormatAge(props.donor.birthDate);
+const years = computed(() => {
+  if (props.donor && props.donor.birthDate) {
+    return getStringFormatAge(props.donor.birthDate);
+  }
+  return null;
 });
 </script>
 
