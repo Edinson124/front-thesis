@@ -117,7 +117,6 @@ let fakeBloodBanks = loadFromStorage(LOCAL_STORAGE_KEYS.BLOOD_BANKS, defaultBloo
 
 const PAGE_SIZE = 6;
 const getBloodBanks = async (filters = {}, page = 0) => {
-  console.log({ page, filters });
   let filtered = fakeBloodBanks.filter((bloodBank) => {
     return Object.entries(filters).every(([key, value]) => {
       if (value === undefined || value === null || value === '') return true;
@@ -128,15 +127,12 @@ const getBloodBanks = async (filters = {}, page = 0) => {
       return field.includes(String(value).toLowerCase());
     });
   });
-  console.log({ filtered });
 
   const totalElements = filtered.length;
 
   const start = page * PAGE_SIZE;
   const end = start + PAGE_SIZE;
-  console.log({ start, end });
   const content = filtered.slice(start, end);
-  console.log({ content });
 
   return {
     content,
@@ -151,13 +147,10 @@ const getBloodBank = async (bloodBankId) => {
 };
 
 const toogleStatusBloodBank = async (bloodBankId) => {
-  console.log('toogle');
   const bloodBank = fakeBloodBanks.find((r) => r.id === bloodBankId);
-  console.log('bloodBank ', bloodBank);
   if (bloodBank) {
     bloodBank.status = bloodBank.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
     saveToStorage(LOCAL_STORAGE_KEYS.BLOOD_BANKS, fakeBloodBanks);
-    console.log('bloodBank toogle ', bloodBank);
     return bloodBank;
   }
   return null;

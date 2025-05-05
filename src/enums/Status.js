@@ -15,3 +15,13 @@ export const DonationStatus = {
   'Finalizada con diferimiento permanente': { label: 'Finalizada con diferimiento permanente', edit: false },
   Finalizada: { label: 'Finalizada', edit: false }
 };
+
+export const ExtractionStatus = {
+  Interrumpida: { label: 'Interrumpida' },
+  Completada: { label: 'Completada' }
+};
+
+export const extractionStatusOptions = Object.entries(ExtractionStatus).map(([value, data]) => ({
+  value,
+  label: data.label
+}));

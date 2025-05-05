@@ -35,7 +35,6 @@ const searchDonor = async () => {
   loading.value = true;
   errorMessage.value = false;
   const response = await donorStore.verifyDonor(null, donor.documentNumber, donor.documentType);
-  console.log('response', response);
   if (!response) {
     router.push(`/donation/new/${donor.documentType}/${donor.documentNumber}`);
   } else {

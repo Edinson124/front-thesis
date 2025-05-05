@@ -67,10 +67,7 @@ const handleSave = async () => {
       }
     }
 
-    console.log('Formulario válido. Guardando...');
-    console.log(savedAnswers);
-    const response = await interviewStore.createInterviewAnswer(savedAnswers, donationId.value);
-    console.log('res', response);
+    await interviewStore.createInterviewAnswer(savedAnswers, donationId.value);
   } else {
     console.log('Hay errores en el formulario.');
   }

@@ -1,20 +1,27 @@
 <script setup>
+import { extractionStatusOptions } from '@/enums/Status';
 import router from '@/router';
+import { useExtractionStore } from '@/stores/donation/extraction';
 import { required, requiredIf } from '@/validation/validators';
 import useVuelidate from '@vuelidate/core';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
+
+const extractionStore = useExtractionStore();
+const route = useRoute();
 
 const extraction = ref({
   startDate: null,
   startTime: null,
-  duration: '',
-  volume: '',
+  endDateTime: null,
+  durationMinutes: '',
+  processedBloodVolumeMl: '',
   arm: null,
-  hadAdverseReactions: null,
+  adverseReactionOccurred: null,
   adverseReaction: null,
   otherReaction: '',
-  extractionStatus: null,
-  observations: ''
+  status: null,
+  observation: ''
 });
 
 // Reglas de validación
@@ -22,24 +29,46 @@ const rules = computed(() => ({
   extraction: {
     startDate: { required: required('Fecha de Inicio') },
     startTime: { required: required('Hora de Inicio') },
-    duration: { required: required('Duración') },
-    volume: { required: required('Volumen total procesado') },
+    durationMinutes: { required: required('Duración') },
+    processedBloodVolumeMl: { required: required('Volumen total procesado') },
     arm: { required: required('Brazo de extracción') },
-    hadAdverseReactions: { required: required('¿Se presentó reacciones adversas?') },
+    adverseReactionOccurred: { required: required('¿Se presentó reacciones adversas?') },
     adverseReaction: {
-      required: requiredIf('Reacciones adversas', () => extraction.value.hadAdverseReactions === 'Si')
+      required: requiredIf('Reacciones adversas', () => extraction.value.adverseReactionOccurred === 'Si')
     },
     otherReaction: {},
-    extractionStatus: { required: required('Estado de extracción') },
-    observations: {}
+    status: { required: required('Estado de extracción') },
+    observation: {}
   }
 }));
 
 const v$ = useVuelidate(rules, { extraction });
 
+const calculateEndTime = computed(() => {
+  if (extraction.value.startDate && extraction.value.startTime && extraction.value.durationMinutes > 0) {
+    const startDateTime = new Date(extraction.value.startDate);
+    const startTime = new Date(extraction.value.startTime);
+    // Establece las horas y minutos de startDateTime usando startTime
+    startDateTime.setHours(startTime.getHours());
+    startDateTime.setMinutes(startTime.getMinutes());
+    // Suma la duración en minutos
+    startDateTime.setMinutes(startDateTime.getMinutes() + parseInt(extraction.value.durationMinutes));
+    return startDateTime;
+  }
+  return null;
+});
+
+watch([() => extraction.value.startDate, () => extraction.value.startTime, () => extraction.value.durationMinutes], () => {
+  extraction.value.endDateTime = calculateEndTime.value;
+});
+
 const handleSave = async () => {
   const isValid = await v$.value.$validate();
   if (isValid) {
+    const extractionData = JSON.parse(JSON.stringify(extraction.value));
+    const donationRoute = route.query.donationId;
+    extractionData.donationId = donationRoute;
+    extractionStore.createExtraction(extractionData);
     console.log('Datos a guardar:', extraction.value);
   } else {
     console.log('Errores en el formulario', v$.value);
@@ -66,7 +95,7 @@ const handleSave = async () => {
 
         <span class="w-full md:w-1/4">
           <FloatLabel variant="on" class="w-full">
-            <DatePicker v-model="extraction.startTime" class="w-full" showIcon fluid timeOnly>
+            <DatePicker v-model="extraction.startTime" class="w-full" showIcon fluid iconDisplay="input" timeOnly>
               <template #inputicon="slotProps">
                 <i class="pi pi-clock" @click="slotProps.clickCallback" />
               </template>
@@ -79,8 +108,8 @@ const handleSave = async () => {
         </span>
 
         <FloatLabel variant="on" class="w-full md:w-1/4">
-          <DatePicker disabled class="w-full" showIcon fluid />
-          <label for="endDate">Fecha y Hora Final</label>
+          <DatePicker id="endDateTime" v-model="extraction.endDateTime" disabled class="w-full" showIcon fluid showTime hourFormat="24" />
+          <label for="endDateTime">Fecha y Hora Final</label>
         </FloatLabel>
       </div>
 
@@ -88,13 +117,13 @@ const handleSave = async () => {
         <span class="w-full">
           <div class="w-full flex items-center gap-4">
             <FloatLabel variant="on" class="w-full md:w-1/4">
-              <InputText v-model="extraction.duration" class="w-full" id="duration" />
-              <label for="duration">Duración</label>
+              <InputText v-model="extraction.durationMinutes" class="w-full" id="durationMinutes" />
+              <label for="durationMinutes">Duración</label>
             </FloatLabel>
             <span>min</span>
           </div>
-          <Message v-if="v$.extraction.duration?.$error" severity="error" size="small" variant="simple" class="mt-2">
-            {{ v$.extraction.duration.$errors[0].$message }}
+          <Message v-if="v$.extraction.durationMinutes?.$error" severity="error" size="small" variant="simple" class="mt-2">
+            {{ v$.extraction.durationMinutes.$errors[0].$message }}
           </Message>
         </span>
       </div>
@@ -103,13 +132,13 @@ const handleSave = async () => {
         <span class="w-full">
           <div class="w-full flex items-center gap-4">
             <FloatLabel variant="on" class="w-full md:w-1/4">
-              <InputText v-model="extraction.volume" class="w-full" id="volume" />
-              <label for="volume">Volumen total procesado</label>
+              <InputText v-model="extraction.processedBloodVolumeMl" class="w-full" id="processedBloodVolumeMl" />
+              <label for="processedBloodVolumeMl">Volumen total procesado</label>
             </FloatLabel>
             <span>ml</span>
           </div>
-          <Message v-if="v$.extraction.volume?.$error" severity="error" size="small" variant="simple" class="mt-2">
-            {{ v$.extraction.volume.$errors[0].$message }}
+          <Message v-if="v$.extraction.processedBloodVolumeMl?.$error" severity="error" size="small" variant="simple" class="mt-2">
+            {{ v$.extraction.processedBloodVolumeMl.$errors[0].$message }}
           </Message>
         </span>
       </div>
@@ -121,8 +150,8 @@ const handleSave = async () => {
               v-model="extraction.arm"
               class="w-full"
               :options="[
-                { label: 'Izquierdo', value: 'left' },
-                { label: 'Derecho', value: 'right' }
+                { label: 'Izquierdo', value: 'Izquierdo' },
+                { label: 'Derecho', value: 'Derecho' }
               ]"
               optionLabel="label"
               optionValue="value"
@@ -139,13 +168,20 @@ const handleSave = async () => {
       <div class="flex flex-col gap-2 px-8 mt-6 mb-2">
         <div class="flex items-center gap-8">
           <h6 class="m-0">¿Se presentó reacciones adversas?</h6>
-          <div class="flex items-center gap-2" v-for="(option, index) in ['Si', 'No']" :key="index">
-            <RadioButton :inputId="`reaction-${index}`" :value="option" v-model="extraction.hadAdverseReactions" name="hadAdverseReactions" />
-            <label :for="`reaction-${index}`">{{ option }}</label>
+          <div
+            class="flex items-center gap-2"
+            v-for="(option, index) in [
+              { label: 'Si', value: true },
+              { label: 'No', value: false }
+            ]"
+            :key="index"
+          >
+            <RadioButton :inputId="`reaction-${index}`" :value="option.value" v-model="extraction.adverseReactionOccurred" name="adverseReactionOccurred" />
+            <label :for="`reaction-${index}`">{{ option.label }}</label>
           </div>
         </div>
-        <Message v-if="v$.extraction.hadAdverseReactions?.$error" severity="error" size="small" variant="simple" class="mt-2">
-          {{ v$.extraction.hadAdverseReactions.$errors[0].$message }}
+        <Message v-if="v$.extraction.adverseReactionOccurred?.$error" severity="error" size="small" variant="simple" class="mt-2">
+          {{ v$.extraction.adverseReactionOccurred.$errors[0].$message }}
         </Message>
       </div>
 
@@ -181,28 +217,20 @@ const handleSave = async () => {
       <div class="flex items-center gap-4 px-8 mt-6 mb-2">
         <span class="w-full md:w-1/4">
           <FloatLabel variant="on" class="w-full">
-            <Select
-              v-model="extraction.extractionStatus"
-              class="w-full"
-              :options="[
-                { label: 'Completada', value: 'completed' },
-                { label: 'Cancelada', value: 'cancelled' }
-              ]"
-              optionLabel="label"
-              optionValue="value"
-              showClear
-            />
+            <Select v-model="extraction.status" class="w-full" :options="extractionStatusOptions" optionLabel="label" optionValue="value" showClear />
             <label>Estado de extracción</label>
           </FloatLabel>
-          <Message v-if="v$.extraction.extractionStatus?.$error" severity="error" size="small" variant="simple" class="mt-2">
-            {{ v$.extraction.extractionStatus.$errors[0].$message }}
+          <Message v-if="v$.extraction.status?.$error" severity="error" size="small" variant="simple" class="mt-2">
+            {{ v$.extraction.status.$errors[0].$message }}
           </Message>
         </span>
       </div>
 
       <div class="flex flex-col items-start gap-4 px-8 mt-10 mb-6">
-        <span class="w-full md:max-w-[50%]">Observaciones</span>
-        <Textarea v-model="extraction.observations" class="w-full md:grow resize-none" rows="5" />
+        <FloatLabel variant="on" class="w-full">
+          <Textarea id="observation" v-model="extraction.observation" class="w-full md:grow resize-none" rows="5" />
+          <label for="observation">Observaciones</label>
+        </FloatLabel>
       </div>
     </Fieldset>
 
