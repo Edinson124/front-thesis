@@ -78,10 +78,10 @@ onMounted(async () => {
             <i v-else class="mdi mdi-minus-circle text-3xl text-gray-300"></i>
           </div>
 
-          <div class="text-sm mb-1"><span class="font-medium">Registrado el : </span>{{ donation.createdAtPhysicalAssessment ? donation.createdAtPhysicalAssessment : '-' }}</div>
-          <div class="text-sm mb-1"><span class="font-medium">Registrado por : </span>{{ donation.createdByNamePhysicalAssessment ?? '-' }}</div>
-          <div class="text-sm mb-1"><span class="font-medium">Editado el : </span>{{ donation.updatedAtPhysicalAssessment ? donation.updatedAtPhysicalAssessment : '-' }}</div>
-          <div class="text-sm mb-1"><span class="font-medium">Editado por : </span>{{ donation.updatedByNamePhysicalAssessment ?? '-' }}</div>
+          <div class="text-sm mb-1"><span class="font-medium">Registrado el : </span>{{ donation.donation.createdAtPhysicalAssessment ? donation.donation.createdAtPhysicalAssessment : '-' }}</div>
+          <div class="mb-1"><span class="font-medium">Registrado por : </span>{{ donation.donation.createdByNamePhysicalAssessment ?? '-' }}</div>
+          <div class="mb-1"><span class="font-medium">Editado el : </span>{{ donation.donation.updatedAtPhysicalAssessment ? donation.donation.updatedAtPhysicalAssessment : '-' }}</div>
+          <div class="mb-1"><span class="font-medium">Editado por : </span>{{ donation.donation.updatedByNamePhysicalAssessment ?? '-' }}</div>
 
           <div class="flex justify-center mt-3">
             <Button v-if="donation.donation.physicalAssessmentId" class="h-8 btn-view" label="Visualizar" />
@@ -96,8 +96,8 @@ onMounted(async () => {
             <i v-else class="mdi mdi-minus-circle text-3xl text-gray-300"></i>
           </div>
 
-          <div class="text-sm mb-1"><span class="font-medium">Registrado el : </span>{{ donation.createdAtInterviewAnswer ? donation.createdAtInterviewAnswer : '-' }}</div>
-          <div class="text-sm mb-1"><span class="font-medium">Registrado por : </span>{{ donation.createdByNameInterviewAnswer ?? '-' }}</div>
+          <div class="mb-1"><span class="font-medium">Registrado el : </span>{{ donation.donation.createdAtInterviewAnswer ? donation.donation.createdAtInterviewAnswer : '-' }}</div>
+          <div class="mb-1"><span class="font-medium">Registrado por : </span>{{ donation.donation.createdByNameInterviewAnswer ?? '-' }}</div>
           <div class="flex justify-center mt-3">
             <Button v-if="donation.donation.interviewAnswerId" class="h-8 btn-view" label="Visualizar" />
             <Button v-else label="Registrar entrevista" class="p-button-success p-button-sm" @click="redirectInterview" />
@@ -111,10 +111,10 @@ onMounted(async () => {
             <i v-else class="mdi mdi-minus-circle text-3xl text-gray-300"></i>
           </div>
 
-          <div class="text-sm mb-1"><span class="font-medium">Registrado el : </span>{{ donation.createdAtBloodExtraction ? donation.createdAtBloodExtraction : '-' }}</div>
-          <div class="text-sm mb-1"><span class="font-medium">Registrado por : </span>{{ donation.createdByNameBloodExtraction ?? '-' }}</div>
-          <div class="text-sm mb-1"><span class="font-medium">Editado el : </span>{{ donation.updatedAtBloodExtraction ? donation.updatedAtBloodExtraction : '-' }}</div>
-          <div class="text-sm mb-1"><span class="font-medium">Editado por : </span>{{ donation.updatedByNameBloodExtraction ?? '-' }}</div>
+          <div class="mb-1"><span class="font-medium">Registrado el : </span>{{ donation.donation.createdAtBloodExtraction ? donation.donation.createdAtBloodExtraction : '-' }}</div>
+          <div class="mb-1"><span class="font-medium">Registrado por : </span>{{ donation.donation.createdByNameBloodExtraction ?? '-' }}</div>
+          <div class="mb-1"><span class="font-medium">Editado el : </span>{{ donation.donation.updatedAtBloodExtraction ? donation.donation.updatedAtBloodExtraction : '-' }}</div>
+          <div class="mb-1"><span class="font-medium">Editado por : </span>{{ donation.donation.updatedByNameBloodExtraction ?? '-' }}</div>
 
           <div class="flex justify-center mt-3">
             <Button v-if="donation.donation.bloodExtractionId" class="h-8 btn-view" label="Visualizar" />
@@ -129,8 +129,8 @@ onMounted(async () => {
             <i v-else class="mdi mdi-minus-circle text-3xl text-gray-300"></i>
           </div>
 
-          <div class="text-sm mb-1"><span class="font-medium">Registrado el : </span>{{ donation.createdAtInterviewAnswer ? donation.createdAtInterviewAnswer : '-' }}</div>
-          <div class="text-sm mb-1"><span class="font-medium">Registrado por : </span>{{ donation.createdByNameInterviewAnswer ?? '-' }}</div>
+          <div class="mb-1"><span class="font-medium">Registrado el : </span>{{ donation.createdAtInterviewAnswer ? donation.createdAtInterviewAnswer : '-' }}</div>
+          <div class="mb-1"><span class="font-medium">Registrado por : </span>{{ donation.createdByNameInterviewAnswer ?? '-' }}</div>
           <div class="flex justify-center mt-3">
             <Button v-if="id" class="h-8 btn-view" label="Visualizar" />
             <Button v-else label="Registrar muestras y unidades" class="p-button-success p-button-sm" />

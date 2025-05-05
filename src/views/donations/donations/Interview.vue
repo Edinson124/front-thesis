@@ -1,16 +1,27 @@
 <script setup>
-import { DonorInterviewQuestions } from '@/enums/DonorInterviewQuestions';
+// import { DonorInterviewQuestions } from '@/enums/DonorInterviewQuestions';
 import router from '@/router';
+import { useInterviewStore } from '@/stores/donation/interview';
 import { requiredIfMessage, requiredMessage } from '@/validation/validators';
 import useVuelidate from '@vuelidate/core';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
 
 const answers = ref({});
+const DonorInterviewQuestions = ref({});
+const interviewStore = useInterviewStore();
+const route = useRoute();
+const isLoading = ref(true);
+const donationId = ref(null);
 
 const rules = computed(() => {
   const rulesObject = {};
 
-  for (const section of DonorInterviewQuestions.sections) {
+  if (!DonorInterviewQuestions.value || !DonorInterviewQuestions.value.sections) {
+    return { answers: rulesObject };
+  }
+
+  for (const section of DonorInterviewQuestions.value.sections) {
     for (const question of section.questions) {
       if (question.type === 'subtitle') continue;
 
@@ -41,7 +52,7 @@ const handleSave = async () => {
   if (isValid) {
     const savedAnswers = {};
 
-    for (const section of DonorInterviewQuestions.sections) {
+    for (const section of DonorInterviewQuestions.value.sections) {
       for (const question of section.questions) {
         if (question.type === 'subtitle') continue;
 
@@ -58,14 +69,26 @@ const handleSave = async () => {
 
     console.log('Formulario válido. Guardando...');
     console.log(savedAnswers);
+    const response = await interviewStore.createInterviewAnswer(savedAnswers, donationId.value);
+    console.log('res', response);
   } else {
     console.log('Hay errores en el formulario.');
   }
 };
+onMounted(async () => {
+  const response = await interviewStore.getInterviewStructure();
+  DonorInterviewQuestions.value = response;
+  const donationRoute = route.query.donationId;
+  donationId.value = donationRoute;
+  isLoading.value = false;
+});
 </script>
 
 <template>
-  <div class="card">
+  <div v-if="isLoading" class="card absolute inset-0 bg-white/50 flex items-center justify-center z-10">
+    <ProgressSpinner style="width: 50px; height: 50px" />
+  </div>
+  <div v-else class="card">
     <div class="mb-4 flex flex-wrap justify-between items-center gap-2">
       <h3 class="min-w-[10rem] !mt-2">Entrevista de donación</h3>
       <Button class="h-8 w-full md:grow max-w-[16rem] md:max-w-[16rem]" label="Diferir donante" severity="danger" @click="() => {}" />
@@ -100,17 +123,17 @@ const handleSave = async () => {
 
               <div class="flex items-center justify-between gap-4 px-8 mt-6 mb-2" v-else-if="question.type === 'select'">
                 <span class="w-full md:max-w-[50%]">{{ question.name }}</span>
-                <Dropdown class="w-full md:w-[16rem]" v-model="answers[question.id]" :options="question.options" placeholder="Seleccionar" />
+                <Select class="w-full md:w-[16rem]" v-model="answers[question.id]" :options="question.options" placeholder="Seleccionar" />
               </div>
 
               <div class="flex items-center justify-between gap-4 px-8 mt-6 mb-2" v-else-if="question.type === 'datepicker'">
                 <span class="w-full md:max-w-[50%]">{{ question.name }}</span>
-                <DatePicker class="w-full md:w-[16rem]" v-model="answers[question.id]" placeholder="Seleccionar" />
+                <DatePicker class="w-full md:w-[16rem]" showIcon fluid v-model="answers[question.id]" placeholder="Seleccionar" />
               </div>
 
               <div class="flex flex-col items-start gap-4 px-8 mt-10 mb-6" v-else-if="question.type === 'textarea'">
                 <span class="w-full md:max-w-[50%]">{{ question.name }}</span>
-                <Textarea class="w-full md:grow" rows="8" v-model="answers[question.id]" />
+                <Textarea class="w-full md:grow resize-none" rows="5" v-model="answers[question.id]" />
               </div>
 
               <Message v-if="v$.answers[question.id]?.$error" severity="error" size="small" variant="simple" class="px-8 mb-6">{{ v$.answers[question.id].$errors[0].$message }}</Message>

@@ -22,7 +22,7 @@ const newDonor = async (donor) => {
 
 const editDonor = async (donor) => {
   try {
-    const response = await put(`/donors/${donor.id}`, donor);
+    const response = await put(`/donors`, donor);
     return response;
   } catch (error) {
     console.error('Error al editar donante: ', error);

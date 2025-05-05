@@ -119,7 +119,11 @@ onMounted(async () => {
   if (documentNumber) {
     isNewDonor.value = false;
     const donorResponse = await donorStore.getDonor(documentNumber, documentType);
-    Object.assign(donor, { ...donor, ...donorResponse });
+    for (const key in donor) {
+      if (Object.prototype.hasOwnProperty.call(donorResponse, key)) {
+        donor[key] = donorResponse[key];
+      }
+    }
 
     if (donor.birthDate) {
       donor.birthDate = stringToDate(donor.birthDate);
@@ -219,7 +223,7 @@ const saveDonor = async () => {
   if (!isValid) return;
 
   const donorNormalized = normalizeEmptyStringsToNull(donor);
-  const saveMethod = donorStore.newDonor;
+  const saveMethod = isNewDonor.value ? donorStore.newDonor : donorStore.editDonor;
   const success = await saveMethod(donorNormalized);
   if (success) {
     showSuccessDialog.value = true;
