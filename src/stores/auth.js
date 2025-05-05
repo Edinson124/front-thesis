@@ -11,9 +11,7 @@ export const useAuthStore = defineStore('auth', () => {
     const sessionTime = localStorage.getItem('session_time');
     const isSessionExpired = Date.now() >= parseInt(sessionTime, 10);
     if (isSessionExpired) {
-      user.value = null;
-      localStorage.removeItem('user');
-      localStorage.removeItem('session_time');
+      logout();
     }
     return !!user.value;
   });
@@ -73,6 +71,7 @@ export const useAuthStore = defineStore('auth', () => {
     await authService.logout();
     user.value = null;
     localStorage.removeItem('user');
+    localStorage.removeItem('session_time');
   };
 
   watch(

@@ -42,7 +42,7 @@ const years = computed(() => {
 
       <!-- Botón de editar, solo visible si isEditable es true -->
       <div v-if="isEditable" class="flex justify-end mt-4">
-        <Button label="Editar" class="h-8 w-[6rem] btn-edit" />
+        <Button label="Editar" class="h-8 w-[6rem] btn-edit" as="router-link" :to="`/donation/donor/${donor.documentType}/${donor.documentNumber}/edit`" />
       </div>
     </div>
   </div>

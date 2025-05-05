@@ -41,7 +41,6 @@ const handleSave = async () => {
   const isValid = await v$.value.$validate();
   if (isValid) {
     console.log('Datos a guardar:', extraction.value);
-    // aquí podrías enviar extraction.value al servidor
   } else {
     console.log('Errores en el formulario', v$.value);
   }

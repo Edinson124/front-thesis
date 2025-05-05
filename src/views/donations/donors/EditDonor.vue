@@ -2,6 +2,7 @@
 import { DocumentTypes } from '@/enums/DocumentTypes';
 import { genderOptions } from '@/enums/Gender';
 import { MaritalStatus } from '@/enums/MaritalStatus';
+import router from '@/router';
 import ubicationService from '@/services/ubication';
 import { useDonorStore } from '@/stores/donation/donor';
 import { email, minLength, required, requiredIf } from '@/validation/validators';
@@ -113,10 +114,11 @@ onMounted(async () => {
   departments.splice(0, departments.length, ...departmentsResponse);
   loadingDeparments.value = false;
 
-  const donorId = route.params.id;
-  if (donorId) {
+  const documentNumber = route.params.doc;
+  const documentType = route.params.type;
+  if (documentNumber) {
     isNewDonor.value = false;
-    const donorResponse = await useDonorStore.getDonor(donorId);
+    const donorResponse = await donorStore.getDonor(documentNumber, documentType);
     Object.assign(donor, { ...donor, ...donorResponse });
 
     if (donor.birthDate) {
@@ -208,27 +210,44 @@ const resetDonorForm = () => {
 };
 
 const saveDonor = async () => {
+  if (isNewDonor.value) {
+    await verifyDocumentNumber();
+    if (!documentNumberVerified.value) return;
+  }
+
   const isValid = await v$.value.$validate();
-  await verifyDocumentNumber();
-  if (!isValid || !documentNumberVerified.value) return;
+  if (!isValid) return;
 
   const donorNormalized = normalizeEmptyStringsToNull(donor);
   const saveMethod = donorStore.newDonor;
   const success = await saveMethod(donorNormalized);
   if (success) {
     showSuccessDialog.value = true;
-    resetDonorForm();
+    if (isNewDonor.value) {
+      resetDonorForm();
+    } else {
+      router.back();
+    }
   }
 };
 const confirmResetForm = () => {
   resetDonorForm();
   showCancelConfirmDialog.value = false;
 };
+
+const cancel = () => {
+  if (isNewDonor.value) {
+    showCancelConfirmDialog.value = true;
+  } else {
+    router.back();
+  }
+};
 </script>
 
 <template>
   <form class="card" v-if="!loadingDonor" @submit.prevent="saveDonor">
-    <h3>Registrar donante</h3>
+    <h3 v-if="isNewDonor">Registrar donante</h3>
+    <h3 v-else>Editar donante</h3>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div>
@@ -238,7 +257,7 @@ const confirmResetForm = () => {
           </div>
           <span class="w-full mr-2">
             <FloatLabel variant="on">
-              <Select id="documentType" v-model="donor.documentType" :options="documentTypesOptions" optionLabel="label" optionValue="value" class="w-full" :invalid="v$.documentType?.$error" />
+              <Select id="documentType" v-model="donor.documentType" :options="documentTypesOptions" optionLabel="label" optionValue="value" class="w-full" :invalid="v$.documentType?.$error" :disabled="!isNewDonor" />
               <label for="documentType">Tipo Documento</label>
             </FloatLabel>
             <Message v-if="v$.documentType?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.documentType.$errors[0].$message }}</Message>
@@ -254,7 +273,7 @@ const confirmResetForm = () => {
                   id="documentNumber"
                   v-model="donor.documentNumber"
                   aria-describedby="documentNumber"
-                  :disabled="!donor.documentType"
+                  :disabled="!donor.documentType || !isNewDonor"
                   :invalid="v$.documentNumber?.$error || documentNumberVerified === false"
                   @focusout="verifyDocumentNumber"
                 />
@@ -406,7 +425,7 @@ const confirmResetForm = () => {
     </div>
 
     <div class="flex justify-end mt-4 gap-2">
-      <Button class="min-w-40 btn-clean" label="Cancelar" @click="showCancelConfirmDialog = true" />
+      <Button class="min-w-40 btn-clean" label="Cancelar" @click="cancel" />
       <Button class="min-w-40 p-button-success" label="Guardar" type="submit" />
     </div>
   </form>

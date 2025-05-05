@@ -11,6 +11,11 @@ export default [
     component: EditDonor
   },
   {
+    path: '/donation/donor/:type/:doc/edit',
+    name: 'donor-edit',
+    component: EditDonor
+  },
+  {
     path: '/donation/donor/search',
     name: 'donor-search',
     component: SearchDonor
