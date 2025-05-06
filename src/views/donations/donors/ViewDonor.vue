@@ -1,4 +1,5 @@
 <script setup>
+import DonationForm from '@/components/donation/DonationForm.vue';
 import DonorStatusCard from '@/components/donation/DonorStatusCard.vue';
 import InfoDonor from '@/components/donation/InfoDonor.vue';
 import { useDonationStore } from '@/stores/donation/donations';
@@ -49,6 +50,8 @@ onMounted(async () => {
   const donorResponse = await donorStore.getDonor(documentNumber, documentType);
   Object.assign(donor, { ...donor, ...donorResponse });
 });
+
+const isOpenDialogDonation = ref(false);
 </script>
 <template>
   <div class="card">
@@ -68,7 +71,7 @@ onMounted(async () => {
     <div>
       <div class="flex justify-between items-center mb-3">
         <h2 class="text-xl">Donaciones</h2>
-        <Button label="Nueva Donación" icon="pi pi-plus" class="h-8 p-button-success" />
+        <Button label="Nueva Donación" icon="pi pi-plus" class="h-8 p-button-success" @click="() => (isOpenDialogDonation = true)" />
       </div>
 
       <!-- Tabla de donaciones -->
@@ -99,5 +102,9 @@ onMounted(async () => {
         </DataTable>
       </div>
     </div>
+
+    <Dialog v-model:visible="isOpenDialogDonation" modal :style="{ width: '50vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+      <DonationForm :donor="donor" @success="() => (isOpenDialogDonation = false)" @cancel="() => (isOpenDialogDonation = false)" />
+    </Dialog>
   </div>
 </template>

@@ -1,33 +1,27 @@
 <script setup>
+import DonationForm from '@/components/donation/DonationForm.vue';
 import DonorStatusCard from '@/components/donation/DonorStatusCard.vue';
 import InfoDonor from '@/components/donation/InfoDonor.vue';
-import { documentTypesPatientOptions } from '@/enums/DocumentTypes';
-import { componentDonationOptions } from '@/enums/Donation';
-import { DonorType, donorTypesOptions } from '@/enums/Donor';
-import { DonorStatus } from '@/enums/Status';
-import { useDonationStore } from '@/stores/donation/donations';
+import { DonorType } from '@/enums/Donor';
 import { useDonorStore } from '@/stores/donation/donor';
-import { usePatientStore } from '@/stores/transfusion/patient';
-import { required, requiredIf } from '@/validation/validators';
-import { useVuelidate } from '@vuelidate/core';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const donorStore = useDonorStore();
-const donationStore = useDonationStore();
-const patientStore = usePatientStore();
+// const donationStore = useDonationStore();
+// const patientStore = usePatientStore();
 const route = useRoute();
 const router = useRouter();
-const showModalDocument = ref(false);
+// const showModalDocument = ref(false);
 const pacienteEncontrado = ref(false);
 const tipoDocumentoPacienteBuscado = ref('');
 const numeroDocumentoPacienteBuscado = ref('');
-const showSuccessModal = ref(false);
-const createdDonationId = ref(null);
+// const showSuccessModal = ref(false);
+// const createdDonationId = ref(null);
 
-const actuadlDonationId = ref(null);
+// const actuadlDonationId = ref(null);
 const lastDonationDateDetail = ref(null);
-const canDonateDateLastDonation = ref(true);
+// const canDonateDateLastDonation = ref(true);
 
 const nombrePaciente = ref('');
 const pacienteBuscado = ref(false);
@@ -66,49 +60,49 @@ const donation = reactive({
   observation: null
 });
 
-const rules = computed(() => ({
-  documentTypeDonor: { required: required('Tipo de documento') },
-  documentNumberDonor: { required: required('Número de documento') },
-  donationPurpose: { required: required('Tipo de donante') },
-  bloodComponent: { required: required('Componente Donado') },
-  documentNumberPatient: {
-    required: requiredIf('Número de documento', () => requiresPaciente.value)
-  },
-  documentTypePatient: {
-    required: requiredIf('Tipo de documento', () => requiresPaciente.value)
-  }
-}));
+// const rules = computed(() => ({
+//   documentTypeDonor: { required: required('Tipo de documento') },
+//   documentNumberDonor: { required: required('Número de documento') },
+//   donationPurpose: { required: required('Tipo de donante') },
+//   bloodComponent: { required: required('Componente Donado') },
+//   documentNumberPatient: {
+//     required: requiredIf('Número de documento', () => requiresPaciente.value)
+//   },
+//   documentTypePatient: {
+//     required: requiredIf('Tipo de documento', () => requiresPaciente.value)
+//   }
+// }));
 
-const v$ = useVuelidate(rules, donation);
+// const v$ = useVuelidate(rules, donation);
 
-const validatePatient = async () => {
-  pacienteBuscado.value = false;
-  const documentType = donation.documentTypePatient;
-  const documentNumber = donation.documentNumberPatient;
-  if (documentType == null || documentType == '') return;
-  if (documentNumber == null || documentNumber == '') return;
+// const validatePatient = async () => {
+//   pacienteBuscado.value = false;
+//   const documentType = donation.documentTypePatient;
+//   const documentNumber = donation.documentNumberPatient;
+//   if (documentType == null || documentType == '') return;
+//   if (documentNumber == null || documentNumber == '') return;
 
-  const fullName = await patientStore.validatePatient(documentNumber, documentType);
+//   const fullName = await patientStore.validatePatient(documentNumber, documentType);
 
-  pacienteBuscado.value = true;
-  tipoDocumentoPacienteBuscado.value = documentType;
-  numeroDocumentoPacienteBuscado.value = documentNumber;
+//   pacienteBuscado.value = true;
+//   tipoDocumentoPacienteBuscado.value = documentType;
+//   numeroDocumentoPacienteBuscado.value = documentNumber;
 
-  if (fullName) {
-    pacienteEncontrado.value = true;
-    nombrePaciente.value = fullName;
-  } else {
-    pacienteEncontrado.value = false;
-    nombrePaciente.value = '';
-  }
-};
-const isEnableDonationToStatus = computed(() => {
-  return DonorStatus[donor.status]?.enableToNewDonation === true;
-});
+//   if (fullName) {
+//     pacienteEncontrado.value = true;
+//     nombrePaciente.value = fullName;
+//   } else {
+//     pacienteEncontrado.value = false;
+//     nombrePaciente.value = '';
+//   }
+// };
+// const isEnableDonationToStatus = computed(() => {
+//   return DonorStatus[donor.status]?.enableToNewDonation === true;
+// });
 
-const requiresPaciente = computed(() => {
-  return DonorType[donation.donationPurpose]?.requiredPacient === true;
-});
+// const requiresPaciente = computed(() => {
+//   return DonorType[donation.donationPurpose]?.requiredPacient === true;
+// });
 
 const isSameDonor = computed(() => {
   return DonorType[donation.donationPurpose]?.sameDonor === true;
@@ -132,35 +126,35 @@ watch(isSameDonor, (newVal) => {
     donation.documentNumberPatient = '';
   }
 });
-const closeModal = () => {
-  showModalDocument.value = false;
-};
+// const closeModal = () => {
+//   showModalDocument.value = false;
+// };
 
-const saveDonation = async () => {
-  const isValid = await v$.value.$validate();
-  if (!isValid) return;
-  if (requiresPaciente.value && !pacienteEncontrado.value) {
-    showModalDocument.value = true;
-    return;
-  }
-  if (!requiresPaciente.value) {
-    donation.documentNumberPatient = null;
-    donation.documentTypePatient = null;
-  }
-  const id = await donationStore.newDonation(donation);
-  if (id) {
-    createdDonationId.value = id;
-    showSuccessModal.value = true;
-  }
-};
+// const saveDonation = async () => {
+//   const isValid = await v$.value.$validate();
+//   if (!isValid) return;
+//   if (requiresPaciente.value && !pacienteEncontrado.value) {
+//     showModalDocument.value = true;
+//     return;
+//   }
+//   if (!requiresPaciente.value) {
+//     donation.documentNumberPatient = null;
+//     donation.documentTypePatient = null;
+//   }
+//   const id = await donationStore.newDonation(donation);
+//   if (id) {
+//     createdDonationId.value = id;
+//     showSuccessModal.value = true;
+//   }
+// };
 
-const confirmSuccess = () => {
-  showSuccessModal.value = false;
-  router.push('/donation/search/donor');
-};
-const cancelSave = () => {
-  router.push('/donation/search/donor');
-};
+// const confirmSuccess = () => {
+//   showSuccessModal.value = false;
+//   router.push('/donation/search/donor');
+// };
+// const cancelSave = () => {
+//   router.push('/donation/search/donor');
+// };
 
 onMounted(async () => {
   const documentNumber = route.params.doc;
@@ -169,18 +163,18 @@ onMounted(async () => {
   const donorResponse = await donorStore.getDonor(documentNumber, documentType);
   Object.assign(donor, { ...donor, ...donorResponse });
 
-  donation.documentTypeDonor = donor.documentType;
-  donation.documentNumberDonor = donor.documentNumber;
+  // donation.documentTypeDonor = donor.documentType;
+  // donation.documentNumberDonor = donor.documentNumber;
 
-  const actualDonationResponse = await donationStore.getActualDonation(documentNumber, documentType);
-  //Id actual donación en proceso
-  actuadlDonationId.value = actualDonationResponse ? actualDonationResponse.id : null;
+  // const actualDonationResponse = await donationStore.getActualDonation(documentNumber, documentType);
+  // //Id actual donación en proceso
+  // actuadlDonationId.value = actualDonationResponse ? actualDonationResponse.id : null;
 
-  const lastDonationDateDetailResponse = await donationStore.getLastDateDonation(documentNumber, documentType);
-  //Detalle de fecha de ultima donación
-  lastDonationDateDetail.value = lastDonationDateDetailResponse;
-  //Si puedes donar despues del tiempo de la última donación
-  canDonateDateLastDonation.value = lastDonationDateDetailResponse ? lastDonationDateDetailResponse.isEnableDonation : true;
+  // const lastDonationDateDetailResponse = await donationStore.getLastDateDonation(documentNumber, documentType);
+  // //Detalle de fecha de ultima donación
+  // lastDonationDateDetail.value = lastDonationDateDetailResponse;
+  // //Si puedes donar despues del tiempo de la última donación
+  // canDonateDateLastDonation.value = lastDonationDateDetailResponse ? lastDonationDateDetailResponse.isEnableDonation : true;
 });
 </script>
 <template>
@@ -205,8 +199,10 @@ onMounted(async () => {
       </div>
     </Fieldset>
 
+    <DonationForm :donor="donor" @success="() => router.push('/donation/search/donor')" @cancel="() => router.push('/donation/search/donor')" />
+
+    <!-- 
     <div v-if="isEnableDonationToStatus">
-      <!-- Si ya existe una donación activa, muestra el mensaje -->
       <div v-if="actuadlDonationId != null" class="text-center py-10">
         <div class="flex justify-between items-center mb-3">
           <h2 class="text-xl">Nueva Donación</h2>
@@ -221,7 +217,6 @@ onMounted(async () => {
           <Button class="min-w-40 btn-clean" label="Cancelar" @click="cancelSave" />
         </div>
       </div>
-      <!-- Sección de Donaciones -->
       <div v-else-if="canDonateDateLastDonation">
         <div class="flex justify-between items-center mb-3">
           <h2 class="text-xl">Nueva Donación</h2>
@@ -248,7 +243,6 @@ onMounted(async () => {
               </div>
             </div>
 
-            <!-- Paciente asignado -->
             <div class="mb-6" v-if="requiresPaciente">
               <h3 class="text-base mb-4">Paciente asignado (en caso requiera)</h3>
 
@@ -294,7 +288,6 @@ onMounted(async () => {
               </div>
             </div>
 
-            <!-- Observaciones -->
             <div class="mb-6">
               <FloatLabel variant="on">
                 <Textarea id="observation" v-model="donation.observation" rows="5" class="w-full resize-none" />
@@ -302,7 +295,6 @@ onMounted(async () => {
               </FloatLabel>
             </div>
 
-            <!-- Botones de acción -->
             <div class="flex justify-end mt-4 gap-2">
               <Button class="min-w-40 btn-clean" label="Cancelar" @click="cancelSave" />
               <Button class="min-w-40 p-button-success" label="Guardar" type="submit" />
@@ -336,5 +328,6 @@ onMounted(async () => {
         <Button label="Aceptar" class="min-w-40 p-button-success" @click="confirmSuccess" autofocus />
       </template>
     </Dialog>
+     -->
   </div>
 </template>
