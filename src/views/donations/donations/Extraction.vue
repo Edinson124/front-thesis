@@ -68,7 +68,7 @@ const handleSave = async () => {
     const extractionData = JSON.parse(JSON.stringify(extraction.value));
     const donationRoute = route.query.donationId;
     extractionData.donationId = donationRoute;
-    extractionStore.createExtraction(extractionData);
+    await extractionStore.createExtraction(extractionData);
     console.log('Datos a guardar:', extraction.value);
   } else {
     console.log('Errores en el formulario', v$.value);

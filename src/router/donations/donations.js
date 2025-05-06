@@ -1,4 +1,7 @@
+import Extraction from '@/views/donations/donations/Extraction.vue';
+import Interview from '@/views/donations/donations/Interview.vue';
 import NewDonation from '@/views/donations/donations/NewDonation.vue';
+import PhysicalAssessment from '@/views/donations/donations/PhysicalAssessment.vue';
 import SearchDonation from '@/views/donations/donations/SearchDonation.vue';
 import SearchDonorDonation from '@/views/donations/donations/SearchDonorNewDonation.vue';
 import ViewDonation from '@/views/donations/donations/ViewDonation.vue';
@@ -23,5 +26,20 @@ export default [
     path: '/donation/view',
     name: 'donation-view',
     component: ViewDonation
+  },
+  {
+    path: '/donation/interview',
+    name: 'donation-interview',
+    component: Interview
+  },
+  {
+    path: '/donation/extraction',
+    name: 'donation-extraction',
+    component: Extraction
+  },
+  {
+    path: '/donation/physical',
+    name: 'donation-physical-exam',
+    component: PhysicalAssessment
   }
 ];

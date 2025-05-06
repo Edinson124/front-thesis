@@ -14,6 +14,7 @@ export const MenuRoutes = [
   { id: 'donation-search', label: 'Consultar donación', to: '/donation/search', parentId: 'donation' },
   { id: 'donation-interview', label: 'Entrevista', to: '/donation/interview', parentId: 'donation' },
   { id: 'donation-extraction', label: 'Extracción', to: '/donation/extraction', parentId: 'donation' },
+  { id: 'donation-physical-exam', label: 'Exámen Físico', to: '/donation/physical', parentId: 'donation' },
   { id: 'laboratory', label: 'Laboratorio', icon: 'mdi mdi-test-tube', parentId: 'root' },
   { id: 'laboratory-results', label: 'Resultados de tamizaje', parentId: 'laboratory' },
   { id: 'laboratory-tests', label: 'Resultados pruebas cruzadas', parentId: 'laboratory' },

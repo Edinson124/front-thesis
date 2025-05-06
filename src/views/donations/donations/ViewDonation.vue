@@ -28,6 +28,13 @@ const redirectExtraction = () => {
   });
 };
 
+const redirectExam = () => {
+  router.push({
+    path: '/donation/physical',
+    query: { donationId: donationId.value }
+  });
+};
+
 onMounted(async () => {
   const donationResponse = await donationStore.getDonation(donationId.value);
   donation.value = donationResponse;
@@ -85,7 +92,7 @@ onMounted(async () => {
 
           <div class="flex justify-center mt-3">
             <Button v-if="donation.donation.physicalAssessmentId" class="h-8 btn-view" label="Visualizar" />
-            <Button v-else label="Registrar examen físico" class="p-button-success p-button-sm" />
+            <Button v-else label="Registrar examen físico" class="p-button-success p-button-sm" @click="redirectExam" />
           </div>
         </Fieldset>
 
