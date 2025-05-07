@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import adminRoutes from './admin';
 import authRoutes from './auth';
 import donationRoutes from './donations';
+import laboratoryRoutes from './laboratory';
 import templateRoutes from './template';
 
 const router = createRouter({
@@ -20,6 +21,12 @@ const router = createRouter({
       path: '/',
       component: AppLayout,
       children: donationRoutes,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/',
+      component: AppLayout,
+      children: laboratoryRoutes,
       meta: { requiresAuth: true }
     },
     /**

@@ -16,8 +16,8 @@ export const MenuRoutes = [
   { id: 'donation-extraction', label: 'Extracción', to: '/donation/extraction', parentId: 'donation' },
   { id: 'donation-physical-exam', label: 'Exámen Físico', to: '/donation/physical', parentId: 'donation' },
   { id: 'laboratory', label: 'Laboratorio', icon: 'mdi mdi-test-tube', parentId: 'root' },
-  { id: 'laboratory-results', label: 'Resultados de tamizaje', parentId: 'laboratory' },
-  { id: 'laboratory-tests', label: 'Resultados pruebas cruzadas', parentId: 'laboratory' },
+  { id: 'laboratory-hematological-search', label: 'Registrar resultado hematológico', to: '/laboratory/hematological/search', parentId: 'laboratory' },
+  { id: 'laboratory-serology-search', label: 'Registrar resultado serológico', to: '/laboratory/serology/search', parentId: 'laboratory' },
   { id: 'inventory', label: 'Unidades', icon: 'mdi mdi-database-outline', parentId: 'root' },
   { id: 'inventory-stock', label: 'Unidades en stock', parentId: 'inventory' },
   { id: 'inventory-maturity', label: 'Unidades por vencer', parentId: 'inventory' },
@@ -40,7 +40,9 @@ export const extraRoutes = [
   { id: 'admin-blood-banks-edit', label: 'Editar Banco de Sangre', to: '/admin/blood-banks/:id', parentId: 'admin-blood-banks' },
   { id: 'donor-view', label: 'Visualizar donante', to: '/donation/donor/:type/:doc', parentId: 'donor-search' },
   { id: 'donation-new', label: 'Registrar donación', to: '/donation/new/:type/:doc', parentId: 'donation-search-donor' },
-  { id: 'donation-view', label: 'Visualizar donación', to: '/donation/view', parentId: 'donation-search' }
+  { id: 'donation-view', label: 'Visualizar donación', to: '/donation/view', parentId: 'donation-search' },
+  { id: 'laboratory-serology', label: 'Resultado serológico', to: '/laboratory/serology', parentId: 'laboratory-serology-search' },
+  { id: 'laboratory-hematological', label: 'Resultado hematológico', to: '/laboratory/hematological', parentId: 'laboratory-hematological-search' }
 ];
 
 export const breadcrumbs = [...MenuRoutes, ...extraRoutes];
