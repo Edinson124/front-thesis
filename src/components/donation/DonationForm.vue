@@ -8,12 +8,11 @@ import { usePatientStore } from '@/stores/transfusion/patient';
 import { required, requiredIf } from '@/validation/validators';
 import { useVuelidate } from '@vuelidate/core';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 
 const donationStore = useDonationStore();
 const patientStore = usePatientStore();
 const route = useRoute();
-const router = useRouter();
 const showModalDocument = ref(false);
 const pacienteEncontrado = ref(false);
 const tipoDocumentoPacienteBuscado = ref('');

@@ -93,7 +93,7 @@ const isOpenDialogDonation = ref(false);
 
           <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" :style="`width: ${col.width}`"> </Column>
           <Column header="Acciones">
-            <template #body="slotProps">
+            <template #body>
               <div class="flex flex-wrap w-full">
                 <Button class="h-8 w-[6rem] mr-1 my-1 btn-view" label="Visualizar" />
               </div>
