@@ -19,6 +19,7 @@ export const MenuRoutes = [
   { id: 'laboratory', label: 'Laboratorio', icon: 'mdi mdi-test-tube', parentId: 'root' },
   { id: 'laboratory-hematological-search', label: 'Registrar resultado hematológico', to: '/laboratory/hematological/search', parentId: 'laboratory' },
   { id: 'laboratory-serology-search', label: 'Registrar resultado serológico', to: '/laboratory/serology/search', parentId: 'laboratory' },
+  { id: 'laboratory-units-quarantined', label: 'Unidades en cuarentena', to: '/laboratory/units/quarantined', parentId: 'laboratory' },
   { id: 'inventory', label: 'Unidades', icon: 'mdi mdi-database-outline', parentId: 'root' },
   { id: 'inventory-stock', label: 'Unidades en stock', parentId: 'inventory' },
   { id: 'inventory-maturity', label: 'Unidades por vencer', parentId: 'inventory' },
