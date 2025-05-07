@@ -3,7 +3,9 @@ import { bloodTypesOptions } from '@/enums/BloodType';
 import { unitTypesOptions } from '@/enums/Units';
 import { useUnitsQuarantinedStore } from '@/stores/laboratory/unitsQuarantined';
 import { onMounted, reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const unitsQuarantinedStore = useUnitsQuarantinedStore();
 // Estado reactivo
 const filters = reactive({
@@ -81,9 +83,15 @@ function onPage(event) {
 }
 
 function visualizarUnidad(unidad) {
-  console.log('Visualizar unidad:', unidad);
+  router.push({
+    path: '/laboratory/view/unit/quarantined',
+    query: { donationId: unidad.donationId, unitId: unidad.id }
+  });
 }
 
+const rowClass = (data) => {
+  return data.serologyResult === 'REACTIVO' ? 'row-reactive' : '';
+};
 // Cargar unidades al montar el componente
 onMounted(async () => {
   await searchUnits();
@@ -149,6 +157,7 @@ onMounted(async () => {
         showGridlines
         class="p-datatable-sm"
         @page="onPage"
+        :rowClass="rowClass"
       >
         <template #empty>
           <p class="text-gray-600 text-lg py-4">No se encontraron unidades en cuarentena con los filtros seleccionados.</p>
@@ -167,3 +176,9 @@ onMounted(async () => {
     </div>
   </div>
 </template>
+<style lang="css">
+.row-reactive {
+  background-color: #fbd7d7 !important; /* fondo rojo claro */
+  color: #d70229 !important; /* texto rojo oscuro */
+}
+</style>

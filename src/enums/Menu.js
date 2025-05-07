@@ -44,7 +44,8 @@ export const extraRoutes = [
   { id: 'donation-new', label: 'Registrar donación', to: '/donation/new/:type/:doc', parentId: 'donation-search-donor' },
   { id: 'donation-view', label: 'Visualizar donación', to: '/donation/view', parentId: 'donation-search' },
   { id: 'laboratory-serology', label: 'Resultado serológico', to: '/laboratory/serology', parentId: 'laboratory-serology-search' },
-  { id: 'laboratory-hematological', label: 'Resultado hematológico', to: '/laboratory/hematological', parentId: 'laboratory-hematological-search' }
+  { id: 'laboratory-hematological', label: 'Resultado hematológico', to: '/laboratory/hematological', parentId: 'laboratory-hematological-search' },
+  { id: 'laboratory-view-unit-quarantined', label: 'Visualizar unidad en cuarentena', to: '/laboratory/view/unit/quarantined', parentId: 'laboratory-units-quarantined' }
 ];
 
 export const breadcrumbs = [...MenuRoutes, ...extraRoutes];

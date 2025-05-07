@@ -11,8 +11,18 @@ export const useHematologicalTestStore = defineStore('hematologic', () => {
       return null;
     }
   };
+  const getHematologicalTestByDonationId = async (donationId) => {
+    try {
+      const response = await hematologicalTestService.getHematologicalTestByDonationId(donationId);
+      return response;
+    } catch (error) {
+      console.error('Error al obtener resultados hematológicas: ', error);
+      return null;
+    }
+  };
 
   return {
-    createhematologicalTest
+    createhematologicalTest,
+    getHematologicalTestByDonationId
   };
 });

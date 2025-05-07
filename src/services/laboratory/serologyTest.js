@@ -1,4 +1,4 @@
-import { post } from '@/api';
+import { get, post } from '@/api';
 
 const createSerologyTest = async (serologyTest) => {
   try {
@@ -10,6 +10,16 @@ const createSerologyTest = async (serologyTest) => {
   }
 };
 
+const getSerologyTestByDonationId = async (donationId) => {
+  try {
+    const response = await get(`/serology-test/${donationId}`);
+    return response;
+  } catch (error) {
+    console.error('Error al obtener resultados serológicos: ', error);
+    return null;
+  }
+};
 export default {
-  createSerologyTest
+  createSerologyTest,
+  getSerologyTestByDonationId
 };

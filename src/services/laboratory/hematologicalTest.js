@@ -1,4 +1,4 @@
-import { post } from '@/api';
+import { get, post } from '@/api';
 
 const createHematologicalTest = async (hematologicalTest) => {
   try {
@@ -10,6 +10,17 @@ const createHematologicalTest = async (hematologicalTest) => {
   }
 };
 
+const getHematologicalTestByDonationId = async (donationId) => {
+  try {
+    const response = await get(`/hematological-test/${donationId}`);
+    return response;
+  } catch (error) {
+    console.error('Error al obtener resultados hematologicos: ', error);
+    return null;
+  }
+};
+
 export default {
-  createHematologicalTest
+  createHematologicalTest,
+  getHematologicalTestByDonationId
 };

@@ -11,8 +11,17 @@ export const useSerologyTestStore = defineStore('serology', () => {
       return null;
     }
   };
-
+  const getSerologyTestByDonationId = async (donationId) => {
+    try {
+      const response = await serologyTestService.getSerologyTestByDonationId(donationId);
+      return response;
+    } catch (error) {
+      console.error('Error al obtener resultados serológicos: ', error);
+      return null;
+    }
+  };
   return {
-    createSerologyTest
+    createSerologyTest,
+    getSerologyTestByDonationId
   };
 });

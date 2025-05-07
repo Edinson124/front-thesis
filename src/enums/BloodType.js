@@ -16,8 +16,14 @@ export const BloodTypes = {
   'AB-': 'AB-'
 };
 export const RhFactor = {
-  POSITIVE: 'POSITIVO',
-  NEGATIVE: 'NEGATIVO'
+  POSITIVO: {
+    label: 'POSITIVO',
+    symbol: '+'
+  },
+  NEGATIVO: {
+    label: 'NEGATIVO',
+    symbol: '-'
+  }
 };
 
 export const rhFactorOptions = Object.entries(RhFactor).map(([value, label]) => ({
