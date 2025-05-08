@@ -155,7 +155,7 @@ onMounted(async () => {
 
             <div class="flex">
               <div class="font-medium w-28">VIH:</div>
-              <div class="text-center mb-2 font-bold" :class="serologyTest.hiv ? 'text-red-600' : 'text-black'">
+              <div class="text-center mb-2" :class="serologyTest.hiv ? 'text-red-600 font-bold' : 'text-black'">
                 {{ serologyTest.hiv ? resultSerology.TRUE : resultSerology.FALSE }}
               </div>
             </div>

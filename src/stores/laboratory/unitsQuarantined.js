@@ -2,7 +2,7 @@ import unitsQuarantinedService from '@/services/laboratory/unitsQuarantined';
 import { defineStore } from 'pinia';
 import { reactive, ref } from 'vue';
 
-export const useUnitsQuarantinedStore = defineStore('users', () => {
+export const useUnitsQuarantinedStore = defineStore('unitQuarantined', () => {
   const units = reactive([]);
   const totalRecords = ref(0);
   const currentPage = ref(0);
@@ -15,7 +15,7 @@ export const useUnitsQuarantinedStore = defineStore('users', () => {
       currentPage.value = page;
       return true;
     } catch (error) {
-      console.error('Error al obtener usuarios: ', error);
+      console.error('Error al obtener las unidades en cuarentena: ', error);
       return false;
     }
   };

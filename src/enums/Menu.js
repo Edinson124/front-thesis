@@ -20,6 +20,7 @@ export const MenuRoutes = [
   { id: 'laboratory-hematological-search', label: 'Registrar resultado hematológico', to: '/laboratory/hematological/search', parentId: 'laboratory' },
   { id: 'laboratory-serology-search', label: 'Registrar resultado serológico', to: '/laboratory/serology/search', parentId: 'laboratory' },
   { id: 'laboratory-units-quarantined', label: 'Unidades en cuarentena', to: '/laboratory/units/quarantined', parentId: 'laboratory' },
+  { id: 'laboratory-units-transformation', label: 'Unidades para fraccionar', to: '/laboratory/units/transformation', parentId: 'laboratory' },
   { id: 'inventory', label: 'Unidades', icon: 'mdi mdi-database-outline', parentId: 'root' },
   { id: 'inventory-stock', label: 'Unidades en stock', parentId: 'inventory' },
   { id: 'inventory-maturity', label: 'Unidades por vencer', parentId: 'inventory' },
@@ -45,7 +46,8 @@ export const extraRoutes = [
   { id: 'donation-view', label: 'Visualizar donación', to: '/donation/view', parentId: 'donation-search' },
   { id: 'laboratory-serology', label: 'Resultado serológico', to: '/laboratory/serology', parentId: 'laboratory-serology-search' },
   { id: 'laboratory-hematological', label: 'Resultado hematológico', to: '/laboratory/hematological', parentId: 'laboratory-hematological-search' },
-  { id: 'laboratory-view-unit-quarantined', label: 'Visualizar unidad en cuarentena', to: '/laboratory/view/unit/quarantined', parentId: 'laboratory-units-quarantined' }
+  { id: 'laboratory-view-unit-quarantined', label: 'Visualizar unidad en cuarentena', to: '/laboratory/view/unit/quarantined', parentId: 'laboratory-units-quarantined' },
+  { id: 'laboratory-unit-transformation', label: 'Fraccionar unidad', to: '/laboratory/unit/transformation', parentId: 'laboratory-units-transformation' }
 ];
 
 export const breadcrumbs = [...MenuRoutes, ...extraRoutes];
