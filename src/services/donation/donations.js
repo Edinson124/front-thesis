@@ -1,6 +1,6 @@
 import { get, post } from '@/api';
 
-const getDonations = async (documentNumber, documentType, page = 0) => {
+const getDonationsByDocumentDonor = async (documentNumber, documentType, page = 0) => {
   try {
     const query = new URLSearchParams();
 
@@ -74,7 +74,7 @@ const getDonation = async (id) => {
 };
 export default {
   getDonation,
-  getDonations,
+  getDonationsByDocumentDonor,
   newDonation,
   getActualDonation,
   getLastDateDonation,

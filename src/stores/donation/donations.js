@@ -8,7 +8,7 @@ export const useDonationStore = defineStore('donation', () => {
   const currentPageDonationsByDonor = ref(0);
   const getDonationsByDocumentDonor = async (documentNumber, documentType, page = 0) => {
     try {
-      const response = await donationService.getDonations(documentNumber, documentType, page);
+      const response = await donationService.getDonationsByDocumentDonor(documentNumber, documentType, page);
       donationsByDonor.splice(0, donationsByDonor.length, ...response.content);
       totalRecordsDonationsByDonor.value = response.totalElements;
       currentPageDonationsByDonor.value = page;

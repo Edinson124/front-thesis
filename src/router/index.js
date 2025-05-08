@@ -5,7 +5,9 @@ import adminRoutes from './admin';
 import authRoutes from './auth';
 import donationRoutes from './donations';
 import laboratoryRoutes from './laboratory';
+import storageRoutes from './storage';
 import templateRoutes from './template';
+import transfusionRoutes from './transfusions';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -27,6 +29,18 @@ const router = createRouter({
       path: '/',
       component: AppLayout,
       children: laboratoryRoutes,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/',
+      component: AppLayout,
+      children: storageRoutes,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/',
+      component: AppLayout,
+      children: transfusionRoutes,
       meta: { requiresAuth: true }
     },
     /**

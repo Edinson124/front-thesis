@@ -1,13 +1,11 @@
 <script setup>
 // import DonationStatusCard from '@/components/donation/DonationStatusCard.vue';
-import InfoDonation from '@/components/donation/InfoDonation.vue';
-import InfoDonor from '@/components/donation/InfoDonor.vue';
 import UnitCardStatus from '@/components/unit/UnitCardStatus.vue';
+import UnitInfoCard from '@/components/unit/UnitInfoCard.vue';
 import UnitSerologyTest from '@/components/unit/UnitSerologyTest.vue';
-import { RhFactor } from '@/enums/BloodType';
 import { useDonationStore } from '@/stores/donation/donations';
-import { useHematologicalTestStore } from '@/stores/laboratory/hematologicalTest';
 import { useSerologyTestStore } from '@/stores/laboratory/serologyTest';
+import { useUnitStore } from '@/stores/storage/units';
 import { required } from '@/validation/validators';
 import useVuelidate from '@vuelidate/core';
 import { computed, onMounted, ref, watch } from 'vue';
@@ -15,14 +13,15 @@ import { useRoute, useRouter } from 'vue-router';
 
 const donationStore = useDonationStore();
 const serologyStore = useSerologyTestStore();
-const hematologicStore = useHematologicalTestStore();
+const unitSore = useUnitStore();
 const route = useRoute();
 const router = useRouter();
 
 const donation = ref(null);
-const hematologicTest = ref(null);
 const serologyTest = ref(null);
 const bloodType = ref(null);
+const unit = ref(null);
+
 const donationId = computed(() => route.query.donationId);
 const unitId = computed(() => route.query.unitId);
 const showReactiveWarning = ref(false);
@@ -92,12 +91,12 @@ Object.keys(serologyResult.value).forEach((key) => {
 
 onMounted(async () => {
   const donationResponse = await donationStore.getDonation(donationId.value);
-  const hematologicalTestResponse = await hematologicStore.getHematologicalTestByDonationId(donationId.value);
   const serologyTestResponse = await serologyStore.getSerologyTestByDonationId(donationId.value);
+  const unitReponse = await unitSore.getUnitById(unitId.value);
+  unit.value = unitReponse;
   donation.value = donationResponse;
-  hematologicTest.value = hematologicalTestResponse;
   serologyTest.value = serologyTestResponse;
-  bloodType.value = hematologicTest.value.bloodType + RhFactor[hematologicTest.value.rhFactor]?.symbol;
+  bloodType.value = unit.value.bloodType;
   isLoading.value = false;
 });
 </script>
@@ -113,39 +112,18 @@ onMounted(async () => {
       </div>
     </div>
     <div v-else>
-      <h2>Unidad en cuarentena</h2>
-      <div v-if="serologyTest && serologyTest.status == 'REACTIVO'">
-        <UnitCardStatus :codeUnit="unitId" :status="serologyTest.status" />
+      <h2>Visualizar unidad en Stock</h2>
+      <div>
+        <UnitCardStatus :codeUnit="unitId" :status="unit.status" />
       </div>
 
-      <!-- Información de la donación -->
-      <!-- <div class="grid grid-cols-1 md:grid-cols-4 gap-1 mb-4">
-        <div class="md:col-span-3">
-          <DonationStatusCard :code-donation="donation.donation.id" :status="donation.donation.status" :deferral-end-date="donation.donor.deferralEndDate" :deferral-reason="donation.donor.deferralReason" />
-        </div>
-        <div class="md:col-span-1 flex justify-end items-center">
-          <Button label="Diferir donante" class="h-8 w-full md:grow md:max-w-[16rem]" severity="danger" />
-        </div>
-      </div> -->
-      <!-- Información de donante -->
+      <UnitInfoCard :unit="unit" />
 
-      <Fieldset legend="Datos generales del donante" class="!mb-4">
-        <div class="rounded-md px-5 pt-5 pb-2 bg-white">
-          <InfoDonor :donor="donation?.donor" :isEditable="false" />
-        </div>
-      </Fieldset>
-
-      <Fieldset legend="Datos generales de la donación" class="!mb-4">
-        <div class="rounded-md px-5 pt-5 pb-2 bg-white">
-          <InfoDonation :donation="donation?.donation" :isEditable="false" />
-        </div>
-      </Fieldset>
-
-      <UnitSerologyTest :serologyTest="serologyTest" :bloodType="bloodType" :showBloodType="true" />
+      <UnitSerologyTest :serologyTest="serologyTest" :bloodType="bloodType" :showBloodType="false" />
 
       <div v-if="serologyTest" class="flex justify-center px-8 my-8 gap-4">
-        <Button v-if="serologyTest.status != 'REACTIVO'" class="h-10 w-full md:max-w-[16rem]" label="Unidad Apta" severity="success" />
         <Button class="h-10 w-full md:max-w-[16rem]" label="Descartar Unidad" severity="danger" />
+        <Button class="h-10 w-full md:max-w-[16rem]" label="Obtener Etiqueta" severity="success" />
       </div>
     </div>
   </div>

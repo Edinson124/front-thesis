@@ -22,11 +22,12 @@ export const MenuRoutes = [
   { id: 'laboratory-units-quarantined', label: 'Unidades en cuarentena', to: '/laboratory/units/quarantined', parentId: 'laboratory' },
   { id: 'laboratory-units-transformation', label: 'Unidades para fraccionar', to: '/laboratory/units/transformation', parentId: 'laboratory' },
   { id: 'inventory', label: 'Unidades', icon: 'mdi mdi-database-outline', parentId: 'root' },
-  { id: 'inventory-stock', label: 'Unidades en stock', parentId: 'inventory' },
+  { id: 'inventory-stock', label: 'Unidades en stock', to: '/units/stock', parentId: 'inventory' },
   { id: 'inventory-maturity', label: 'Unidades por vencer', parentId: 'inventory' },
   { id: 'transfusion', label: 'Transfusión', icon: 'mdi mdi-blood-bag', parentId: 'root' },
   { id: 'transfusion-patients', label: 'Pacientes', parentId: 'transfusion' },
   { id: 'transfusion-units', label: 'Solicitud de unidades', parentId: 'transfusion' },
+  { id: 'transfusion-patient-search', label: 'Consultar paciente', to: '/transfusion/patient/search', parentId: 'transfusion' },
   { id: 'extern', label: 'Redes', icon: 'mdi mdi-lan', parentId: 'root' },
   { id: 'extern-query', label: 'Consultar stock externo', parentId: 'extern' },
   { id: 'extern-support', label: 'Solicitudes de apoyo', parentId: 'extern' },
@@ -47,7 +48,9 @@ export const extraRoutes = [
   { id: 'laboratory-serology', label: 'Resultado serológico', to: '/laboratory/serology', parentId: 'laboratory-serology-search' },
   { id: 'laboratory-hematological', label: 'Resultado hematológico', to: '/laboratory/hematological', parentId: 'laboratory-hematological-search' },
   { id: 'laboratory-view-unit-quarantined', label: 'Visualizar unidad en cuarentena', to: '/laboratory/view/unit/quarantined', parentId: 'laboratory-units-quarantined' },
-  { id: 'laboratory-unit-transformation', label: 'Fraccionar unidad', to: '/laboratory/unit/transformation', parentId: 'laboratory-units-transformation' }
+  { id: 'laboratory-unit-transformation', label: 'Fraccionar unidad', to: '/laboratory/unit/transformation', parentId: 'laboratory-units-transformation' },
+  { id: 'inventory-unit-view', label: 'Visualizar unidad', to: '/unit/view', parentId: 'inventory-stock' },
+  { id: 'patient-view', label: 'Visualizar paciente', to: '/transfusion/patient/:type/:doc', parentId: 'transfusion-patient-search' }
 ];
 
 export const breadcrumbs = [...MenuRoutes, ...extraRoutes];

@@ -1,18 +1,19 @@
 <script setup>
 import { bloodTypesOptions } from '@/enums/BloodType';
-import { unitTypesTransformationSearchOptions } from '@/enums/Units';
-import { useUnitsTranformationStore } from '@/stores/laboratory/unitsTranformation';
+import { unitStatusOptions, unitTypesOptions } from '@/enums/Units';
+import { useUnitStore } from '@/stores/storage/units';
 import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const unitsTransformationStore = useUnitsTranformationStore();
+const unitStore = useUnitStore();
 // Estado reactivo
 const filters = reactive({
   entryDate: null,
   expirationDate: null,
   bloodType: null,
-  type: null
+  type: null,
+  status: null
 });
 
 const loading = ref(false);
@@ -36,11 +37,12 @@ const formatDate = (date) => {
 
 const searchUnits = async (event) => {
   loading.value = true;
-  const page = event ? event.page + 1 : unitsTransformationStore.currentPage;
+  const page = event ? event.page + 1 : unitStore.currentPage;
 
   const params = {
     type: filters.type,
-    bloodType: filters.bloodType
+    bloodType: filters.bloodType,
+    status: filters.status
   };
 
   // Procesar rango de fecha de ingreso
@@ -65,7 +67,7 @@ const searchUnits = async (event) => {
     }
   }
 
-  await unitsTransformationStore.getUnits(params, page);
+  await unitStore.getUnits(params, page);
   loading.value = false;
 };
 
@@ -83,7 +85,7 @@ function onPage(event) {
 
 function visualizarUnidad(unidad) {
   router.push({
-    path: '/laboratory/unit/transformation',
+    path: '/unit/view',
     query: { donationId: unidad.donationId, unitId: unidad.id }
   });
 }
@@ -97,7 +99,7 @@ onMounted(async () => {
   <div class="card">
     <!-- Sección de búsqueda -->
     <div class="mb-6">
-      <h3>Búsqueda de unidades para fraccionar</h3>
+      <h3>Búsqueda de unidades</h3>
 
       <div class="grid grid-cols-12 gap-4">
         <div class="col-span-12 md:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4 mb-1">
@@ -124,8 +126,15 @@ onMounted(async () => {
 
           <div>
             <FloatLabel variant="on">
-              <Select id="type" v-model="filters.type" :options="unitTypesTransformationSearchOptions" optionLabel="label" optionValue="value" class="w-full" />
+              <Select id="type" v-model="filters.type" :options="unitTypesOptions" optionLabel="label" optionValue="value" class="w-full" />
               <label for="type">Tipo de unidad</label>
+            </FloatLabel>
+          </div>
+
+          <div>
+            <FloatLabel variant="on">
+              <Select id="status" v-model="filters.status" :options="unitStatusOptions" optionLabel="label" optionValue="value" class="w-full" />
+              <label for="status">Estado</label>
             </FloatLabel>
           </div>
         </div>
@@ -141,10 +150,10 @@ onMounted(async () => {
       <h2 class="text-xl font-semibold mb-4">Resultados de unidades para fraccionar</h2>
 
       <DataTable
-        :value="unitsTransformationStore.units"
+        :value="unitStore.units"
         :paginator="true"
         :rows="10"
-        :totalRecords="unitsTransformationStore.totalRecords"
+        :totalRecords="unitStore.totalRecords"
         :loading="loading"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport"
         currentPageReportTemplate="{first} - {last} de {totalRecords}"
@@ -155,7 +164,7 @@ onMounted(async () => {
         @page="onPage"
       >
         <template #empty>
-          <p class="text-gray-600 text-lg py-4">No se encontraron unidades para fraccionar con los filtros seleccionados.</p>
+          <p class="text-gray-600 text-lg py-4">No se encontraron unidades disponibles o reservadas con los filtros seleccionados.</p>
         </template>
 
         <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" :sortable="col.sortable"> </Column>
@@ -163,7 +172,7 @@ onMounted(async () => {
         <Column header="Acciones" :exportable="false" style="min-width: 8rem">
           <template #body="slotProps">
             <div class="flex justify-center">
-              <Button class="h-8 w-[6rem] mr-1 my-1 btn-edit" label="Fraccionar" @click="visualizarUnidad(slotProps.data)" />
+              <Button class="h-8 btn-view" label="Visualizar" @click="visualizarUnidad(slotProps.data)" />
             </div>
           </template>
         </Column>

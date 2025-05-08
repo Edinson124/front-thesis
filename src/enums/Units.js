@@ -9,6 +9,11 @@ export const UnitTypes = {
   'Aféresis de Plasma': 'Aféresis de Plasma'
 };
 
+export const UnitStatus = {
+  Apto: 'Apto',
+  Reservado: 'Reservado'
+};
+
 export const bagTypes = {
   Simple: 'Simple',
   Doble: 'Doble',
@@ -66,6 +71,21 @@ export const bagTypesOptions = Object.entries(bagTypes).map(([value, label]) => 
 }));
 
 export const anticoagulantOptions = Object.entries(anticoagulant).map(([value, label]) => ({
+  value,
+  label
+}));
+
+export const unitStatusOptions = Object.entries(UnitStatus).map(([value, label]) => ({
+  value,
+  label
+}));
+
+export const UnitTypesTransformationSearch = {
+  'Sangre Total': 'Sangre Total',
+  'Plasma Fresco Congelado': 'Plasma Fresco Congelado'
+};
+
+export const unitTypesTransformationSearchOptions = Object.entries(UnitTypesTransformationSearch).map(([value, label]) => ({
   value,
   label
 }));

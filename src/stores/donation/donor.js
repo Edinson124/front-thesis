@@ -7,7 +7,7 @@ export const useDonorStore = defineStore('donor', () => {
       const response = await donorService.verifyDonor(donorId, documentNumber, documentType);
       return !response.exists;
     } catch (error) {
-      console.error('Error al verificar usuario: ', error);
+      console.error('Error al verificar donante: ', error);
       return null;
     }
   };
@@ -16,7 +16,7 @@ export const useDonorStore = defineStore('donor', () => {
       const response = await donorService.getDonor(documentNumber, documentType);
       return response;
     } catch (error) {
-      console.error('Error al obtener banco de sangre: ', error);
+      console.error('Error al obtener donante: ', error);
       return null;
     }
   };
@@ -26,7 +26,7 @@ export const useDonorStore = defineStore('donor', () => {
       await donorService.newDonor(donor);
       return true;
     } catch (error) {
-      console.error('Error al crear usuario: ', error);
+      console.error('Error al crear donante: ', error);
       return false;
     }
   };
@@ -36,7 +36,7 @@ export const useDonorStore = defineStore('donor', () => {
       await donorService.editDonor(donor);
       return true;
     } catch (error) {
-      console.error('Error al crear usuario: ', error);
+      console.error('Error al editar donante: ', error);
       return false;
     }
   };

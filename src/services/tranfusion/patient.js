@@ -10,6 +10,28 @@ const validatePatient = async (documentNumber, documentType) => {
   }
 };
 
+const verifyPatient = async (documentNumber, documentType) => {
+  try {
+    const response = await post(`/patient/exists`, { documentNumber, documentType });
+    return response;
+  } catch (error) {
+    console.error('Error al verificar paciente: ', error);
+    return null;
+  }
+};
+
+const getPatient = async (documentNumber, documentType) => {
+  try {
+    const response = await post(`/patient/search`, { documentNumber, documentType });
+    return response;
+  } catch (error) {
+    console.error('Error al obtener paciente: ', error);
+    return null;
+  }
+};
+
 export default {
-  validatePatient
+  validatePatient,
+  verifyPatient,
+  getPatient
 };

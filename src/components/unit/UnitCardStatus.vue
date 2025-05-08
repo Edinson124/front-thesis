@@ -2,19 +2,29 @@
 import { computed } from 'vue';
 
 const props = defineProps({
-  codeUnit: Number,
+  codeUnit: String,
   status: String
 });
 
 const STATUS_STYLES = {
-  REACTIVO: {
+  Reactivo: {
     bgColor: 'bg-red-500',
     icon: 'mdi mdi-close-circle'
   },
-  'NO REACTIVO': {
+  Apto: {
     bgColor: 'bg-green-500',
     icon: 'mdi mdi-check-circle'
+  },
+  Reservado: {
+    bgColor: 'bg-orange-500',
+    icon: 'mdi mdi-lock'
   }
+};
+
+const STATUS_LABELS = {
+  Reactivo: 'REACTIVA',
+  Apto: 'APTA',
+  Reservado: 'RESERVADA'
 };
 
 const statusStyle = computed(() => {
@@ -25,6 +35,10 @@ const statusStyle = computed(() => {
     }
   );
 });
+
+const statusLabel = computed(() => {
+  return STATUS_LABELS[props.status] || 'DESCONOCIDO';
+});
 </script>
 <template>
   <div :class="['text-white p-4 rounded-md flex items-center', statusStyle.bgColor]">
@@ -33,7 +47,7 @@ const statusStyle = computed(() => {
     </div>
     <div>
       <div class="font-semibold text-lg">Código de unidad: {{ codeUnit }}</div>
-      <div class="font-semibold text-lg">Unidad {{ status === 'REACTIVO' ? 'REACTIVA' : 'APTA' }}</div>
+      <div class="font-semibold text-lg">UNIDAD {{ statusLabel }}</div>
 
       <!-- <div v-if="enrichedStatus.label === 'Finalizada con diferimiento temporal'" class="text-lg">
         Fecha final de diferimiento: <span class="font-semibold">{{ deferralEndDate }}</span>
