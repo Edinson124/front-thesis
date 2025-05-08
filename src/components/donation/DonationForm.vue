@@ -128,6 +128,7 @@ const saveDonation = async () => {
     donation.documentNumberPatient = null;
     donation.documentTypePatient = null;
   }
+  console.log('saveeeD');
   const id = await donationStore.newDonation(donation);
   if (id) {
     createdDonationId.value = id;

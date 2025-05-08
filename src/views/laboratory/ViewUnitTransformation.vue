@@ -2,6 +2,7 @@
 // import DonationStatusCard from '@/components/donation/DonationStatusCard.vue';
 import InfoDonation from '@/components/donation/InfoDonation.vue';
 import UnitInfoCard from '@/components/unit/UnitInfoCard.vue';
+import UnitTable from '@/components/unit/UnitTable.vue';
 import { useDonationStore } from '@/stores/donation/donations';
 import { useUnitsTranformationStore } from '@/stores/laboratory/unitsTranformation';
 import { computed, onMounted, ref } from 'vue';
@@ -24,11 +25,23 @@ const handleSave = async () => {
 };
 
 onMounted(async () => {
-  const donationResponse = await donationStore.getDonation(donationId.value);
-  const unitReponse = await unitsTransformationStore.getUnitById(unitId.value);
-  donation.value = donationResponse;
-  unit.value = unitReponse;
-  isLoading.value = false;
+  // const donationResponse = await donationStore.getDonation(donationId.value);
+  // const unitReponse = await unitsTransformationStore.getUnitById(unitId.value);
+  // await unitsTransformationStore.getUnitsFromUnit(unitId.value);
+  // donation.value = donationResponse;
+  // unit.value = unitReponse;
+
+  try {
+    isLoading.value = true;
+    const [donationResponse, unitResponse] = await Promise.all([donationStore.getDonation(donationId.value), unitsTransformationStore.getUnitById(unitId.value), unitsTransformationStore.getUnitsFromUnit(unitId.value)]);
+
+    donation.value = donationResponse;
+    unit.value = unitResponse;
+  } catch (err) {
+    console.error(err);
+  } finally {
+    isLoading.value = false;
+  }
 });
 </script>
 
@@ -51,6 +64,16 @@ onMounted(async () => {
       </Fieldset>
 
       <UnitInfoCard :unit="unit" />
+
+      <UnitTable
+        title="Unidades hematológicas resultantes"
+        v-model="unitsTransformationStore.unitsFromUnit"
+        typeModal="transformation"
+        :loading="isLoading"
+        :totalUnits="unitsTransformationStore.totalUnitsFromUnit"
+        @edit="(index, unit) => unitsTransformationStore.editUnitFromUnit(index, unit)"
+        @add="(unit) => unitsTransformationStore.addUnitFromUnit(unit)"
+      />
     </div>
   </div>
 </template>

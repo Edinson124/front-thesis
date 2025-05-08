@@ -50,12 +50,12 @@ export const unitTypesOptions = Object.entries(UnitTypes).map(([value, label]) =
   label
 }));
 
-export const unitTypesCreateOptions = Object.entries(UnitTypes).map(([value, label]) => ({
+export const unitTypesCreateOptions = Object.entries(UnitTypesCreate).map(([value, label]) => ({
   value,
   label
 }));
 
-export const unitTypesTransformationOptions = Object.entries(UnitTypes).map(([value, label]) => ({
+export const unitTypesTransformationOptions = Object.entries(UnitTypesTransformation).map(([value, label]) => ({
   value,
   label
 }));

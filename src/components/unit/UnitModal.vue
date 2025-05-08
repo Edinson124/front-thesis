@@ -1,14 +1,17 @@
 <script setup>
-import { useSampleUnitsStore } from '@/stores/donation/sample-units';
+import { anticoagulantOptions, bagTypesOptions, unitTypesCreateOptions, unitTypesTransformationOptions } from '@/enums/Units';
 import { ref, watch } from 'vue';
 
 const props = defineProps({
+  type: {
+    type: String,
+    default: 'creation' // 'transformation'
+  },
   unit: {
     type: Object,
     required: true
   }
 });
-const sampleUnitsStore = useSampleUnitsStore();
 
 const showModal = defineModel({ type: Boolean, required: true });
 const emit = defineEmits(['save']);
@@ -18,7 +21,8 @@ watch(
   () => props.unit,
   (newVal) => {
     localUnit.value = { ...newVal };
-  }
+  },
+  { deep: true }
 );
 
 const close = () => {
@@ -35,16 +39,16 @@ const save = () => {
   <Dialog v-model:visible="showModal" header="Unidad hematológica" modal class="w-[30rem]">
     <div class="w-full flex flex-col gap-4 p-2">
       <FloatLabel variant="on" class="w-full">
-        <Select class="w-full" id="type" :options="sampleUnitsStore.unitTypes" optionLabel="label" optionValue="value" showClear v-model="localUnit.type" />
+        <Select class="w-full" id="type" :options="type === 'creation' ? unitTypesCreateOptions : unitTypesTransformationOptions" optionLabel="label" optionValue="value" showClear v-model="localUnit.type" />
         <label for="type">Tipo de unidad</label>
       </FloatLabel>
       <FloatLabel variant="on" class="w-full">
-        <Select class="w-full" id="package" :options="sampleUnitsStore.unitPackages" optionLabel="label" optionValue="value" showClear v-model="localUnit.package" />
+        <Select class="w-full" id="package" :options="bagTypesOptions" optionLabel="label" optionValue="value" showClear v-model="localUnit.bag" />
         <label for="package">Tipo de bolsa</label>
       </FloatLabel>
       <FloatLabel variant="on" class="w-full">
-        <Select class="w-full" id="unit" :options="sampleUnitsStore.unitNames" optionLabel="label" optionValue="value" showClear v-model="localUnit.unit" />
-        <label for="unit">Unidad</label>
+        <Select class="w-full" id="unit" :options="anticoagulantOptions" optionLabel="label" optionValue="value" showClear v-model="localUnit.anticoagulant" />
+        <label for="unit">Anticoagulante</label>
       </FloatLabel>
       <FloatLabel variant="on" class="w-full">
         <InputText class="w-full" id="volume" v-model="localUnit.volume" />
