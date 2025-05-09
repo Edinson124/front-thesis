@@ -16,12 +16,24 @@ export const DonationStatus = {
   Finalizada: { label: 'Finalizada', edit: false }
 };
 
+export const TranfusionStatus = {
+  Pendiente: { label: 'Pendiente', edit: true },
+  Aceptada: { label: 'Aceptada', edit: false },
+  Finalizada: { label: 'Finalizada', edit: false },
+  'No atendida': { label: 'No atendida', edit: false }
+};
+
 export const ExtractionStatus = {
   Interrumpida: { label: 'Interrumpida' },
   Completada: { label: 'Completada' }
 };
 
 export const extractionStatusOptions = Object.entries(ExtractionStatus).map(([value, data]) => ({
+  value,
+  label: data.label
+}));
+
+export const tranfusionStatusOptions = Object.entries(TranfusionStatus).map(([value, data]) => ({
   value,
   label: data.label
 }));

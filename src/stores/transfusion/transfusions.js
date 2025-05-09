@@ -7,6 +7,10 @@ export const useTransfusionStore = defineStore('tranfusion', () => {
   const totalRecordsTranfusionByPatient = ref(0);
   const currentPageTranfusionByPatient = ref(0);
 
+  const transfusions = reactive([]);
+  const totalRecords = ref(0);
+  const currentPage = ref(0);
+
   const getTransfusionsByDocumentPatient = async (documentNumber, documentType, page = 0) => {
     try {
       const response = await transfusionService.getTransfusionsByDocumentPatient(documentNumber, documentType, page);
@@ -20,10 +24,27 @@ export const useTransfusionStore = defineStore('tranfusion', () => {
     }
   };
 
+  const getTransfusions = async (filters = {}, page = 0) => {
+    try {
+      const response = await transfusionService.getTransfusions(filters, page);
+      transfusions.splice(0, transfusions.length, ...response.content);
+      totalRecords.value = response.totalElements;
+      currentPage.value = page;
+      return true;
+    } catch (error) {
+      console.error('Error al obtener las unidades en cuarentena: ', error);
+      return false;
+    }
+  };
+
   return {
     tranfusionByPatient,
     totalRecordsTranfusionByPatient,
     currentPageTranfusionByPatient,
-    getTransfusionsByDocumentPatient
+    transfusions,
+    totalRecords,
+    currentPage,
+    getTransfusionsByDocumentPatient,
+    getTransfusions
   };
 });

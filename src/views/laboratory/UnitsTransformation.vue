@@ -70,10 +70,10 @@ const searchUnits = async (event) => {
 };
 
 function cleanfilters() {
-  filters.fechaInicio = null;
-  filters.fechaVencimiento = null;
-  filters.grupoSanguineo = null;
-  filters.tipoUnidad = null;
+  filters.entryDate = null;
+  filters.expirationDate = null;
+  filters.bloodType = null;
+  filters.type = null;
   searchUnits();
 }
 

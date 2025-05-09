@@ -1,18 +1,15 @@
 <script setup>
-import { bloodTypesOptions } from '@/enums/BloodType';
-import { unitStatusOptions, unitTypesOptions } from '@/enums/Units';
-import { useUnitStore } from '@/stores/storage/units';
+import { tranfusionStatusOptions } from '@/enums/Status';
+import { useTransfusionStore } from '@/stores/transfusion/transfusions';
 import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const unitStore = useUnitStore();
-// Estado reactivo
+const transfusionStore = useTransfusionStore();
+
 const filters = reactive({
   entryDate: null,
-  expirationDate: null,
-  bloodType: null,
-  type: null,
+  code: null,
   status: null
 });
 
@@ -21,10 +18,10 @@ const loading = ref(false);
 // Columnas de la tabla
 const columns = [
   { field: 'id', header: 'Código' },
-  { field: 'unitType', header: 'Tipo de Unidad' },
-  { field: 'bloodType', header: 'Grupo Sanguíneo' },
-  { field: 'entryDate', header: 'Fecha Ingreso' },
-  { field: 'expirationDate', header: 'Fecha Vencimiento' },
+  { field: 'patientDocumentNumber', header: 'N° Documento' },
+  { field: 'patientName', header: 'Paciente' },
+  { field: 'attendingDoctorName', header: 'Médico Solicitante' },
+  { field: 'date', header: 'Fecha' },
   { field: 'status', header: 'Estado' }
 ];
 
@@ -35,13 +32,12 @@ const formatDate = (date) => {
   return `${day}/${month}/${year}`;
 };
 
-const searchUnits = async (event) => {
+const searchTranfusions = async (event) => {
   loading.value = true;
-  const page = event ? event.page + 1 : unitStore.currentPage;
+  const page = event ? event.page + 1 : transfusionStore.currentPage;
 
   const params = {
-    type: filters.type,
-    bloodType: filters.bloodType,
+    code: filters.code,
     status: filters.status
   };
 
@@ -56,28 +52,16 @@ const searchUnits = async (event) => {
     }
   }
 
-  // Procesar rango de fecha de vencimiento
-  if (filters.expirationDate && filters.expirationDate.length > 0) {
-    const [start, end] = filters.expirationDate;
-    if (start) {
-      params.startExpirationDate = formatDate(start);
-    }
-    if (end) {
-      params.endExpirationDate = formatDate(end);
-    }
-  }
-
-  await unitStore.getUnits(params, page);
+  await transfusionStore.getTransfusions(params, page);
   loading.value = false;
 };
 
 function cleanfilters() {
   filters.entryDate = null;
-  filters.expirationDate = null;
-  filters.bloodType = null;
-  filters.type = null;
+  filters.code = null;
+  filters.grupoSanguineo = null;
   filters.status = null;
-  searchUnits();
+  searchTranfusions();
 }
 
 function onPage(event) {
@@ -93,54 +77,40 @@ function visualizarUnidad(unidad) {
 
 // Cargar unidades al montar el componente
 onMounted(async () => {
-  await searchUnits();
+  await searchTranfusions();
 });
 </script>
 <template>
   <div class="card">
     <!-- Sección de búsqueda -->
     <div class="mb-6">
-      <h3>Búsqueda de unidades</h3>
+      <h3>Solicitudes de transfusión</h3>
 
       <div class="grid grid-cols-12 gap-4">
-        <div class="col-span-12 md:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4 mb-1">
+        <div class="col-span-12 md:col-span-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-1">
+          <div>
+            <FloatLabel variant="on">
+              <InputText id="code" v-model="filters.code" class="w-full" />
+              <label for="code">Código de solicitud</label>
+            </FloatLabel>
+          </div>
+
           <div>
             <FloatLabel variant="on">
               <DatePicker id="entryDate" v-model="filters.entryDate" showIcon fluid dateFormat="dd/mm/yy" class="w-full" selectionMode="range" :manualInput="false" />
-              <label for="entryDate">Rango fecha inicio</label>
+              <label for="entryDate">Rango fecha de solicitud</label>
             </FloatLabel>
           </div>
 
           <div>
             <FloatLabel variant="on">
-              <DatePicker id="expirationDate" v-model="filters.expirationDate" showIcon fluid dateFormat="dd/mm/yy" class="w-full" selectionMode="range" :manualInput="false" />
-              <label for="expirationDate">Rango fecha vencimiento</label>
-            </FloatLabel>
-          </div>
-
-          <div>
-            <FloatLabel variant="on">
-              <Select id="bloodType" v-model="filters.bloodType" :options="bloodTypesOptions" optionLabel="label" optionValue="value" class="w-full" />
-              <label for="bloodType">Grupo sanguíneo</label>
-            </FloatLabel>
-          </div>
-
-          <div>
-            <FloatLabel variant="on">
-              <Select id="type" v-model="filters.type" :options="unitTypesOptions" optionLabel="label" optionValue="value" class="w-full" />
-              <label for="type">Tipo de unidad</label>
-            </FloatLabel>
-          </div>
-
-          <div>
-            <FloatLabel variant="on">
-              <Select id="status" v-model="filters.status" :options="unitStatusOptions" optionLabel="label" optionValue="value" class="w-full" />
+              <Select id="status" v-model="filters.status" :options="tranfusionStatusOptions" optionLabel="label" optionValue="value" class="w-full" />
               <label for="status">Estado</label>
             </FloatLabel>
           </div>
         </div>
         <div class="col-span-12 md:col-span-4 flex flex-col md:flex-row md:grow justify-end items-center">
-          <Button class="h-8 w-full md:mr-2 mb-2 md:mb-0" label="Filtrar" severity="info" @click="searchUnits()" />
+          <Button class="h-8 w-full md:mr-2 mb-2 md:mb-0" label="Filtrar" severity="info" @click="searchTranfusions()" />
           <Button class="h-8 w-full md:grow btn-clean" label="Limpiar" @click="cleanfilters()" />
         </div>
       </div>
@@ -148,13 +118,15 @@ onMounted(async () => {
 
     <!-- Sección de resultados -->
     <div>
-      <h2 class="text-xl font-semibold mb-4">Resultados de unidades para fraccionar</h2>
-
+      <div class="w-full mb-4 flex flex-wrap justify-between">
+        <h2 class="text-xl font-semibold mb-4">Resultados de Solicitudes</h2>
+        <Button class="h-8 w-full md:w-[50%] sm:max-w-[16rem]" label="Nueva Solicitud" icon="pi pi-plus" severity="success" as="router-link" to="/admin/users/new" />
+      </div>
       <DataTable
-        :value="unitStore.units"
+        :value="transfusionStore.transfusions"
         :paginator="true"
         :rows="10"
-        :totalRecords="unitStore.totalRecords"
+        :totalRecords="transfusionStore.totalRecords"
         :loading="loading"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport"
         currentPageReportTemplate="{first} - {last} de {totalRecords}"
@@ -165,7 +137,7 @@ onMounted(async () => {
         @page="onPage"
       >
         <template #empty>
-          <p class="text-gray-600 text-lg py-4">No se encontraron unidades disponibles o reservadas con los filtros seleccionados.</p>
+          <p class="text-gray-600 text-lg py-4">No se encontraron tranfusisones con los filtros seleccionados.</p>
         </template>
 
         <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" :sortable="col.sortable"> </Column>
