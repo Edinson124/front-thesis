@@ -28,6 +28,7 @@ export const MenuRoutes = [
   { id: 'transfusion-patients', label: 'Pacientes', parentId: 'transfusion' },
   { id: 'transfusion-patient-search', label: 'Consultar paciente', to: '/transfusion/patient/search', parentId: 'transfusion' },
   { id: 'transfusion-search', label: 'Solicitudes de tranfusión', to: '/transfusion/search', parentId: 'transfusion' },
+  { id: 'transfusion-search-performed', label: 'Resultado de tranfusión', to: '/transfusion/search/performed', parentId: 'transfusion' },
   { id: 'extern', label: 'Redes', icon: 'mdi mdi-lan', parentId: 'root' },
   { id: 'extern-query', label: 'Consultar stock externo', parentId: 'extern' },
   { id: 'extern-support', label: 'Solicitudes de apoyo', parentId: 'extern' },
@@ -50,7 +51,8 @@ export const extraRoutes = [
   { id: 'laboratory-view-unit-quarantined', label: 'Visualizar unidad en cuarentena', to: '/laboratory/view/unit/quarantined', parentId: 'laboratory-units-quarantined' },
   { id: 'laboratory-unit-transformation', label: 'Fraccionar unidad', to: '/laboratory/unit/transformation', parentId: 'laboratory-units-transformation' },
   { id: 'inventory-unit-view', label: 'Visualizar unidad', to: '/unit/view', parentId: 'inventory-stock' },
-  { id: 'patient-view', label: 'Visualizar paciente', to: '/transfusion/patient/:type/:doc', parentId: 'transfusion-patient-search' }
+  { id: 'patient-view', label: 'Visualizar paciente', to: '/transfusion/patient/:type/:doc', parentId: 'transfusion-patient-search' },
+  { id: 'transfusion-register-performed', label: 'Registro de resultado de tranfusión', to: '/transfusion/register/performed', parentId: 'transfusion-search-performed' }
 ];
 
 export const breadcrumbs = [...MenuRoutes, ...extraRoutes];

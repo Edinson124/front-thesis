@@ -53,7 +53,7 @@ export const useDonationStore = defineStore('donation', () => {
       const response = await donationService.verifyDonationByCode(id);
       return response;
     } catch (error) {
-      console.error('Error al verificar usuario: ', error);
+      console.error('Error al verificar donación: ', error);
       return null;
     }
   };
@@ -63,7 +63,7 @@ export const useDonationStore = defineStore('donation', () => {
       const response = await donationService.verifyDonationByDonor(documentNumber, documentType);
       return response;
     } catch (error) {
-      console.error('Error al verificar usuario: ', error);
+      console.error('Error al verificar donación: ', error);
       return null;
     }
   };

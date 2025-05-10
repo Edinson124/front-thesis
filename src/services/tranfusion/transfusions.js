@@ -11,7 +11,7 @@ const getTransfusionsByDocumentPatient = async (documentNumber, documentType, pa
     const response = await get(`/transfusion/paginated?${query.toString()}`);
     return response;
   } catch (error) {
-    console.error('Error al obtener donaciones: ', error);
+    console.error('Error al obtener tranfusiones: ', error);
     return null;
   }
 };
@@ -30,11 +30,33 @@ const getTransfusions = async (filters = {}, page = 0) => {
     const response = await get(`/transfusion/request?${queryString.toString()}`);
     return response;
   } catch (error) {
-    console.error('Error al obtener unitades en cuarentena: ', error);
+    console.error('Error al obtener tranfusiones: ', error);
     return [];
+  }
+};
+
+const verifyTransfusionByCode = async (id) => {
+  try {
+    const response = await get(`/transfusion/exists/${id}`);
+    return response;
+  } catch (error) {
+    console.error('Error al verificar transfusión por código: ', error);
+    return null;
+  }
+};
+
+const getTranfusionDetail = async (id) => {
+  try {
+    const response = await get(`/transfusion/detail/${id}`);
+    return response;
+  } catch (error) {
+    console.error('Error al obtener detalle de transfusión : ', error);
+    return null;
   }
 };
 export default {
   getTransfusionsByDocumentPatient,
-  getTransfusions
+  getTransfusions,
+  verifyTransfusionByCode,
+  getTranfusionDetail
 };
