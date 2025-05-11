@@ -26,9 +26,9 @@ export const RhFactor = {
   }
 };
 
-export const rhFactorOptions = Object.entries(RhFactor).map(([value, label]) => ({
+export const rhFactorOptions = Object.entries(RhFactor).map(([value, obj]) => ({
   value,
-  label
+  label: obj.label
 }));
 
 export const bloodGroupOptions = Object.entries(BloodGroup).map(([value, label]) => ({

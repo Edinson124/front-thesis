@@ -78,7 +78,7 @@ const saveUnit = async (unit) => {
 };
 
 const editUnit = async (index, unit) => {
-  await sampleUnitsStore.saveUnit(unit.id, unit);
+  await sampleUnitsStore.editTableUnit(unit.id, unit);
   await sampleUnitsStore.fetchUnits(donationId.value);
 };
 

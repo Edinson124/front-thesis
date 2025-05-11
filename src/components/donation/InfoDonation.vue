@@ -10,6 +10,12 @@ defineProps({
     <!-- Información del Donante -->
     <div>
       <div>
+        <div class="mb-2">
+          <span class="font-medium">Código de donación: </span>
+          {{ donation.id }}
+        </div>
+      </div>
+      <div>
         <div class="grid grid-cols-1 md:grid-cols-4 md:gap-y-3 gap-x-6">
           <div class="mb-2 md:col-span-2"><span class="font-medium">Tipo de donante: </span> {{ donation.donationPurpose }}</div>
           <div class="mb-2 md:col-span-2"><span class="font-medium">Componente a donar: </span> {{ donation.bloodComponent }}</div>

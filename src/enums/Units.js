@@ -1,12 +1,12 @@
 export const UnitTypes = {
-  'Sangre Total': 'Sangre Total',
+  'Sangre total': 'Sangre total',
   'Concentrado de eritrocitos': 'Concentrado de eritrocitos',
-  'Plasma Fresco Congelado': 'Plasma Fresco Congelado',
+  'Plasma fresco congelado': 'Plasma fresco congelado',
   Crioprecipitados: 'Crioprecipitados',
   Plaquetas: 'Plaquetas',
-  'Aféresis de Plaquetas': 'Aféresis de Plaquetas',
-  'Aféresis de Glóbulos Rojos': 'Aféresis de Glóbulos Rojos',
-  'Aféresis de Plasma': 'Aféresis de Plasma'
+  'Aféresis de plaquetas': 'Aféresis de plaquetas',
+  'Aféresis de glóbulos rojos': 'Aféresis de glóbulos rojos',
+  'Aféresis de plasma': 'Aféresis de plasma'
 };
 
 export const UnitStatus = {
@@ -37,15 +37,15 @@ export const anticoagulant = {
 };
 
 export const UnitTypesCreate = {
-  'Sangre Total': 'Sangre Total',
-  'Aféresis de Plaquetas': 'Aféresis de Plaquetas',
-  'Aféresis de Glóbulos Rojos': 'Aféresis de Glóbulos Rojos',
-  'Aféresis de Plasma': 'Aféresis de Plasma'
+  'Sangre total': 'Sangre Total',
+  'Aféresis de plaquetas': 'Aféresis de Plaquetas',
+  'Aféresis de glóbulos rojos': 'Aféresis de Glóbulos Rojos',
+  'Aféresis de plasma': 'Aféresis de Plasma'
 };
 
 export const UnitTypesTransformation = {
   'Concentrado de eritrocitos': 'Concentrado de eritrocitos',
-  'Plasma Fresco Congelado': 'Plasma Fresco Congelado',
+  'Plasma fresco congelado': 'Plasma Fresco Congelado',
   Crioprecipitados: 'Crioprecipitados',
   Plaquetas: 'Plaquetas'
 };
@@ -81,8 +81,8 @@ export const unitStatusOptions = Object.entries(UnitStatus).map(([value, label])
 }));
 
 export const UnitTypesTransformationSearch = {
-  'Sangre Total': 'Sangre Total',
-  'Plasma Fresco Congelado': 'Plasma Fresco Congelado'
+  'Sangre total': 'Sangre total',
+  'Plasma fresco congelado': 'Plasma fresco congelado'
 };
 
 export const unitTypesTransformationSearchOptions = Object.entries(UnitTypesTransformationSearch).map(([value, label]) => ({

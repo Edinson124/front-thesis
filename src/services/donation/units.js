@@ -43,7 +43,7 @@ const getUnits = async (donationId) => {
     const response = await get(`/units/get/${donationId}`);
     return response;
   } catch (error) {
-    console.error('Error al registrar una muestra: ', error);
+    console.error('Error al obtener unidades: ', error);
     return null;
   }
 };

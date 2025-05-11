@@ -24,6 +24,16 @@ const handleSave = async () => {
   console.log('guardando');
 };
 
+const saveUnit = async (unit) => {
+  await unitsTransformationStore.saveUnit(unitId.value, unit);
+  await unitsTransformationStore.getUnitsFromUnit(unitId.value);
+};
+
+const editUnit = async (index, unit) => {
+  await unitsTransformationStore.editTableUnit(unit.id, unit);
+  await unitsTransformationStore.getUnitsFromUnit(unitId.value);
+};
+
 onMounted(async () => {
   // const donationResponse = await donationStore.getDonation(donationId.value);
   // const unitReponse = await unitsTransformationStore.getUnitById(unitId.value);
@@ -65,15 +75,7 @@ onMounted(async () => {
 
       <UnitInfoCard :unit="unit" />
 
-      <UnitTable
-        title="Unidades hematológicas resultantes"
-        v-model="unitsTransformationStore.unitsFromUnit"
-        typeModal="transformation"
-        :loading="isLoading"
-        :totalUnits="unitsTransformationStore.totalUnitsFromUnit"
-        @edit="(index, unit) => unitsTransformationStore.editUnitFromUnit(index, unit)"
-        @add="(unit) => unitsTransformationStore.addUnitFromUnit(unit)"
-      />
+      <UnitTable title="Unidades hematológicas resultantes" v-model="unitsTransformationStore.unitsFromUnit" typeModal="transformation" :loading="isLoading" :totalUnits="unitsTransformationStore.totalUnitsFromUnit" @edit="editUnit" @add="saveUnit" />
     </div>
   </div>
 </template>

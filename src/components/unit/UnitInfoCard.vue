@@ -21,7 +21,7 @@ defineProps({
 
           <div class="flex">
             <div class="font-medium">Volumen:</div>
-            <div class="text-center ml-2">{{ unit.volumen }} ml</div>
+            <div class="text-center ml-2">{{ unit.volume }} ml</div>
           </div>
 
           <div class="flex">

@@ -8,14 +8,14 @@ import { RhFactor } from '@/enums/BloodType';
 import { useDonationStore } from '@/stores/donation/donations';
 import { useHematologicalTestStore } from '@/stores/laboratory/hematologicalTest';
 import { useSerologyTestStore } from '@/stores/laboratory/serologyTest';
-import { required } from '@/validation/validators';
-import useVuelidate from '@vuelidate/core';
+import { useUnitsQuarantinedStore } from '@/stores/laboratory/unitsQuarantined';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const donationStore = useDonationStore();
 const serologyStore = useSerologyTestStore();
 const hematologicStore = useHematologicalTestStore();
+const unitsQuarantinedStore = useUnitsQuarantinedStore();
 const route = useRoute();
 const router = useRouter();
 
@@ -41,43 +41,6 @@ const serologyResult = ref({
   observations: ''
 });
 
-const rules = computed(() => ({
-  testDate: { required: required('Fecha de prueba') },
-  HIV: { required: required('VIH') },
-  HBsAg: { required: required('HBsAg') },
-  HBcAb: { required: required('HBcAb') },
-  HCV: { required: required('VHC') },
-  syphilis: { required: required('Sífilis') },
-  chagas: { required: required('Chagas') },
-  htlvI_II: { required: required('HtlvI_II') }
-}));
-
-const v$ = useVuelidate(rules, serologyResult);
-
-const handleSave = async () => {
-  const isValid = await v$.value.$validate();
-  if (isValid) {
-    let serologyResultNormalized = normalizeEmptyStringsToNull(serologyResult.value);
-    const donationRoute = route.query.donationId;
-    serologyResultNormalized.donationId = donationRoute;
-    await serologyStore.createSerologyTest(serologyResultNormalized);
-  } else {
-    console.log('Errores en el formulario', v$.value);
-  }
-};
-
-function normalizeEmptyStringsToNull(obj) {
-  const normalized = {};
-  for (const [key, value] of Object.entries(obj)) {
-    if (typeof value === 'string' && value.trim() === '') {
-      normalized[key] = null;
-    } else {
-      normalized[key] = value;
-    }
-  }
-  return normalized;
-}
-
 Object.keys(serologyResult.value).forEach((key) => {
   watch(
     () => serologyResult.value[key],
@@ -90,6 +53,11 @@ Object.keys(serologyResult.value).forEach((key) => {
   );
 });
 
+const unitSuitable = async () => {
+  const response = await unitsQuarantinedStore.unitSuitable(unitId.value);
+  console.log('resp', response);
+};
+
 onMounted(async () => {
   const donationResponse = await donationStore.getDonation(donationId.value);
   const hematologicalTestResponse = await hematologicStore.getHematologicalTestByDonationId(donationId.value);
@@ -97,7 +65,7 @@ onMounted(async () => {
   donation.value = donationResponse;
   hematologicTest.value = hematologicalTestResponse;
   serologyTest.value = serologyTestResponse;
-  bloodType.value = hematologicTest.value.bloodType + RhFactor[hematologicTest.value.rhFactor]?.symbol;
+  bloodType.value = (hematologicTest.value?.bloodType ?? '') + (RhFactor[hematologicTest.value?.rhFactor]?.symbol ?? '');
   isLoading.value = false;
 });
 </script>
@@ -144,7 +112,7 @@ onMounted(async () => {
       <UnitSerologyTest :serologyTest="serologyTest" :bloodType="bloodType" :showBloodType="true" />
 
       <div v-if="serologyTest" class="flex justify-center px-8 my-8 gap-4">
-        <Button v-if="serologyTest.status != 'REACTIVO'" class="h-10 w-full md:max-w-[16rem]" label="Unidad Apta" severity="success" />
+        <Button v-if="serologyTest.status != 'REACTIVO'" class="h-10 w-full md:max-w-[16rem]" label="Unidad Apta" severity="success" @click="unitSuitable" />
         <Button class="h-10 w-full md:max-w-[16rem]" label="Descartar Unidad" severity="danger" />
       </div>
     </div>

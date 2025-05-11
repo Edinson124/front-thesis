@@ -1,4 +1,3 @@
-import unitService from '@/services/donation/units';
 import unitsTranformationService from '@/services/laboratory/unitsTranformation';
 import { defineStore } from 'pinia';
 import { reactive, ref } from 'vue';
@@ -35,13 +34,33 @@ export const useUnitsTranformationStore = defineStore('unitTransformation', () =
 
   const getUnitsFromUnit = async (idUnit) => {
     try {
-      const response = await unitService.getUnits();
+      const response = await unitsTranformationService.getUnitsFromUnit(idUnit);
       unitsFromUnit.splice(0, unitsFromUnit.length, ...response);
       totalUnitsFromUnit.value = response.length;
       return response;
     } catch (error) {
       console.error('Error al obtener las unidades: ', error);
       return false;
+    }
+  };
+
+  const saveUnit = async (unitId, unit) => {
+    try {
+      const response = await unitsTranformationService.saveUnit(unitId, unit);
+      return response;
+    } catch (error) {
+      console.error('Error al guardar unidad: ', error);
+      return null;
+    }
+  };
+
+  const editTableUnit = async (unitId, unit) => {
+    try {
+      const response = await unitsTranformationService.editTableUnit(unitId, unit);
+      return response;
+    } catch (error) {
+      console.error('Error al editar unidad: ', error);
+      return null;
     }
   };
 
@@ -64,6 +83,8 @@ export const useUnitsTranformationStore = defineStore('unitTransformation', () =
     addUnitFromUnit,
     editUnitFromUnit,
     removeUnitFromUnit,
+    saveUnit,
+    editTableUnit,
     units,
     totalRecords,
     currentPage,

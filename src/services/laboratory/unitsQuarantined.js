@@ -1,4 +1,4 @@
-import { get } from '@/api';
+import { get, put } from '@/api';
 
 const getUnits = async (filters = {}, page = 0) => {
   try {
@@ -19,6 +19,17 @@ const getUnits = async (filters = {}, page = 0) => {
   }
 };
 
+const unitSuitable = async (unitId) => {
+  try {
+    const response = await put(`/units/quarantined/unitSuitable/${unitId}`);
+    return response;
+  } catch (error) {
+    console.error('Error al cambiar de estado a la unidad: ', error);
+    return null;
+  }
+};
+
 export default {
-  getUnits
+  getUnits,
+  unitSuitable
 };

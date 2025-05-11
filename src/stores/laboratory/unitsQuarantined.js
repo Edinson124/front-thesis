@@ -20,8 +20,19 @@ export const useUnitsQuarantinedStore = defineStore('unitQuarantined', () => {
     }
   };
 
+  const unitSuitable = async (unitId) => {
+    try {
+      const response = await unitsQuarantinedService.unitSuitable(unitId);
+      return response?.payload?.id ?? null;
+    } catch (error) {
+      console.error('Error al editar unidad: ', error);
+      return null;
+    }
+  };
+
   return {
     getUnits,
+    unitSuitable,
     units,
     totalRecords,
     currentPage
