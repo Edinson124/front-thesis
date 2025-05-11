@@ -62,12 +62,22 @@ export const useSampleUnitsStore = defineStore('sample-units', () => {
     }
   };
 
-  const saveUnits = async (donationId) => {
+  const saveUnit = async (donationId, unit) => {
     try {
-      const response = await unitService.saveUnits(donationId, units.value);
+      const response = await unitService.saveUnit(donationId, unit);
       return response;
     } catch (error) {
-      console.error('Error al guardar unidades: ', error);
+      console.error('Error al guardar unidad: ', error);
+      return null;
+    }
+  };
+
+  const editTableUnit = async (unitId, unit) => {
+    try {
+      const response = await unitService.editTableUnit(unitId, unit);
+      return response;
+    } catch (error) {
+      console.error('Error al editar unidad: ', error);
       return null;
     }
   };
@@ -88,6 +98,7 @@ export const useSampleUnitsStore = defineStore('sample-units', () => {
     removeUnit,
     saveSample,
     getSamples,
-    saveUnits
+    saveUnit,
+    editTableUnit
   };
 });

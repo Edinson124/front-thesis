@@ -1,4 +1,4 @@
-import { get, post } from '@/api';
+import { get, post, put } from '@/api';
 import { anticoagulantOptions, bagTypesOptions, unitTypesCreateOptions, unitTypesTransformationOptions } from '@/enums/Units';
 
 const getUnitTypesCreate = async () => {
@@ -48,12 +48,22 @@ const getUnits = async (donationId) => {
   }
 };
 
-const saveUnits = async (donationId, units) => {
+const saveUnit = async (donationId, unit) => {
   try {
-    const response = await post(`/units/save/${donationId}`, units);
+    const response = await post(`/units/save/${donationId}`, unit);
     return response;
   } catch (error) {
-    console.error('Error al registrar unidades: ', error);
+    console.error('Error al registrar unidad: ', error);
+    return null;
+  }
+};
+
+const editTableUnit = async (unitId, unit) => {
+  try {
+    const response = await put(`/units/edit/${unitId}`, unit);
+    return response;
+  } catch (error) {
+    console.error('Error al editar unidad: ', error);
     return null;
   }
 };
@@ -66,5 +76,6 @@ export default {
   getUnitAnticoagunlants,
   saveSample,
   getSamples,
-  saveUnits
+  saveUnit,
+  editTableUnit
 };

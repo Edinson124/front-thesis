@@ -72,9 +72,14 @@ onMounted(async () => {
   }
 });
 
-const handleSave = async () => {
-  await sampleUnitsStore.saveUnits(donationId.value);
-  console.log('save');
+const saveUnit = async (unit) => {
+  await sampleUnitsStore.saveUnit(donationId.value, unit);
+  await sampleUnitsStore.fetchUnits(donationId.value);
+};
+
+const editUnit = async (index, unit) => {
+  await sampleUnitsStore.saveUnit(unit.id, unit);
+  await sampleUnitsStore.fetchUnits(donationId.value);
 };
 
 watch(selectedSample1, (newVal) => {
@@ -147,11 +152,10 @@ watch(selectedSample2, (newVal) => {
       </div>
     </Panel>
 
-    <UnitTable v-model="sampleUnitsStore.units" :loading="loading" :totalUnits="sampleUnitsStore.totalUnits" @edit="(index, unit) => sampleUnitsStore.editUnit(index, unit)" @add="(unit) => sampleUnitsStore.addUnit(unit)" />
+    <UnitTable v-model="sampleUnitsStore.units" :loading="loading" :totalUnits="sampleUnitsStore.totalUnits" @edit="editUnit" @add="saveUnit" />
 
     <div class="flex justify-end px-8 my-8 gap-4">
-      <Button class="w-full md:max-w-[16rem] btn-clean" label="Cancelar" @click="router.back()" />
-      <Button class="w-full md:max-w-[16rem]" label="Guardar" severity="success" @click="handleSave" />
+      <Button class="w-full md:max-w-[16rem] btn-clean" label="Regresar" @click="router.back()" />
     </div>
   </div>
 </template>
