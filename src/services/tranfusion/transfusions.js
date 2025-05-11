@@ -54,9 +54,19 @@ const getTranfusionDetail = async (id) => {
     return null;
   }
 };
+const getTranfusionAllInfo = async (id) => {
+  try {
+    const response = await get(`/transfusion/${id}`);
+    return response;
+  } catch (error) {
+    console.error('Error al obtener detalle de transfusión : ', error);
+    return null;
+  }
+};
 export default {
   getTransfusionsByDocumentPatient,
   getTransfusions,
   verifyTransfusionByCode,
-  getTranfusionDetail
+  getTranfusionDetail,
+  getTranfusionAllInfo
 };

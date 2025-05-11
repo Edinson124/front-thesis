@@ -63,7 +63,7 @@ const columns = [
   { field: 'id', header: 'Código', width: '12%' },
   { field: 'type', header: 'Unidad', width: '30%' },
   { field: 'volume', header: 'Volumen', width: '20%' },
-  { field: 'bag', header: 'TIpo de bolsa', width: '12%' }
+  { field: 'bag', header: 'Tipo de bolsa', width: '12%' }
 ];
 </script>
 

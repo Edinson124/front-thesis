@@ -12,10 +12,6 @@ export const MenuRoutes = [
   { id: 'donor-search', label: 'Consultar donante', to: '/donation/donor/search', parentId: 'donation' },
   { id: 'donation-search-donor', label: 'Registrar donación', to: '/donation/search/donor', parentId: 'donation' },
   { id: 'donation-search', label: 'Consultar donación', to: '/donation/search', parentId: 'donation' },
-  { id: 'donation-interview', label: 'Entrevista', to: '/donation/interview', parentId: 'donation' },
-  { id: 'donation-extraction', label: 'Extracción', to: '/donation/extraction', parentId: 'donation' },
-  { id: 'donation-sample', label: 'Muestras', to: '/donation/sample', parentId: 'donation' },
-  { id: 'donation-physical-exam', label: 'Exámen Físico', to: '/donation/physical', parentId: 'donation' },
   { id: 'laboratory', label: 'Laboratorio', icon: 'mdi mdi-test-tube', parentId: 'root' },
   { id: 'laboratory-hematological-search', label: 'Registrar resultado hematológico', to: '/laboratory/hematological/search', parentId: 'laboratory' },
   { id: 'laboratory-serology-search', label: 'Registrar resultado serológico', to: '/laboratory/serology/search', parentId: 'laboratory' },
@@ -46,13 +42,19 @@ export const extraRoutes = [
   { id: 'donor-view', label: 'Visualizar donante', to: '/donation/donor/:type/:doc', parentId: 'donor-search' },
   { id: 'donation-new', label: 'Registrar donación', to: '/donation/new/:type/:doc', parentId: 'donation-search-donor' },
   { id: 'donation-view', label: 'Visualizar donación', to: '/donation/view', parentId: 'donation-search' },
+  { id: 'donor-edit', label: 'Editar donante', to: '/donation/donor/:type/:doc/edit', parentId: 'donor-search' },
   { id: 'laboratory-serology', label: 'Resultado serológico', to: '/laboratory/serology', parentId: 'laboratory-serology-search' },
   { id: 'laboratory-hematological', label: 'Resultado hematológico', to: '/laboratory/hematological', parentId: 'laboratory-hematological-search' },
   { id: 'laboratory-view-unit-quarantined', label: 'Visualizar unidad en cuarentena', to: '/laboratory/view/unit/quarantined', parentId: 'laboratory-units-quarantined' },
   { id: 'laboratory-unit-transformation', label: 'Fraccionar unidad', to: '/laboratory/unit/transformation', parentId: 'laboratory-units-transformation' },
   { id: 'inventory-unit-view', label: 'Visualizar unidad', to: '/unit/view', parentId: 'inventory-stock' },
   { id: 'patient-view', label: 'Visualizar paciente', to: '/transfusion/patient/:type/:doc', parentId: 'transfusion-patient-search' },
-  { id: 'transfusion-register-performed', label: 'Registro de resultado de tranfusión', to: '/transfusion/register/performed', parentId: 'transfusion-search-performed' }
+  { id: 'transfusion-register-performed', label: 'Registro de resultado de tranfusión', to: '/transfusion/register/performed', parentId: 'transfusion-search-performed' },
+  { id: 'transfusion-view', label: 'Visualizar tranfusión', to: '/transfusion/view', parentId: 'transfusion-search' },
+  { id: 'donation-interview', label: 'Entrevista', to: '/donation/interview', parentId: 'donation-view' },
+  { id: 'donation-extraction', label: 'Extracción', to: '/donation/extraction', parentId: 'donation-view' },
+  { id: 'donation-sample', label: 'Muestras', to: '/donation/sample', parentId: 'donation-view' },
+  { id: 'donation-physical-exam', label: 'Exámen Físico', to: '/donation/physical', parentId: 'donation-view' }
 ];
 
 export const breadcrumbs = [...MenuRoutes, ...extraRoutes];

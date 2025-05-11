@@ -5,12 +5,16 @@ import InfoDonor from '@/components/donation/InfoDonor.vue';
 import { useDonationStore } from '@/stores/donation/donations';
 import { useDonorStore } from '@/stores/donation/donor';
 
-import { onMounted, reactive, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { computed, onMounted, reactive, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+
+const router = useRouter();
 const donorStore = useDonorStore();
 const donationStore = useDonationStore();
 const loading = ref(false);
 const route = useRoute();
+const documentNumber = computed(() => route.params.doc);
+const documentType = computed(() => route.params.type);
 
 const donor = reactive({
   documentType: '',
@@ -43,6 +47,17 @@ const columns = [
   { field: 'status', header: 'Estado', width: '12%' }
 ];
 
+const succesNewDoantion = async () => {
+  await donationStore.getDonationsByDocumentDonor(documentNumber.value, documentType.value);
+  isOpenDialogDonation.value = false;
+};
+
+const goViewDonation = (id) => {
+  router.push({
+    path: '/donation/view',
+    query: { donationId: id }
+  });
+};
 onMounted(async () => {
   const documentNumber = route.params.doc;
   const documentType = route.params.type;
@@ -93,9 +108,9 @@ const isOpenDialogDonation = ref(false);
 
           <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" :style="`width: ${col.width}`"> </Column>
           <Column header="Acciones">
-            <template #body>
+            <template #body="{ data }">
               <div class="flex flex-wrap w-full">
-                <Button class="h-8 w-[6rem] mr-1 my-1 btn-view" label="Visualizar" />
+                <Button class="h-8 w-[6rem] mr-1 my-1 btn-view" label="Visualizar" @click="goViewDonation(data.id)" />
               </div>
             </template>
           </Column>
@@ -103,8 +118,8 @@ const isOpenDialogDonation = ref(false);
       </div>
     </div>
 
-    <Dialog v-model:visible="isOpenDialogDonation" modal :style="{ width: '50vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
-      <DonationForm :donor="donor" @success="() => (isOpenDialogDonation = false)" @cancel="() => (isOpenDialogDonation = false)" />
+    <Dialog header="Nueva Donación" v-model:visible="isOpenDialogDonation" modal :style="{ width: '50vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+      <DonationForm :donor="donor" @success="succesNewDoantion" @cancel="() => (isOpenDialogDonation = false)" />
     </Dialog>
   </div>
 </template>

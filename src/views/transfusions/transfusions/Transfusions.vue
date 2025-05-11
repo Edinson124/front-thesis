@@ -68,10 +68,10 @@ function onPage(event) {
   console.log('Cambio de página:', event);
 }
 
-function visualizarUnidad(unidad) {
+function visualizarUnidad(transfusion) {
   router.push({
-    path: '/unit/view',
-    query: { donationId: unidad.donationId, unitId: unidad.id }
+    path: '/transfusion/view',
+    query: { transfusionId: transfusion.id }
   });
 }
 

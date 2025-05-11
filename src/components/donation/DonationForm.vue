@@ -174,7 +174,7 @@ onMounted(async () => {
     <!-- Si ya existe una donación activa, muestra el mensaje -->
     <div v-if="actuadlDonationId != null" class="text-center py-10">
       <div class="flex justify-between items-center mb-3">
-        <h2 class="text-xl">Nueva Donación</h2>
+        <!-- <h2 class="text-xl">Nueva Donación</h2> -->
       </div>
       <div>
         <p class="text-lg font-semibold text-red-600 mb-2">Ya existe una donación en proceso.</p>
@@ -189,7 +189,7 @@ onMounted(async () => {
     <!-- Sección de Donaciones -->
     <div v-else-if="canDonateDateLastDonation">
       <div class="flex justify-between items-center mb-3">
-        <h2 class="text-xl">Nueva Donación</h2>
+        <!-- <h2 class="text-xl">Nueva Donación</h2> -->
       </div>
 
       <div class="border border-gray-300 rounded-md p-5 bg-white mb-6">

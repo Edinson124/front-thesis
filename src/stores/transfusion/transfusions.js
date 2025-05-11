@@ -57,6 +57,16 @@ export const useTransfusionStore = defineStore('tranfusion', () => {
     }
   };
 
+  const getTranfusionAllInfo = async (id) => {
+    try {
+      const response = await transfusionService.getTranfusionAllInfo(id);
+      return response;
+    } catch (error) {
+      console.error('Error al verificar transfusión: ', error);
+      return null;
+    }
+  };
+
   return {
     tranfusionByPatient,
     totalRecordsTranfusionByPatient,
@@ -67,6 +77,7 @@ export const useTransfusionStore = defineStore('tranfusion', () => {
     getTransfusionsByDocumentPatient,
     getTransfusions,
     verifyTransfusionByCode,
-    getTranfusionDetail
+    getTranfusionDetail,
+    getTranfusionAllInfo
   };
 });

@@ -35,6 +35,13 @@ const redirectExam = () => {
   });
 };
 
+const redirectSamples = () => {
+  router.push({
+    path: '/donation/sample',
+    query: { donationId: donationId.value }
+  });
+};
+
 onMounted(async () => {
   const donationResponse = await donationStore.getDonation(donationId.value);
   donation.value = donationResponse;
@@ -140,7 +147,7 @@ onMounted(async () => {
           <div class="mb-1"><span class="font-medium">Registrado por : </span>{{ donation.createdByNameInterviewAnswer ?? '-' }}</div>
           <div class="flex justify-center mt-3">
             <Button v-if="id" class="h-8 btn-view" label="Visualizar" />
-            <Button v-else label="Registrar muestras y unidades" class="p-button-success p-button-sm" />
+            <Button v-else label="Registrar muestras y unidades" class="p-button-success p-button-sm" @click="redirectSamples" />
           </div>
         </Fieldset>
       </div>

@@ -9,8 +9,8 @@ export const useSampleUnitsStore = defineStore('sample-units', () => {
   const unitBags = ref([]);
   const unitAnticoagunlants = ref([]);
 
-  const fetchUnits = async () => {
-    units.value = await unitService.getUnits();
+  const fetchUnits = async (donationId) => {
+    units.value = await unitService.getUnits(donationId);
     totalUnits.value = units.value.length;
   };
 
@@ -42,6 +42,36 @@ export const useSampleUnitsStore = defineStore('sample-units', () => {
     units.value.splice(index, 1);
   };
 
+  const saveSample = async (donationId, test) => {
+    try {
+      const response = await unitService.saveSample(donationId, test);
+      return response;
+    } catch (error) {
+      console.error('Error al crear una muestra: ', error);
+      return null;
+    }
+  };
+
+  const getSamples = async (donationId) => {
+    try {
+      const response = await unitService.getSamples(donationId);
+      return response;
+    } catch (error) {
+      console.error('Error al obtener muestras: ', error);
+      return null;
+    }
+  };
+
+  const saveUnits = async (donationId) => {
+    try {
+      const response = await unitService.saveUnits(donationId, units.value);
+      return response;
+    } catch (error) {
+      console.error('Error al guardar unidades: ', error);
+      return null;
+    }
+  };
+
   return {
     units,
     totalUnits,
@@ -55,6 +85,9 @@ export const useSampleUnitsStore = defineStore('sample-units', () => {
     fetchUnitAnticoagunlants,
     addUnit,
     editUnit,
-    removeUnit
+    removeUnit,
+    saveSample,
+    getSamples,
+    saveUnits
   };
 });
