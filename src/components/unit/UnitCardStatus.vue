@@ -7,7 +7,7 @@ const props = defineProps({
 });
 
 const STATUS_STYLES = {
-  Reactivo: {
+  REACTIVO: {
     bgColor: 'bg-red-500',
     icon: 'mdi mdi-close-circle'
   },
@@ -22,7 +22,7 @@ const STATUS_STYLES = {
 };
 
 const STATUS_LABELS = {
-  Reactivo: 'REACTIVA',
+  REACTIVO: 'REACTIVA',
   Apto: 'APTA',
   Reservado: 'RESERVADA'
 };

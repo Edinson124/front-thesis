@@ -92,7 +92,7 @@ onMounted(async () => {
             <i v-else class="mdi mdi-minus-circle text-3xl text-gray-300"></i>
           </div>
 
-          <div class="text-sm mb-1"><span class="font-medium">Registrado el : </span>{{ donation.donation.createdAtPhysicalAssessment ? donation.donation.createdAtPhysicalAssessment : '-' }}</div>
+          <div class="mb-1"><span class="font-medium">Registrado el : </span>{{ donation.donation.createdAtPhysicalAssessment ? donation.donation.createdAtPhysicalAssessment : '-' }}</div>
           <div class="mb-1"><span class="font-medium">Registrado por : </span>{{ donation.donation.createdByNamePhysicalAssessment ?? '-' }}</div>
           <div class="mb-1"><span class="font-medium">Editado el : </span>{{ donation.donation.updatedAtPhysicalAssessment ? donation.donation.updatedAtPhysicalAssessment : '-' }}</div>
           <div class="mb-1"><span class="font-medium">Editado por : </span>{{ donation.donation.updatedByNamePhysicalAssessment ?? '-' }}</div>

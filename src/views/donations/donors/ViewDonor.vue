@@ -2,6 +2,7 @@
 import DonationForm from '@/components/donation/DonationForm.vue';
 import DonorStatusCard from '@/components/donation/DonorStatusCard.vue';
 import InfoDonor from '@/components/donation/InfoDonor.vue';
+import { Gender } from '@/enums/Gender';
 import { useDonationStore } from '@/stores/donation/donations';
 import { useDonorStore } from '@/stores/donation/donor';
 
@@ -15,6 +16,11 @@ const loading = ref(false);
 const route = useRoute();
 const documentNumber = computed(() => route.params.doc);
 const documentType = computed(() => route.params.type);
+
+const actuadlDonationId = ref(null);
+const lastDonationDateDetail = ref(null);
+const canDonateDateLastDonation = ref(true);
+const necesitaAdvertencia = ref(false);
 
 const donor = reactive({
   documentType: '',
@@ -58,12 +64,40 @@ const goViewDonation = (id) => {
     query: { donationId: id }
   });
 };
+
+function necesitaAdvertenciaPorDonacion(status, lastDonationDate, gender) {
+  if (status !== 'Apto' || !lastDonationDate || !gender) return false;
+
+  const generoConfig = Gender[gender];
+  if (!generoConfig || !generoConfig.minMonthsBetweenDonations) return false;
+
+  const ultima = new Date(lastDonationDate);
+  const hoy = new Date();
+  let diferenciaMeses = (hoy.getFullYear() - ultima.getFullYear()) * 12 + hoy.getMonth() - ultima.getMonth();
+  if (hoy.getDate() < ultima.getDate()) diferenciaMeses--;
+
+  return diferenciaMeses < generoConfig.minMonthsBetweenDonations;
+}
+
 onMounted(async () => {
   const documentNumber = route.params.doc;
   const documentType = route.params.type;
   await donationStore.getDonationsByDocumentDonor(documentNumber, documentType);
   const donorResponse = await donorStore.getDonor(documentNumber, documentType);
   Object.assign(donor, { ...donor, ...donorResponse });
+
+  const actualDonationResponse = await donationStore.getActualDonation(documentNumber, documentType);
+  //Id actual donación en proceso
+  actuadlDonationId.value = actualDonationResponse ? actualDonationResponse.id : null;
+  const lastDonationDateDetailResponse = await donationStore.getLastDateDonation(documentNumber, documentType);
+  //Detalle de fecha de ultima donación
+  lastDonationDateDetail.value = lastDonationDateDetailResponse;
+  //Si puedes donar despues del tiempo de la última donación
+  canDonateDateLastDonation.value = lastDonationDateDetailResponse ? lastDonationDateDetailResponse.isEnableDonation : true;
+  necesitaAdvertencia.value = necesitaAdvertenciaPorDonacion(donor.status, lastDonationDateDetail.value?.dateDonation || null, donor.gender);
+  console.log(necesitaAdvertencia.value);
+  console.log(actuadlDonationId.value);
+  console.log('res', !necesitaAdvertencia.value || actuadlDonationId.value == null);
 });
 
 const isOpenDialogDonation = ref(false);
@@ -73,7 +107,15 @@ const isOpenDialogDonation = ref(false);
     <div class="mb-4">
       <h3>Visualizar Donante</h3>
     </div>
-    <DonorStatusCard :document-number="donor.documentNumber" :status="donor.status" :deferral-end-date="donor.deferralEndDate" :deferral-reason="donor.deferralReason" :gender="donor.gender" :last-donation-date="donor.lastDonationDate" />
+    <DonorStatusCard
+      :document-number="donor.documentNumber"
+      :status="donor.status"
+      :deferral-end-date="donor.deferralEndDate"
+      :deferral-reason="donor.deferralReason"
+      :gender="donor.gender"
+      :last-donation-date="lastDonationDateDetail?.dateDonation || null"
+      :date-enabled="lastDonationDateDetail?.dateEnabledDonation || null"
+    />
 
     <!-- Datos generales del donante -->
     <Fieldset legend="Datos generales del donante" class="!mb-4">
@@ -86,7 +128,7 @@ const isOpenDialogDonation = ref(false);
     <div>
       <div class="flex justify-between items-center mb-3">
         <h2 class="text-xl">Donaciones</h2>
-        <Button label="Nueva Donación" icon="pi pi-plus" class="h-8 p-button-success" @click="() => (isOpenDialogDonation = true)" />
+        <Button v-if="!necesitaAdvertencia && actuadlDonationId == null" label="Nueva Donación" icon="pi pi-plus" class="h-8 p-button-success" @click="() => (isOpenDialogDonation = true)" />
       </div>
 
       <!-- Tabla de donaciones -->

@@ -11,7 +11,7 @@ const props = defineProps({
 
 const STATUS_STYLES = {
   'En proceso': {
-    bgColor: 'bg-blue-500',
+    bgColor: 'bg-blue-400',
     icon: 'mdi mdi-clock-time-eight'
   },
   'Finalizada con diferimiento temporal': {
