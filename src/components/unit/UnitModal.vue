@@ -1,11 +1,11 @@
 <script setup>
-import { anticoagulantOptions, bagTypesOptions, unitTypesCreateOptions, unitTypesTransformationOptions } from '@/enums/Units';
+import { anticoagulantOptions, bagTypesOptions, unitTypesCreateOptions, unitTypesOptions, unitTypesTransformationOptions } from '@/enums/Units';
 import { ref, watch } from 'vue';
 
 const props = defineProps({
   type: {
     type: String,
-    default: 'creation' // 'transformation'
+    default: 'creation' // 'transformation', 'request'
   },
   unit: {
     type: Object,
@@ -37,7 +37,7 @@ const save = () => {
 
 <template>
   <Dialog v-model:visible="showModal" header="Unidad hematológica" modal class="w-[30rem]">
-    <div class="w-full flex flex-col gap-4 p-2">
+    <div class="w-full flex flex-col gap-4 p-2" v-if="type !== 'request'">
       <FloatLabel variant="on" class="w-full">
         <Select class="w-full" id="type" :options="type === 'creation' ? unitTypesCreateOptions : unitTypesTransformationOptions" optionLabel="label" optionValue="value" showClear v-model="localUnit.type" />
         <label for="type">Tipo de unidad</label>
@@ -53,6 +53,16 @@ const save = () => {
       <FloatLabel variant="on" class="w-full">
         <InputText class="w-full" id="volume" v-model="localUnit.volume" />
         <label for="volume">Volumen</label>
+      </FloatLabel>
+    </div>
+    <div class="w-full flex flex-col gap-4 p-2" v-else>
+      <FloatLabel variant="on" class="w-full">
+        <Select class="w-full" id="type" :options="unitTypesOptions" optionLabel="label" optionValue="value" showClear v-model="localUnit.type" />
+        <label for="type">Tipo de unidad</label>
+      </FloatLabel>
+      <FloatLabel variant="on" class="w-full">
+        <InputText class="w-full" id="volume" v-model="localUnit.volume" />
+        <label for="volume">Cantidad</label>
       </FloatLabel>
     </div>
 
