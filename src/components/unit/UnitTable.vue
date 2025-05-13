@@ -3,7 +3,7 @@ import { reactive, ref } from 'vue';
 import UnitModal from './UnitModal.vue';
 import { bagTypes, UnitTypes } from '@/enums/Units';
 
-defineProps({
+const props = defineProps({
   title: {
     type: String,
     default: 'Unidades hematológicas'
@@ -14,7 +14,7 @@ defineProps({
   },
   typeModal: {
     type: String,
-    default: 'creation' // 'transformation'
+    default: 'creation' // 'transformation', "request"
   },
   loading: {
     type: Boolean,
@@ -59,12 +59,18 @@ const saveUnit = (unit) => {
   }
 };
 
-const columns = [
-  { field: 'id', header: 'Código', width: '12%' },
-  { field: 'type', header: 'Unidad', width: '30%' },
-  { field: 'volume', header: 'Volumen', width: '20%' },
-  { field: 'bag', header: 'Tipo de bolsa', width: '12%' }
-];
+const columns =
+  props.type === 'allData'
+    ? [
+        { field: 'id', header: 'Código', width: '12%' },
+        { field: 'type', header: 'Unidad', width: '30%' },
+        { field: 'volume', header: 'Volumen', width: '20%' },
+        { field: 'bag', header: 'TIpo de bolsa', width: '12%' }
+      ]
+    : [
+        { field: 'id', header: 'Código', width: '12%' },
+        { field: 'type', header: 'Unidad', width: '30%' }
+      ];
 </script>
 
 <template>
