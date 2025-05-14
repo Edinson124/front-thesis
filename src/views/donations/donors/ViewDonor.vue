@@ -21,6 +21,7 @@ const actuadlDonationId = ref(null);
 const lastDonationDateDetail = ref(null);
 const canDonateDateLastDonation = ref(true);
 const necesitaAdvertencia = ref(false);
+const isLoading = ref(true);
 
 const donor = reactive({
   documentType: '',
@@ -95,15 +96,16 @@ onMounted(async () => {
   //Si puedes donar despues del tiempo de la última donación
   canDonateDateLastDonation.value = lastDonationDateDetailResponse ? lastDonationDateDetailResponse.isEnableDonation : true;
   necesitaAdvertencia.value = necesitaAdvertenciaPorDonacion(donor.status, lastDonationDateDetail.value?.dateDonation || null, donor.gender);
-  console.log(necesitaAdvertencia.value);
-  console.log(actuadlDonationId.value);
-  console.log('res', !necesitaAdvertencia.value || actuadlDonationId.value == null);
+  isLoading.value = false;
 });
 
 const isOpenDialogDonation = ref(false);
 </script>
 <template>
-  <div class="card">
+  <div v-if="isLoading" class="card absolute inset-0 bg-white/50 flex items-center justify-center z-10">
+    <ProgressSpinner style="width: 50px; height: 50px" />
+  </div>
+  <div v-else class="card">
     <div class="mb-4">
       <h3>Visualizar Donante</h3>
     </div>

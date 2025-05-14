@@ -21,7 +21,6 @@ export const MenuRoutes = [
   { id: 'inventory-stock', label: 'Unidades en stock', to: '/units/stock', parentId: 'inventory' },
   { id: 'inventory-maturity', label: 'Unidades por vencer', parentId: 'inventory' },
   { id: 'transfusion', label: 'Transfusión', icon: 'mdi mdi-blood-bag', parentId: 'root' },
-  { id: 'transfusion-patients', label: 'Pacientes', parentId: 'transfusion' },
   { id: 'transfusion-patient-new', label: 'Registrar paciente', to: '/transfusion/patient/new', parentId: 'transfusion' },
   { id: 'transfusion-units', label: 'Solicitud de unidades', to: '/transfusion/requests', parentId: 'transfusion' },
   { id: 'transfusion-patient-search', label: 'Consultar paciente', to: '/transfusion/patient/search', parentId: 'transfusion' },
