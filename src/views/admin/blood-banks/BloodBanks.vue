@@ -1,6 +1,6 @@
 <script setup>
 import ubicationService from '@/services/ubication';
-import { useBloodBanksStore } from '@/stores/blodd-banks';
+import { useBloodBanksStore } from '@/stores/admin/blodd-banks';
 import { onMounted, reactive, ref } from 'vue';
 
 const bloodBankStore = useBloodBanksStore();

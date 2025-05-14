@@ -1,4 +1,4 @@
-import usersService from '@/services/users';
+import usersService from '@/services/admin/users';
 import { defineStore } from 'pinia';
 import { reactive, ref } from 'vue';
 

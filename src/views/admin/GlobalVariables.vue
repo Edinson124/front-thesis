@@ -1,5 +1,5 @@
 <script setup>
-import globalVariablesService from '@/services/globalVariables';
+import globalVariablesService from '@/services/admin/globalVariables';
 import { computed, onMounted, ref } from 'vue';
 
 const groupedVariables = ref({});

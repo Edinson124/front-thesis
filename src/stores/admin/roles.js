@@ -1,4 +1,4 @@
-import rolesService from '@/services/roles';
+import rolesService from '@/services/admin/roles';
 import { defineStore } from 'pinia';
 import { reactive, ref } from 'vue';
 

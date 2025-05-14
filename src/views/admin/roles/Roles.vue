@@ -1,7 +1,7 @@
 <script setup>
 import { Role } from '@/enums/Role';
 import { Status } from '@/enums/Status';
-import { useRolesStore } from '@/stores/roles';
+import { useRolesStore } from '@/stores/admin/roles';
 import { Button, FloatLabel, InputText, Select } from 'primevue';
 import { onMounted, reactive, ref } from 'vue';
 

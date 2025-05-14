@@ -1,6 +1,6 @@
 <script setup>
 import { Status } from '@/enums/Status';
-import { useRolesStore } from '@/stores/roles';
+import { useRolesStore } from '@/stores/admin/roles';
 import useVuelidate from '@vuelidate/core';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';

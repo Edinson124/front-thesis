@@ -1,8 +1,8 @@
 <script setup>
 import { Status } from '@/enums/Status';
+import userService from '@/services/admin/users';
 import ubicationService from '@/services/ubication';
-import userService from '@/services/users';
-import { useBloodBanksStore } from '@/stores/blodd-banks';
+import { useBloodBanksStore } from '@/stores/admin/blodd-banks';
 import useVuelidate from '@vuelidate/core';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';

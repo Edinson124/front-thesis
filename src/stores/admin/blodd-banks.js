@@ -1,4 +1,4 @@
-import bloodBanksService from '@/services/blood-banks';
+import bloodBanksService from '@/services/admin/blood-banks';
 import { defineStore } from 'pinia';
 import { reactive, ref } from 'vue';
 
