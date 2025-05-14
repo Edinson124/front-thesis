@@ -28,8 +28,8 @@ const login = async () => {
           </div>
 
           <div>
-            <label for="email1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Email</label>
-            <InputText id="email1" type="text" placeholder="Email" class="w-full md:w-[30rem] mb-8" v-model="email" />
+            <label for="email1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Usuario</label>
+            <InputText id="email1" type="text" placeholder="Usuario" class="w-full md:w-[30rem] mb-8" v-model="email" />
 
             <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Contraseña</label>
             <Password id="password1" v-model="password" placeholder="Contraseña" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
@@ -38,7 +38,7 @@ const login = async () => {
               <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">¿Olvidaste tu contraseña?</span>
             </div>
             <Button label="Iniciar sesión" class="w-full mb-8 btn-primary" @click.prevent="login"></Button>
-            <Button label="Crear una cuenta nueva" class="w-full" as="router-link" to="/register" severity="secondary" outlined></Button>
+            <!-- <Button label="Crear una cuenta nueva" class="w-full" as="router-link" to="/register" severity="secondary" outlined></Button> -->
           </div>
         </div>
       </div>
