@@ -8,14 +8,17 @@ import { onMounted, reactive, ref } from 'vue';
 const isLoading = ref(true);
 const patientStore = usePatientStore();
 
-const patient = reactive({
-  documentType: '',
-  documentNumber: '',
-  names: '',
-  bloodGroup: '',
+const transfusion = reactive({
+  patient: {
+    documentType: '',
+    documentNumber: '',
+    names: '',
+    bloodGroup: ''
+  },
+  doctorRequest: '',
   bed: '',
   service: '',
-  tests: '',
+  crossTests: '',
   diagnosis: '',
   reason: ''
 });
@@ -28,8 +31,11 @@ onMounted(() => {
 
 const documentNumberVerified = ref(null);
 const verifyDocumentNumber = async () => {
-  const response = await patientStore.verifyPatient(patient.documentNumber, patient.documentType);
-  documentNumberVerified.value = response;
+  const response = await patientStore.verifyPatient(transfusion.patient.documentNumber, transfusion.patient.documentType);
+  documentNumberVerified.value = response?.verified;
+
+  // transfusion.patient.names = response.names;
+  // transfusion.patient.bloodGroup = response.bloodGroup;
 };
 
 const priorityOptions = [];
@@ -48,7 +54,7 @@ const priorityOptions = [];
             </div>
             <span class="w-full mr-2">
               <FloatLabel variant="on">
-                <Select id="documentType" v-model="patient.documentType" :options="documentTypesPatientOptions" optionLabel="label" optionValue="value" class="w-full" />
+                <Select id="documentType" v-model="transfusion.patient.documentType" :options="documentTypesPatientOptions" optionLabel="label" optionValue="value" class="w-full" />
                 <label for="documentType">Tipo Documento</label>
               </FloatLabel>
             </span>
@@ -59,7 +65,7 @@ const priorityOptions = [];
             <span class="w-full mr-2">
               <InputGroup>
                 <FloatLabel variant="on" class="w-full">
-                  <InputText id="documentNumber" v-model="patient.documentNumber" aria-describedby="documentNumber" :disabled="!patient.documentType" @focusout="verifyDocumentNumber" />
+                  <InputText id="documentNumber" v-model="transfusion.patient.documentNumber" aria-describedby="documentNumber" :disabled="!transfusion.patient.documentType" @focusout="verifyDocumentNumber" />
                   <label for="documentNumber">Nro Documento</label>
                 </FloatLabel>
                 <InputGroupAddon><Button icon="pi pi-search" severity="secondary" variant="text" @click="verifyDocumentNumber" /></InputGroupAddon>
@@ -74,7 +80,7 @@ const priorityOptions = [];
       <div class="grid grid-cols-1 gap-4 mb-4">
         <div>
           <FloatLabel variant="on">
-            <InputText id="names" v-model="patient.names" class="w-full" disabled />
+            <InputText id="names" v-model="transfusion.patient.names" class="w-full" disabled />
             <label for="names">Nombres del paciente</label>
           </FloatLabel>
         </div>
@@ -83,8 +89,17 @@ const priorityOptions = [];
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <div>
           <FloatLabel variant="on">
-            <Select id="id_bloodGroup" v-model="patient.bloodGroup" :options="bloodGroupOptions" optionLabel="label" optionValue="value" class="w-full" disabled />
+            <Select id="id_bloodGroup" v-model="transfusion.patient.bloodGroup" :options="bloodGroupOptions" optionLabel="label" optionValue="value" class="w-full" disabled />
             <label for="id_bloodGroup">Grupo sanguíneo</label>
+          </FloatLabel>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div>
+          <FloatLabel variant="on">
+            <Select id="doctor_request" v-model="transfusion.doctorRequest" :options="[]" optionLabel="label" optionValue="value" class="w-full" />
+            <label for="doctor_request">Médico</label>
           </FloatLabel>
         </div>
       </div>
@@ -92,13 +107,13 @@ const priorityOptions = [];
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
           <FloatLabel variant="on">
-            <InputText id="bed" v-model="patient.bed" class="w-full" />
+            <InputText id="bed" v-model="transfusion.bed" class="w-full" />
             <label for="bed">Cama</label>
           </FloatLabel>
         </div>
         <div>
           <FloatLabel variant="on">
-            <InputText id="service" v-model="patient.service" class="w-full" />
+            <InputText id="service" v-model="transfusion.service" class="w-full" />
             <label for="service">Servicio</label>
           </FloatLabel>
         </div>
@@ -107,7 +122,7 @@ const priorityOptions = [];
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <div>
           <FloatLabel variant="on">
-            <Select id="id_priority" v-model="patient.priority" :options="priorityOptions" optionLabel="label" optionValue="value" class="w-full" />
+            <Select id="id_priority" v-model="transfusion.priority" :options="priorityOptions" optionLabel="label" optionValue="value" class="w-full" />
             <label for="id_priority">Prioridad</label>
           </FloatLabel>
         </div>
@@ -124,7 +139,7 @@ const priorityOptions = [];
             ]"
             :key="index"
           >
-            <RadioButton :inputId="`tests-${index}`" :value="option.value" v-model="patient.tests" name="tests" />
+            <RadioButton :inputId="`tests-${index}`" :value="option.value" v-model="transfusion.crossTests" name="tests" />
             <label :for="`tests-${index}`">{{ option.label }}</label>
           </div>
         </div>
@@ -132,14 +147,14 @@ const priorityOptions = [];
 
       <div class="mb-4">
         <FloatLabel variant="on">
-          <Textarea id="diagnosis" v-model="patient.diagnosis" rows="5" class="w-full resize-none" />
+          <Textarea id="diagnosis" v-model="transfusion.diagnosis" rows="5" class="w-full resize-none" />
           <label for="diagnosis">Diagnostico</label>
         </FloatLabel>
       </div>
 
       <div class="mb-4">
         <FloatLabel variant="on">
-          <Textarea id="reason" v-model="patient.reason" rows="5" class="w-full resize-none" />
+          <Textarea id="reason" v-model="transfusion.reason" rows="5" class="w-full resize-none" />
           <label for="reason">Motivo</label>
         </FloatLabel>
       </div>

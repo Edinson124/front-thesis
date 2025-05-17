@@ -1,3 +1,4 @@
+import EditTransfusion from '@/views/transfusions/transfusions/EditTransfusion.vue';
 import PerformedTransfusion from '@/views/transfusions/transfusions/PerformedTransfusion.vue';
 import SearchTranfusion from '@/views/transfusions/transfusions/SearchTranfusion.vue';
 import Transfusions from '@/views/transfusions/transfusions/Transfusions.vue';
@@ -23,5 +24,16 @@ export default [
     path: '/transfusion/register/performed',
     name: 'transfusion-register-performed',
     component: PerformedTransfusion
+  },
+
+  {
+    path: '/transfusion/new',
+    name: 'transfusion-new',
+    component: EditTransfusion
+  },
+  {
+    path: '/transfusion/:id',
+    name: 'transfusion-edit',
+    component: EditTransfusion
   }
 ];

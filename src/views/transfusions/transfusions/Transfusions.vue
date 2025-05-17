@@ -120,7 +120,7 @@ onMounted(async () => {
     <div>
       <div class="w-full mb-4 flex flex-wrap justify-between">
         <h2 class="text-xl font-semibold mb-4">Resultados de Solicitudes</h2>
-        <Button class="h-8 w-full md:w-[50%] sm:max-w-[16rem]" label="Nueva Solicitud" icon="pi pi-plus" severity="success" as="router-link" to="/admin/users/new" />
+        <Button class="h-8 w-full md:w-[50%] sm:max-w-[16rem]" label="Nueva Solicitud" icon="pi pi-plus" severity="success" as="router-link" to="/transfusion/new" />
       </div>
       <DataTable
         :value="transfusionStore.transfusions"

@@ -22,7 +22,6 @@ export const MenuRoutes = [
   { id: 'inventory-maturity', label: 'Unidades por vencer', parentId: 'inventory' },
   { id: 'transfusion', label: 'Transfusión', icon: 'mdi mdi-blood-bag', parentId: 'root' },
   { id: 'transfusion-patient-new', label: 'Registrar paciente', to: '/transfusion/patient/new', parentId: 'transfusion' },
-  { id: 'transfusion-units', label: 'Solicitud de unidades', to: '/transfusion/requests', parentId: 'transfusion' },
   { id: 'transfusion-patient-search', label: 'Consultar paciente', to: '/transfusion/patient/search', parentId: 'transfusion' },
   { id: 'transfusion-search', label: 'Solicitudes de tranfusión', to: '/transfusion/search', parentId: 'transfusion' },
   { id: 'transfusion-search-performed', label: 'Resultado de tranfusión', to: '/transfusion/search/performed', parentId: 'transfusion' },
@@ -56,8 +55,8 @@ export const extraRoutes = [
   { id: 'donation-extraction', label: 'Extracción', to: '/donation/extraction', parentId: 'donation-view' },
   { id: 'donation-sample', label: 'Muestras', to: '/donation/sample', parentId: 'donation-view' },
   { id: 'donation-physical-exam', label: 'Exámen Físico', to: '/donation/physical', parentId: 'donation-view' },
-  { id: 'transfusion-request-new', label: 'Nueva Solicitud', to: '/transfusion/requests/new', parentId: 'transfusion' },
-  { id: 'transfusion-request-edit', label: 'Editar Solicitud', to: '/transfusion/requests/:id', parentId: 'transfusion' }
+  { id: 'transfusion-new', label: 'Nueva Solicitud', to: '/transfusion/new', parentId: 'transfusion' },
+  { id: 'transfusion-edit', label: 'Editar Solicitud', to: '/transfusion/:id', parentId: 'transfusion' }
 ];
 
 export const breadcrumbs = [...MenuRoutes, ...extraRoutes];

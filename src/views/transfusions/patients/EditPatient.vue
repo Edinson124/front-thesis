@@ -32,7 +32,8 @@ const patient = reactive({
   district: null,
   address: '',
   allergies: '',
-  bloodGroup: ''
+  bloodGroup: '',
+  womanBirths: null
 });
 
 const maxDate = ref(new Date());
@@ -171,7 +172,8 @@ const rules = computed(() => ({
   province: { requiredIf: requiredIf('Provincia', () => patient.region) },
   district: { requiredIf: requiredIf('Distrito', () => patient.province) },
   address: { required: required('Dirección'), minLength: minLength('Dirección', 5) },
-  bloodGroup: { required: required('Grupo sanguíneo') }
+  bloodGroup: { required: required('Grupo sanguíneo') },
+  womanBirths: { requiredIf: requiredIf('Número de partos', () => patient.gender === 'Femenino') }
 }));
 
 const v$ = useVuelidate(rules, patient);
@@ -388,6 +390,14 @@ const cancel = () => {
           <label for="id_bloodGroup">Grupo sanguíneo</label>
         </FloatLabel>
         <Message v-if="v$.bloodGroup?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.bloodGroup.$errors[0].$message }}</Message>
+      </div>
+
+      <div v-if="patient.gender === 'Femenino'">
+        <FloatLabel variant="on">
+          <InputNumber id="womanBirths" v-model="patient.womanBirths" class="w-full" :invalid="v$.womanBirths?.$error" />
+          <label for="womanBirths">Número de partos</label>
+        </FloatLabel>
+        <Message v-if="v$.womanBirths?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.womanBirths.$errors[0].$message }}</Message>
       </div>
     </div>
 
