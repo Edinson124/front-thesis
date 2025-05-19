@@ -1,4 +1,4 @@
-import { get } from '@/api';
+import { get, post } from '@/api';
 
 const getTransfusionsByDocumentPatient = async (documentNumber, documentType, page = 0) => {
   try {
@@ -54,6 +54,7 @@ const getTranfusionDetail = async (id) => {
     return null;
   }
 };
+
 const getTranfusionAllInfo = async (id) => {
   try {
     const response = await get(`/transfusion/${id}`);
@@ -63,10 +64,55 @@ const getTranfusionAllInfo = async (id) => {
     return null;
   }
 };
+
+const registerTransfusionResult = async (transfusionId, unitId, result, observations) => {
+  try {
+    const response = await post(`/transfusion/${transfusionId}/result/unit/${unitId}`, { result, observations });
+    return response;
+  } catch (error) {
+    console.error('Error al registrar resultado de la transfusión: ', error);
+    return null;
+  }
+};
+
+const addTransfusionUnit = async (transfusionId, unit) => {
+  try {
+    const response = await post(`/transfusion/${transfusionId}/result/unit`, { unit });
+    return response;
+  } catch (error) {
+    console.error('Error al añadir unidad a transfusión: ', error);
+    return null;
+  }
+};
+
+const removeTransfusionUnit = async (transfusionId, unitId) => {
+  try {
+    const response = await post(`/transfusion/${transfusionId}/result/unit/${unitId}/remove`);
+    return response;
+  } catch (error) {
+    console.error('Error al verificar transfusión: ', error);
+    return null;
+  }
+};
+
+const freeTransusionUnits = async (transfusionId, tuitionNumber, doctor) => {
+  try {
+    const response = await post(`/transfusion/${transfusionId}/units/free`, { tuitionNumber, doctor });
+    return response;
+  } catch (error) {
+    console.error('Error al liberar unidades de la transfusión: ', error);
+    return null;
+  }
+};
+
 export default {
   getTransfusionsByDocumentPatient,
   getTransfusions,
   verifyTransfusionByCode,
   getTranfusionDetail,
-  getTranfusionAllInfo
+  getTranfusionAllInfo,
+  registerTransfusionResult,
+  addTransfusionUnit,
+  removeTransfusionUnit,
+  freeTransusionUnits
 };

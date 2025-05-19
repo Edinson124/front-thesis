@@ -67,6 +67,46 @@ export const useTransfusionStore = defineStore('tranfusion', () => {
     }
   };
 
+  const registerTransfusionResult = async (transfusionId, unitId, result, observations) => {
+    try {
+      const response = await transfusionService.registerTransfusionResult(transfusionId, unitId, result, observations);
+      return response;
+    } catch (error) {
+      console.error('Error al verificar transfusión: ', error);
+      return null;
+    }
+  };
+
+  const addTransfusionUnit = async (transfusionId, unit) => {
+    try {
+      const response = await transfusionService.addTransfusionUnit(transfusionId, unit);
+      return response;
+    } catch (error) {
+      console.error('Error al añadir unidad a transfusión: ', error);
+      return null;
+    }
+  };
+
+  const removeTransfusionUnit = async (transfusionId, unitId) => {
+    try {
+      const response = await transfusionService.removeTransfusionUnit(transfusionId, unitId);
+      return response;
+    } catch (error) {
+      console.error('Error al eliminar unidad de transfusión: ', error);
+      return null;
+    }
+  };
+
+  const freeTransusionUnits = async (transfusionId, tuitionNumber, doctor) => {
+    try {
+      const response = await transfusionService.freeTransusionUnits(transfusionId, tuitionNumber, doctor);
+      return response;
+    } catch (error) {
+      console.error('Error al verificar transfusión: ', error);
+      return null;
+    }
+  };
+
   return {
     tranfusionByPatient,
     totalRecordsTranfusionByPatient,
@@ -78,6 +118,10 @@ export const useTransfusionStore = defineStore('tranfusion', () => {
     getTransfusions,
     verifyTransfusionByCode,
     getTranfusionDetail,
-    getTranfusionAllInfo
+    getTranfusionAllInfo,
+    registerTransfusionResult,
+    addTransfusionUnit,
+    removeTransfusionUnit,
+    freeTransusionUnits
   };
 });

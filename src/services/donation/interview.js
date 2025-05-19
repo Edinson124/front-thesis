@@ -22,7 +22,19 @@ const createInterviewAnswer = async (answer, donationId) => {
   }
 };
 
+const getInterviewAnswers = async (donationId) => {
+  try {
+    // const answer = JSON.stringify(answerObject);
+    const response = await get(`/interview-answer/${donationId}`);
+    return response;
+  } catch (error) {
+    console.error('Error al registrar respuestas de entrevista: ', error);
+    return null;
+  }
+};
+
 export default {
   getInterviewStructure,
-  createInterviewAnswer
+  createInterviewAnswer,
+  getInterviewAnswers
 };

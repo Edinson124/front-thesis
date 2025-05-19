@@ -1,5 +1,6 @@
 <script setup>
 import InfoTransfusions from '@/components/transfusion/InfoTransfusions.vue';
+import UnitTable from '@/components/unit/UnitTable.vue';
 import { useTransfusionStore } from '@/stores/transfusion/transfusions';
 import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
@@ -56,12 +57,20 @@ onMounted(async () => {
           <Column v-for="col of columnsRequest" :key="col.field" :field="col.field" :header="col.header" :sortable="col.sortable"> </Column>
         </DataTable>
       </div>
+
       <!-- Unidades asignada -->
-      <div class="mt-4">
-        <div class="mb-2">
-          <h4>Unidades Asignadass</h4>
-        </div>
-      </div>
+      <UnitTable
+        class="my-4"
+        title="Unidades asignadas"
+        type="resultData"
+        type-modal="result"
+        :loading="isLoading"
+        v-model="transfusion.result"
+        :totalUnits="transfusion.result?.lenght"
+        @edit="(index, unit) => transfusionStore.registerTransfusionResult(index, unit)"
+        @add="(unit) => transfusionStore.addTransfusionUnit(unit)"
+        @remove="(unit) => transfusionStore.removeTransfusionUnit(unit)"
+      />
 
       <!-- Acciones -->
       <div class="flex justify-between">

@@ -4,7 +4,8 @@ import router from '@/router';
 import { useInterviewStore } from '@/stores/donation/interview';
 import { requiredIfMessage, requiredMessage } from '@/validation/validators';
 import useVuelidate from '@vuelidate/core';
-import { computed, onMounted, ref } from 'vue';
+import { useToast } from 'primevue';
+import { computed, nextTick, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 const answers = ref({});
@@ -13,6 +14,9 @@ const interviewStore = useInterviewStore();
 const route = useRoute();
 const isLoading = ref(true);
 const donationId = ref(null);
+const activeTab = ref(null);
+const toast = useToast();
+const refTitle = ref(null);
 
 const rules = computed(() => {
   const rulesObject = {};
@@ -68,15 +72,62 @@ const handleSave = async () => {
     }
 
     await interviewStore.createInterviewAnswer(savedAnswers, donationId.value);
+
+    toast.add({
+      severity: 'success',
+      summary: 'Formulario completado',
+      detail: 'Se guardaron las respuestas con éxito.',
+      life: 4000
+    });
   } else {
     console.log('Hay errores en el formulario.');
+
+    for (const section of DonorInterviewQuestions.value.sections) {
+      let sectionWithError = false;
+      for (const question of section.questions) {
+        if (question.type === 'subtitle') continue;
+        if (v$.value.answers[question.id]?.$error) {
+          activeTab.value = section.id;
+          sectionWithError = true;
+          break;
+        }
+      }
+      if (sectionWithError) {
+        break;
+      }
+    }
+
+    nextTick(() => {
+      const el = refTitle.value;
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+
+    toast.add({
+      severity: 'error',
+      summary: 'Formulario incompleto',
+      detail: 'Por favor completa todos los campos obligatorios.',
+      life: 4000
+    });
   }
 };
+
 onMounted(async () => {
   const response = await interviewStore.getInterviewStructure();
   DonorInterviewQuestions.value = response;
   const donationRoute = route.query.donationId;
   donationId.value = donationRoute;
+
+  console.log(donationId.value);
+  if (donationId.value) {
+    const answersResponse = await interviewStore.getInterviewAnswers(donationId.value);
+    if (answersResponse) {
+      Object.assign({}, answers, answersResponse.answer);
+    }
+  }
+
+  activeTab.value = DonorInterviewQuestions.value.sections?.[0]?.id ?? null;
   isLoading.value = false;
 });
 </script>
@@ -86,12 +137,12 @@ onMounted(async () => {
     <ProgressSpinner style="width: 50px; height: 50px" />
   </div>
   <div v-else class="card">
-    <div class="mb-4 flex flex-wrap justify-between items-center gap-2">
+    <div class="mb-4 flex flex-wrap justify-between items-center gap-2" ref="refTitle">
       <h3 class="min-w-[10rem] !mt-2">Entrevista de donación</h3>
       <Button class="h-8 w-full md:grow max-w-[16rem] md:max-w-[16rem]" label="Diferir donante" severity="danger" @click="() => {}" />
     </div>
 
-    <Tabs :value="DonorInterviewQuestions.sections[0].id">
+    <Tabs v-model:value="activeTab">
       <TabList>
         <Tab v-for="section in DonorInterviewQuestions.sections" :value="section.id" :key="section.id">{{ section.name }}</Tab>
       </TabList>

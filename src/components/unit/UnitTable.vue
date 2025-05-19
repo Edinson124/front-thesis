@@ -76,7 +76,7 @@ const columns =
 <template>
   <div class="my-4">
     <div class="flex justify-between items-center my-4">
-      <h2 class="text-xl">{{ title }}</h2>
+      <h4>{{ title }}</h4>
       <Button label="Nueva Unidad" icon="pi pi-plus" class="p-button-success" @click="openNewUnitModal" />
     </div>
 

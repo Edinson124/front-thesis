@@ -22,8 +22,19 @@ export const useInterviewStore = defineStore('interview', () => {
     }
   };
 
+  const getInterviewAnswers = async (donationId) => {
+    try {
+      const response = await interviewService.getInterviewAnswers(donationId);
+      return response;
+    } catch (error) {
+      console.error('Error al obtener entrevista: ', error);
+      return null;
+    }
+  };
+
   return {
     getInterviewStructure,
-    createInterviewAnswer
+    createInterviewAnswer,
+    getInterviewAnswers
   };
 });
