@@ -10,18 +10,26 @@ const transfusionId = computed(() => route.query.transfusionId);
 const isLoading = ref(true);
 const route = useRoute();
 
+const showModalFreeUnits = ref(false);
+
 const transfusion = ref(null);
 const columnsRequest = [
   { field: 'id', header: 'Código' },
   { field: 'unitType', header: 'Unidad ' },
   { field: 'requestedQuantity', header: 'Cantidad' }
 ];
+
 onMounted(async () => {
   const response = await transfusionStore.getTranfusionAllInfo(transfusionId.value);
   transfusion.value = response;
-  console.log(response);
   isLoading.value = false;
 });
+
+const tuitionNumber = ref('');
+const doctor = ref('');
+const freeUnits = async () => {
+  const response = await transfusionStore.freeTransusionUnits(transfusionId.value, tuitionNumber, doctor);
+};
 </script>
 <template>
   <div v-if="isLoading" class="card absolute inset-0 bg-white/50 flex items-center justify-center z-10">
@@ -75,7 +83,7 @@ onMounted(async () => {
       <!-- Acciones -->
       <div class="flex justify-between">
         <div class="flex flex-1 justify-start px-8 my-8 gap-4">
-          <Button class="h-10 w-full md:max-w-[16rem]" label="Liberar unidades" severity="success" @click="handleSave" />
+          <Button class="h-10 w-full md:max-w-[16rem]" label="Liberar unidades" severity="success" @click="() => (showModalFreeUnits = true)" />
         </div>
         <div class="flex flex-1 justify-end px-8 my-8 gap-4">
           <Button class="h-10 w-full md:max-w-[16rem] btn-clean" label="Cancelar" @click="router.back()" />
@@ -98,5 +106,25 @@ onMounted(async () => {
         </Fieldset>
       </div>
     </div>
+
+    <Dialog v-model:visible="showModalFreeUnits" header="Liberación de unidades" :modal="true" :closable="false" :style="{ width: '800px' }">
+      <div>
+        <h6>Identificación médico que recibió las unidades</h6>
+
+        <FloatLabel variant="on" class="mt-4 w-1/2">
+          <InputText id="tuitionNumber" v-model="tuitionNumber" class="w-full" />
+          <label for="tuitionNumber">Nro Colegiatura</label>
+        </FloatLabel>
+
+        <FloatLabel variant="on" class="mt-4 w-full">
+          <InputText id="doctor" v-model="doctor" class="w-full" />
+          <label for="doctor">Nombres del médico</label>
+        </FloatLabel>
+      </div>
+      <template #footer>
+        <Button label="Cancelar" class="min-w-40 btn-clean" @click="() => (showModalFreeUnits = false)" />
+        <Button label="Aceptar" class="min-w-40 p-button-success" @click="freeUnits" />
+      </template>
+    </Dialog>
   </div>
 </template>

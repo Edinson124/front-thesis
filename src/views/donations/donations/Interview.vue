@@ -119,7 +119,6 @@ onMounted(async () => {
   const donationRoute = route.query.donationId;
   donationId.value = donationRoute;
 
-  console.log(donationId.value);
   if (donationId.value) {
     const answersResponse = await interviewStore.getInterviewAnswers(donationId.value);
     if (answersResponse) {
@@ -197,7 +196,7 @@ onMounted(async () => {
         label="Cancelar"
         @click="
           () => {
-            router.back();
+            router.push({ path: 'view', query: { donationId: donationId } });
           }
         "
       />

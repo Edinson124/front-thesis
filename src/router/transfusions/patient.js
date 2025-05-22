@@ -14,6 +14,11 @@ export default [
     component: EditPatient
   },
   {
+    path: '/transfusion/patient/:type/:doc/edit',
+    name: 'transfusion-patient-edit',
+    component: EditPatient
+  },
+  {
     path: '/transfusion/patient/:type/:doc',
     name: 'patient-view',
     component: ViewPatient

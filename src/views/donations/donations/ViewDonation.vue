@@ -113,7 +113,7 @@ onMounted(async () => {
           <div class="mb-1"><span class="font-medium">Registrado el : </span>{{ donation.donation.createdAtInterviewAnswer ? donation.donation.createdAtInterviewAnswer : '-' }}</div>
           <div class="mb-1"><span class="font-medium">Registrado por : </span>{{ donation.donation.createdByNameInterviewAnswer ?? '-' }}</div>
           <div class="flex justify-center mt-3">
-            <Button v-if="donation.donation.interviewAnswerId" class="h-8 btn-view" label="Visualizar" />
+            <Button v-if="donation.donation.interviewAnswerId" class="h-8 btn-view" label="Visualizar" @click="redirectInterview" />
             <Button v-else label="Registrar entrevista" class="p-button-success p-button-sm" @click="redirectInterview" />
           </div>
         </Fieldset>

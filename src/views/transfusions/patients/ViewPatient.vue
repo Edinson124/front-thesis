@@ -40,8 +40,11 @@ const columns = [
 onMounted(async () => {
   const documentNumber = route.params.doc;
   const documentType = route.params.type;
-  await transfusionStore.getTransfusionsByDocumentPatient(documentNumber, documentType);
-  const patientReponse = await patientStore.getPatient(documentNumber, documentType);
+  // await transfusionStore.getTransfusionsByDocumentPatient(documentNumber, documentType);
+  // const patientReponse = await patientStore.getPatient(documentNumber, documentType);
+
+  const [transfusionReponse, patientReponse] = await Promise.all([transfusionStore.getTransfusionsByDocumentPatient(documentNumber, documentType), patientStore.getPatient(documentNumber, documentType)]);
+
   Object.assign(patient, { ...patient, ...patientReponse });
 });
 
