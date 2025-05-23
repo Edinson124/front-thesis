@@ -55,7 +55,7 @@ export const useUsersStore = defineStore('users', () => {
       await usersService.editUser(user);
       return true;
     } catch (error) {
-      console.error('Error al crear usuario: ', error);
+      console.error('Error al editar usuario: ', error);
       return false;
     }
   };

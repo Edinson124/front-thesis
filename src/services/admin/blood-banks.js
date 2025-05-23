@@ -88,6 +88,25 @@ const toogleStatusBloodBank = async (bloodBankId) => {
   }
 };
 
+const getBloodBanksOptionsAddNetwork = async (filters = {}, page = 0) => {
+  try {
+    let queryString = new URLSearchParams();
+    queryString.append('page', page);
+
+    for (const key in filters) {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        queryString.append(key, filters[key]);
+      }
+    }
+
+    const response = await get(`/blood-bank/optionsNetwork?${queryString.toString()}`);
+    return response;
+  } catch (error) {
+    console.error('Error al obtener bancos de sangre: ', error);
+    return [];
+  }
+};
+
 export default {
   getBloodBanks,
   getBloodBanksOptions,
@@ -95,5 +114,6 @@ export default {
   newBloodBank,
   editBloodBank,
   getTypesBloodBank,
-  toogleStatusBloodBank
+  toogleStatusBloodBank,
+  getBloodBanksOptionsAddNetwork
 };

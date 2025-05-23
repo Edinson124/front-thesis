@@ -181,9 +181,9 @@ const rules = computed(() => ({
   district: { requiredIf: requiredIf('Distrito', () => user.province) },
   address: { required: required('Dirección'), minLength: minLength('Dirección', 5) },
   status: {},
-  bloodBankId: {
-    requiredIf: requiredIf('Banco de sangre', () => user.roleId !== 1) // Cambia 1 por el ID real de "Administrador"
-  },
+  // bloodBankId: {
+  //   requiredIf: requiredIf('Banco de sangre', () => user.roleId !== 1) // Cambia 1 por el ID real de "Administrador"
+  // },
   profileImageUrl: {}
 }));
 const v$ = useVuelidate(rules, user);
@@ -191,8 +191,8 @@ const documentNumberVerified = ref(null);
 
 const saveUser = async () => {
   const isValid = await v$.value.$validate();
-  await verifyDocumentNumber();
-  if (!isValid || !documentNumberVerified.value) return;
+  // await verifyDocumentNumber();
+  if (!isValid) return;
 
   const saveMethod = isNewUser.value ? usersStore.newUser : usersStore.editUser;
   const success = await saveMethod(user);
