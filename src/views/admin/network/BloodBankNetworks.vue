@@ -1,12 +1,15 @@
 <script setup>
+import { useBloodBanksStore } from '@/stores/admin/blodd-banks';
 import { useNetworkStore } from '@/stores/admin/network';
 import { computed, onMounted, reactive, ref, watchEffect } from 'vue';
 
 // Services
 const networkStore = useNetworkStore();
+const bloodBanksStore = useBloodBanksStore();
 
 // State
 const loading = ref(false);
+const loadingBlooBanks = ref(false);
 const first = ref(0);
 const networks = computed(() => networkStore.networks);
 const activeIndexes = ref([]);
@@ -47,7 +50,9 @@ const searchNetwork = async (event) => {
 
 // Sample data for demonstration
 onMounted(async () => {
-  await searchNetwork();
+  loadingBlooBanks.value = true;
+  await Promise.all([searchNetwork(), bloodBanksStore.getBloodBanksOptions()]);
+  loadingBlooBanks.value = false;
 });
 
 const preventCollapse = () => {
@@ -71,17 +76,23 @@ watchEffect(() => {
     </div>
 
     <!-- Search and Add Network Controls -->
-    <div class="flex flex-col md:flex-row gap-2 md:gap-4 mb-6">
-      <div class="network-filters | flex flex-wrap gap-2 w-full md:w-[50%] mb-2 md:mb-0">
-        <div class="network-filter | w-full">
+    <div class="grid grid-cols-12 gap-4">
+      <div class="col-span-12 md:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4 mb-1">
+        <div>
           <FloatLabel variant="on" class="w-full">
             <InputText class="w-full" id="name" v-model="filters.name" aria-describedby="username-help" />
             <label for="name">Nombre</label>
           </FloatLabel>
         </div>
+        <div>
+          <FloatLabel variant="on" class="w-full">
+            <Select id="idBloodBank" v-model="filters.idBloodBank" :options="bloodBanksStore.bloodBanksOptions" optionLabel="name" optionValue="id" class="w-full" showClear filter :loading="loadingBlooBanks" />
+            <label for="idBloodBank">Banco de sangre</label>
+          </FloatLabel>
+        </div>
       </div>
-      <div class="bloodbank-filters-buttons mb-4 w-full md:w-[50%] flex flex-col md:flex-row md:grow gap-1 items-center">
-        <Button class="h-8 w-full md:w-[30%]" label="Buscar" severity="info" @click="searchNetwork()" />
+      <div class="col-span-12 md:col-span-4 flex flex-col md:flex-row items-center">
+        <Button class="h-8 w-full md:w-[30%] md:mr-2 mb-2 md:mb-0" label="Buscar" severity="info" @click="searchNetwork()" />
         <Button class="h-8 w-full md:w-[30%] md:max-w-[16rem] md:min-w-[9rem]" label="Nueva Red" icon="pi pi-plus" severity="success" as="router-link" to="/admin/network/new" />
       </div>
     </div>
@@ -98,7 +109,7 @@ watchEffect(() => {
                 <span>{{ network.name }}</span>
               </div>
               <div class="flex ml-1" @click.stop>
-                <Button class="h-8 btn-view" label="Visualizar" tooltip="Editar nombre" />
+                <Button class="h-8 btn-view" label="Visualizar" as="router-link" :to="`/admin/network/${network.id}`" />
               </div>
             </div>
           </AccordionHeader>

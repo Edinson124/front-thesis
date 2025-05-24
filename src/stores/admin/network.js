@@ -36,7 +36,7 @@ export const useNetworkStore = defineStore('network', () => {
   };
   const editNetwork = async (network) => {
     try {
-      await networkService.editUser(network);
+      await networkService.editNetwork(network);
       return true;
     } catch (error) {
       console.error('Error al editar red de banco de sangre: ', error);
@@ -57,6 +57,16 @@ export const useNetworkStore = defineStore('network', () => {
     }
   };
 
+  const getNetworkById = async (networkId) => {
+    try {
+      const response = await networkService.getNetworkById(networkId);
+      return response;
+    } catch (error) {
+      console.error('Error al obtener red de banco de sangre: ', error);
+      return null;
+    }
+  };
+
   return {
     networks,
     totalRecords,
@@ -67,6 +77,7 @@ export const useNetworkStore = defineStore('network', () => {
     getNetworks,
     newNetwork,
     editNetwork,
-    getBloodBanksOptionsAddNetwork
+    getBloodBanksOptionsAddNetwork,
+    getNetworkById
   };
 });

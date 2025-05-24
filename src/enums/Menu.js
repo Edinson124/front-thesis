@@ -40,6 +40,7 @@ export const extraRoutes = [
   { id: 'admin-blood-banks-new', label: 'Nuevo Banco de Sangre', to: '/admin/blood-banks/new', parentId: 'admin-blood-banks' },
   { id: 'admin-blood-banks-edit', label: 'Editar Banco de Sangre', to: '/admin/blood-banks/:id', parentId: 'admin-blood-banks' },
   { id: 'admin-network-new', label: 'Nueva Red', to: '/admin/network/new', parentId: 'admin-network' },
+  { id: 'admin-network-edit', label: 'Editar Red', to: '/admin/network/:id', parentId: 'admin-network' },
   { id: 'donor-view', label: 'Visualizar donante', to: '/donation/donor/:type/:doc', parentId: 'donor-search' },
   { id: 'donation-new', label: 'Registrar donación', to: '/donation/new/:type/:doc', parentId: 'donation-search-donor' },
   { id: 'donation-view', label: 'Visualizar donación', to: '/donation/view', parentId: 'donation-search' },

@@ -39,8 +39,19 @@ const editNetwork = async (network) => {
   }
 };
 
+const getNetworkById = async (networkId) => {
+  try {
+    const response = await get(`/bb-network/${networkId}`);
+    return response;
+  } catch (error) {
+    console.error('Error al obtener red de banco de sangre: ', error);
+    return null;
+  }
+};
+
 export default {
   getNetworks,
   newNetwork,
-  editNetwork
+  editNetwork,
+  getNetworkById
 };

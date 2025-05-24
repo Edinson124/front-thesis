@@ -11,5 +11,10 @@ export default [
     path: '/admin/network/new',
     name: 'admin-network-new',
     component: EditNetwork
+  },
+  {
+    path: '/admin/network/:id',
+    name: 'admin-network-edit',
+    component: EditNetwork
   }
 ];

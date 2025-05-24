@@ -54,7 +54,7 @@ const addBloodBank = (banco) => {
     // Agregar a la lista de bancos asociados
     bloodBankInNetwork.value.push({
       ...banco,
-      fechaAsociacion: fechaFormateada
+      createdAt: fechaFormateada
     });
     idBloodBanks.value.push(banco.id);
   }
@@ -102,8 +102,10 @@ onMounted(async () => {
   if (networkId) {
     isNewNetwork.value = false;
     const networkResponse = await networkStore.getNetworkById(networkId);
-    Object.assign(networkBB, { ...networkBB, ...networkResponse });
-    bloodBankInNetwork.value = networkResponse.bloodBanks || [];
+    networkBB.description = networkResponse.description;
+    networkBB.name = networkResponse.name;
+    networkBB.id = networkId;
+    bloodBankInNetwork.value = networkResponse.bloodBankDetails || [];
     idBloodBanks.value = bloodBankInNetwork.value.map((bank) => bank.id);
   }
 });
@@ -137,7 +139,11 @@ onMounted(async () => {
       <DataTable :value="bloodBankInNetwork" class="p-datatable-sm" responsiveLayout="scroll" stripedRows :rowHover="true">
         <Column field="id" header="ID" style="width: 10%"></Column>
         <Column field="name" header="Banco de sangre" style="width: 40%"></Column>
-        <Column field="fechaAsociacion" header="Fecha de asociación" style="width: 25%"></Column>
+        <Column field="createdAt" header="Fecha de asociación" style="width: 25%">
+          <template #body="{ data }">
+            {{ data.createdAt.split(' ')[0] }}
+          </template>
+        </Column>
         <Column header="Acciones" style="width: 25%">
           <template #body="slotProps">
             <Button label="Desvincular" class="p-button-danger p-button-sm" @click="unlinkShowModal(slotProps.data)" />
