@@ -5,6 +5,7 @@ import adminRoutes from './admin';
 import authRoutes from './auth';
 import donationRoutes from './donations';
 import laboratoryRoutes from './laboratory';
+import netwroksRoutes from './networks';
 import storageRoutes from './storage';
 import templateRoutes from './template';
 import transfusionRoutes from './transfusions';
@@ -41,6 +42,12 @@ const router = createRouter({
       path: '/',
       component: AppLayout,
       children: transfusionRoutes,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/',
+      component: AppLayout,
+      children: netwroksRoutes,
       meta: { requiresAuth: true }
     },
     /**

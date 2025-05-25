@@ -25,10 +25,10 @@ export const MenuRoutes = [
   { id: 'transfusion-patient-search', label: 'Consultar paciente', to: '/transfusion/patient/search', parentId: 'transfusion' },
   { id: 'transfusion-search', label: 'Solicitudes de tranfusión', to: '/transfusion/search', parentId: 'transfusion' },
   { id: 'transfusion-search-performed', label: 'Resultado de tranfusión', to: '/transfusion/search/performed', parentId: 'transfusion' },
-  { id: 'extern', label: 'Redes', icon: 'mdi mdi-lan', parentId: 'root' },
-  { id: 'extern-query', label: 'Consultar stock externo', parentId: 'extern' },
-  { id: 'extern-support', label: 'Solicitudes de apoyo', parentId: 'extern' },
-  { id: 'extern-shipment', label: 'Solicitudes de envio', parentId: 'extern' },
+  { id: 'networks', label: 'Redes', icon: 'mdi mdi-lan', parentId: 'root' },
+  { id: 'networks-associated', label: ' Visualizar redes asociadas', to: '/networks', parentId: 'networks' },
+  { id: 'networks-shipments', label: 'Solicitudes de tranferencia', to: '/networks/shipments', parentId: 'networks' },
+  { id: 'networks-my-shipments', label: 'Mis solicitudes de transferencia', parentId: 'networks' },
   { id: 'interoperability', label: 'Interoperabilidad', icon: 'mdi mdi-wan', parentId: 'root' },
   { id: 'interoperability-query', label: 'Consulta información externa', parentId: 'interoperability' }
 ];
@@ -58,7 +58,8 @@ export const extraRoutes = [
   { id: 'donation-sample', label: 'Muestras', to: '/donation/sample', parentId: 'donation-view' },
   { id: 'donation-physical-exam', label: 'Exámen Físico', to: '/donation/physical', parentId: 'donation-view' },
   { id: 'transfusion-new', label: 'Nueva Solicitud', to: '/transfusion/new', parentId: 'transfusion' },
-  { id: 'transfusion-edit', label: 'Editar Solicitud', to: '/transfusion/:id', parentId: 'transfusion' }
+  { id: 'transfusion-edit', label: 'Editar Solicitud', to: '/transfusion/:id', parentId: 'transfusion' },
+  { id: 'networks-associated-stock', label: ' Visualizar stock', to: '/networks', parentId: 'networks-associated' }
 ];
 
 export const breadcrumbs = [...MenuRoutes, ...extraRoutes];
