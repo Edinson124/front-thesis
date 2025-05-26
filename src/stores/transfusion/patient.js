@@ -1,11 +1,7 @@
 import patientService from '@/services/tranfusion/patient';
 import { defineStore } from 'pinia';
-import { reactive, ref } from 'vue';
 
 export const usePatientStore = defineStore('patient', () => {
-  const unitsFromRequest = reactive([]);
-  const totalUnitsFromRequest = ref(0);
-
   const validatePatient = async (documentNumber, documentType) => {
     try {
       const response = await patientService.validatePatient(documentNumber, documentType);
@@ -55,41 +51,11 @@ export const usePatientStore = defineStore('patient', () => {
     }
   };
 
-  const getUnitsFromRequest = async (idRequest) => {
-    try {
-      const response = await patientService.getUnits();
-      unitsFromRequest.splice(0, unitsFromRequest.length, ...response);
-      totalUnitsFromRequest.value = response.length;
-      return response;
-    } catch (error) {
-      console.error('Error al obtener las unidades: ', error);
-      return false;
-    }
-  };
-
-  const addUnitFromRequest = (unit) => {
-    unitsFromRequest.push({ id: unitsFromRequest.length + 1, ...unit });
-  };
-
-  const editUnitFromRequest = (index, updatedUnit) => {
-    unitsFromRequest[index] = { ...unitsFromRequest[index], ...updatedUnit };
-  };
-
-  const removeUnitFromRequest = (index) => {
-    unitsFromRequest.splice(index, 1);
-  };
-
   return {
     validatePatient,
     verifyPatient,
     getPatient,
     newPatient,
-    editPatient,
-    getUnitsFromRequest,
-    addUnitFromRequest,
-    editUnitFromRequest,
-    removeUnitFromRequest,
-    unitsFromRequest,
-    totalUnitsFromRequest
+    editPatient
   };
 });

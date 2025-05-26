@@ -65,6 +65,16 @@ const getTranfusionAllInfo = async (id) => {
   }
 };
 
+const registerTransfusionRequest = async (transfusion) => {
+  try {
+    const response = await post(`/transfusion`, { transfusion });
+    return response;
+  } catch (error) {
+    console.error('Error al registrar nueva transfusión: ', error);
+    return null;
+  }
+};
+
 const registerTransfusionResult = async (transfusionId, unitId, result, observations) => {
   try {
     const response = await post(`/transfusion/${transfusionId}/result/unit/${unitId}`, { result, observations });
@@ -111,6 +121,7 @@ export default {
   verifyTransfusionByCode,
   getTranfusionDetail,
   getTranfusionAllInfo,
+  registerTransfusionRequest,
   registerTransfusionResult,
   addTransfusionUnit,
   removeTransfusionUnit,

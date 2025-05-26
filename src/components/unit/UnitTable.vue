@@ -10,19 +10,27 @@ const props = defineProps({
   },
   type: {
     type: String,
-    default: 'allData' // 'allData', 'singleData'
+    default: 'allData' // 'allData', 'singleData', 'resultData'
   },
   typeModal: {
     type: String,
-    default: 'creation' // 'transformation', "request"
+    default: 'creation' // 'transformation', "request", "result"
   },
   loading: {
     type: Boolean,
     default: false
   },
-  totalUnits: {
-    type: Number,
-    default: 0
+  editText: {
+    type: String,
+    default: 'Editar'
+  },
+  readOnly: {
+    type: Boolean,
+    default: false
+  },
+  audit: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -50,7 +58,12 @@ const openEditUnitModal = (unit, index) => {
   showUnitModal.value = true;
 };
 
-const emit = defineEmits(['edit', 'add']);
+const emit = defineEmits(['edit', 'add', 'remove']);
+
+const removeItem = (index) => {
+  emit('remove', index);
+};
+
 const saveUnit = (unit) => {
   if (editingIndex.value !== null) {
     emit('edit', editingIndex.value, unit);
@@ -59,29 +72,41 @@ const saveUnit = (unit) => {
   }
 };
 
-const columns =
-  props.type === 'allData'
+const columns = [
+  ...(props.type === 'allData'
     ? [
         { field: 'id', header: 'Código', width: '12%' },
         { field: 'type', header: 'Unidad', width: '30%' },
         { field: 'volume', header: 'Volumen', width: '20%' },
         { field: 'bag', header: 'Tipo de bolsa', width: '12%' }
       ]
-    : [
-        { field: 'id', header: 'Código', width: '12%' },
-        { field: 'type', header: 'Unidad', width: '30%' }
-      ];
+    : []),
+  ...(props.type !== 'allData'
+    ? [
+        { field: 'id', header: 'Código', width: '10%' },
+        { field: 'unitType', header: 'Unidad', width: '25%' },
+        { field: 'requestedQuantity', header: 'Cantidad', width: '15%' }
+      ]
+    : []),
+  ...(props.type === 'resultData'
+    ? [
+        { field: 'result', header: 'Resultado', width: '15%' },
+        { field: 'resultBy', header: 'Resultado registrado por', width: '15%' }
+      ]
+    : []),
+  ...(props.audit ? [{ field: 'updatedBy', header: 'Actualizado por', width: '12%' }] : [])
+];
 </script>
 
 <template>
   <div class="my-4">
     <div class="flex justify-between items-center my-4">
       <h4>{{ title }}</h4>
-      <Button label="Nueva Unidad" icon="pi pi-plus" class="p-button-success" @click="openNewUnitModal" />
+      <Button v-if="!readOnly" label="Nueva Unidad" icon="pi pi-plus" class="p-button-success" @click="openNewUnitModal" />
     </div>
 
     <div class="w-full">
-      <DataTable :value="units" tableStyle="min-width: 50rem" paginator :rows="10" :totalRecords="totalUnits" lazy :loading="loading" showGridlines :currentPageReportTemplate="'{currentPage} de {totalPages}'">
+      <DataTable :value="units" tableStyle="min-width: 50rem" lazy :loading="loading" showGridlines :currentPageReportTemplate="'{currentPage} de {totalPages}'">
         <template #empty>
           <p class="text-gray-600 text-lg py-4">No existen unidades hematológicas.</p>
         </template>
@@ -101,14 +126,16 @@ const columns =
             </span>
           </template>
         </Column>
-        <Column header="Acciones">
-          <template #body="slotProps">
-            <div class="flex flex-wrap w-full">
-              <Button class="h-8 w-[6rem] mr-1 my-1 btn-edit" label="Editar" @click="() => openEditUnitModal(slotProps.data, slotProps.index)" />
-              <Button class="h-8 w-[6rem] mr-1 my-1" label="Eliminar" severity="danger" />
-            </div>
-          </template>
-        </Column>
+        <template v-if="!readOnly">
+          <Column header="Acciones">
+            <template #body="slotProps">
+              <div class="flex flex-wrap w-full">
+                <Button class="h-8 w-[6rem] mr-1 my-1 btn-edit" :label="editText" @click="() => openEditUnitModal(slotProps.data, slotProps.index)" />
+                <Button class="h-8 w-[6rem] mr-1 my-1" label="Eliminar" severity="danger" @click="removeItem(slotProps.index)" />
+              </div>
+            </template>
+          </Column>
+        </template>
       </DataTable>
     </div>
 

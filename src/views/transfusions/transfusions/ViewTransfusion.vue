@@ -13,11 +13,6 @@ const route = useRoute();
 const showModalFreeUnits = ref(false);
 
 const transfusion = ref(null);
-const columnsRequest = [
-  { field: 'id', header: 'Código' },
-  { field: 'unitType', header: 'Unidad ' },
-  { field: 'requestedQuantity', header: 'Cantidad' }
-];
 
 onMounted(async () => {
   const response = await transfusionStore.getTranfusionAllInfo(transfusionId.value);
@@ -30,6 +25,8 @@ const doctor = ref('');
 const freeUnits = async () => {
   const response = await transfusionStore.freeTransusionUnits(transfusionId.value, tuitionNumber, doctor);
 };
+
+const handleSave = () => {};
 </script>
 <template>
   <div v-if="isLoading" class="card absolute inset-0 bg-white/50 flex items-center justify-center z-10">
@@ -45,26 +42,12 @@ const freeUnits = async () => {
       <div class="mb-4">
         <h3>Visualizar Transfusión</h3>
       </div>
+
       <!-- Datos generales de la transfusión -->
       <InfoTransfusions :transfusion="transfusion.transfusion" />
-      <!-- Unidades solicitadas -->
-      <div class="mt-4">
-        <div class="mb-2">
-          <h4>Unidades solicitadas</h4>
-        </div>
-        <DataTable :value="transfusion.request" :rows="10" responsiveLayout="scroll" stripedRows showGridlines class="p-datatable-sm">
-          <template #empty>
-            <p class="text-gray-600 text-lg py-4">No se han ingresado detalles de solicitud.</p>
-          </template>
 
-          <Column header="N°" style="width: 3rem; text-align: center">
-            <template #body="slotProps">
-              {{ slotProps.index + 1 }}
-            </template>
-          </Column>
-          <Column v-for="col of columnsRequest" :key="col.field" :field="col.field" :header="col.header" :sortable="col.sortable"> </Column>
-        </DataTable>
-      </div>
+      <!-- Unidades solicitadas -->
+      <UnitTable class="my-4" title="Unidades solicitadas" :read-only="true" type="singleData" :loading="isLoading" v-model="transfusion.request" />
 
       <!-- Unidades asignada -->
       <UnitTable
@@ -73,8 +56,8 @@ const freeUnits = async () => {
         type="resultData"
         type-modal="result"
         :loading="isLoading"
+        :edit-text="'Registrar resultado'"
         v-model="transfusion.result"
-        :totalUnits="transfusion.result?.lenght"
         @edit="(index, unit) => transfusionStore.registerTransfusionResult(index, unit)"
         @add="(unit) => transfusionStore.addTransfusionUnit(unit)"
         @remove="(unit) => transfusionStore.removeTransfusionUnit(unit)"

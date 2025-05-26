@@ -57,12 +57,12 @@ const save = () => {
     </div>
     <div class="w-full flex flex-col gap-4 p-2" v-else>
       <FloatLabel variant="on" class="w-full">
-        <Select class="w-full" id="type" :options="unitTypesOptions" optionLabel="label" optionValue="value" showClear v-model="localUnit.type" />
+        <Select class="w-full" id="type" :options="unitTypesOptions" optionLabel="label" optionValue="value" showClear v-model="localUnit.unitType" />
         <label for="type">Tipo de unidad</label>
       </FloatLabel>
       <FloatLabel variant="on" class="w-full">
-        <InputText class="w-full" id="volume" v-model="localUnit.volume" />
-        <label for="volume">Cantidad</label>
+        <InputText class="w-full" id="requested_quantity" v-model="localUnit.requestedQuantity" />
+        <label for="requested_quantity">Cantidad</label>
       </FloatLabel>
     </div>
 

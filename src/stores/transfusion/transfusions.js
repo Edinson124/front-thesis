@@ -67,6 +67,16 @@ export const useTransfusionStore = defineStore('tranfusion', () => {
     }
   };
 
+  const registerTransfusionRequest = async (transfusion) => {
+    try {
+      const response = await transfusionService.registerTransfusionRequest(transfusion);
+      return response;
+    } catch (error) {
+      console.error('Error al registrar nueva transfusión: ', error);
+      return null;
+    }
+  };
+
   const registerTransfusionResult = async (transfusionId, unitId, result, observations) => {
     try {
       const response = await transfusionService.registerTransfusionResult(transfusionId, unitId, result, observations);
@@ -119,6 +129,7 @@ export const useTransfusionStore = defineStore('tranfusion', () => {
     verifyTransfusionByCode,
     getTranfusionDetail,
     getTranfusionAllInfo,
+    registerTransfusionRequest,
     registerTransfusionResult,
     addTransfusionUnit,
     removeTransfusionUnit,
