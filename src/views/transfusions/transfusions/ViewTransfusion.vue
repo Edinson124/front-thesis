@@ -20,13 +20,46 @@ onMounted(async () => {
   isLoading.value = false;
 });
 
+const assignTransfusionUnit = (unit) => {
+  if (!transfusion.value.result) {
+    transfusion.value.result = [];
+  }
+
+  transfusion.value.result.push(unit);
+};
+
+const registerResult = (index, result) => {
+  if (!transfusion.value.result) {
+    transfusion.value.result = [];
+  }
+
+  if (!transfusion.value.result[index]) {
+    return;
+  }
+
+  transfusion.value.result[index].result = result.type;
+  transfusion.value.result[index].resultBy = result.observation;
+  transfusion.value.result[index].observation = result.observation;
+};
+
+const removeTransfusionUnit = (index) => {
+  if (!transfusion.value.result) {
+    transfusion.value.result = [];
+  }
+
+  transfusion.value.result.splice(index, 1);
+};
+
 const tuitionNumber = ref('');
 const doctor = ref('');
 const freeUnits = async () => {
-  const response = await transfusionStore.freeTransusionUnits(transfusionId.value, tuitionNumber, doctor);
+  transfusion.value.result = [];
+  showModalFreeUnits.value = false;
 };
 
-const handleSave = () => {};
+const handleSave = () => {
+  console.log(transfusion.value);
+};
 </script>
 <template>
   <div v-if="isLoading" class="card absolute inset-0 bg-white/50 flex items-center justify-center z-10">
@@ -56,11 +89,11 @@ const handleSave = () => {};
         type="resultData"
         type-modal="result"
         :loading="isLoading"
-        :edit-text="'Registrar resultado'"
+        edit-text="Registrar resultado"
         v-model="transfusion.result"
-        @edit="(index, unit) => transfusionStore.registerTransfusionResult(index, unit)"
-        @add="(unit) => transfusionStore.addTransfusionUnit(unit)"
-        @remove="(unit) => transfusionStore.removeTransfusionUnit(unit)"
+        @add="(unit) => assignTransfusionUnit(unit)"
+        @result="(index, result) => registerResult(index, result)"
+        @remove="(index) => removeTransfusionUnit(index)"
       />
 
       <!-- Acciones -->

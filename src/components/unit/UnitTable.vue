@@ -2,6 +2,8 @@
 import { reactive, ref } from 'vue';
 import UnitModal from './UnitModal.vue';
 import { bagTypes, UnitTypes } from '@/enums/Units';
+import StockUnitsModal from '../storage/StockUnitsModal.vue';
+import RegisterCrossTestResultModal from '../transfusion/RegisterCrossTestResultModal.vue';
 
 const props = defineProps({
   title: {
@@ -44,6 +46,8 @@ const unitCurrent = reactive({
 });
 
 const showUnitModal = ref(false);
+const showModalStockUnits = ref(false);
+const showModalRegisterResult = ref(false);
 const editingIndex = ref(null);
 
 const openNewUnitModal = () => {
@@ -52,16 +56,32 @@ const openNewUnitModal = () => {
   showUnitModal.value = true;
 };
 
+const openAssignUnitModal = () => {
+  editingIndex.value = null;
+  Object.assign(unitCurrent, {});
+  showModalStockUnits.value = true;
+};
+
+const openRegisterResultModal = (unit, index) => {
+  editingIndex.value = index;
+  Object.assign(unitCurrent, unit);
+  showModalRegisterResult.value = true;
+};
+
 const openEditUnitModal = (unit, index) => {
   editingIndex.value = index;
   Object.assign(unitCurrent, unit);
   showUnitModal.value = true;
 };
 
-const emit = defineEmits(['edit', 'add', 'remove']);
+const emit = defineEmits(['edit', 'add', 'remove', 'result']);
 
 const removeItem = (index) => {
   emit('remove', index);
+};
+
+const saveResult = (result) => {
+  emit('result', editingIndex.value, result);
 };
 
 const saveUnit = (unit) => {
@@ -81,7 +101,7 @@ const columns = [
         { field: 'bag', header: 'Tipo de bolsa', width: '12%' }
       ]
     : []),
-  ...(props.type !== 'allData'
+  ...(props.type === 'singleData'
     ? [
         { field: 'id', header: 'Código', width: '10%' },
         { field: 'unitType', header: 'Unidad', width: '25%' },
@@ -90,6 +110,9 @@ const columns = [
     : []),
   ...(props.type === 'resultData'
     ? [
+        { field: 'id', header: 'Código', width: '10%' },
+        { field: 'unitType', header: 'Unidad', width: '25%' },
+        { field: 'bloodType', header: 'Grupo sanguíneo', width: '15%' },
         { field: 'result', header: 'Resultado', width: '15%' },
         { field: 'resultBy', header: 'Resultado registrado por', width: '15%' }
       ]
@@ -102,7 +125,10 @@ const columns = [
   <div class="my-4">
     <div class="flex justify-between items-center my-4">
       <h4>{{ title }}</h4>
-      <Button v-if="!readOnly" label="Nueva Unidad" icon="pi pi-plus" class="p-button-success" @click="openNewUnitModal" />
+      <template v-if="!readOnly">
+        <Button v-if="typeModal !== 'result'" label="Nueva Unidad" icon="pi pi-plus" class="p-button-success" @click="openNewUnitModal" />
+        <Button v-else label="Asignar Unidad" icon="pi pi-plus" class="p-button-success" @click="openAssignUnitModal" />
+      </template>
     </div>
 
     <div class="w-full">
@@ -130,7 +156,8 @@ const columns = [
           <Column header="Acciones">
             <template #body="slotProps">
               <div class="flex flex-wrap w-full">
-                <Button class="h-8 w-[6rem] mr-1 my-1 btn-edit" :label="editText" @click="() => openEditUnitModal(slotProps.data, slotProps.index)" />
+                <Button v-if="typeModal !== 'result'" class="h-8 w-[6rem] mr-1 my-1 btn-edit" label="Editar" @click="() => openEditUnitModal(slotProps.data, slotProps.index)" />
+                <Button v-if="typeModal === 'result'" class="h-8 w-[12rem] mr-1 my-1 btn-edit" label="Registrar resultado" @click="() => openRegisterResultModal(slotProps.data, slotProps.index)" />
                 <Button class="h-8 w-[6rem] mr-1 my-1" label="Eliminar" severity="danger" @click="removeItem(slotProps.index)" />
               </div>
             </template>
@@ -139,6 +166,9 @@ const columns = [
       </DataTable>
     </div>
 
-    <UnitModal v-model="showUnitModal" :unit="unitCurrent" :type="typeModal" @save="saveUnit" />
+    <UnitModal v-if="typeModal !== 'result'" v-model="showUnitModal" :unit="unitCurrent" :type="typeModal" @save="saveUnit" />
+    <StockUnitsModal v-else v-model="showModalStockUnits" :unit="unitCurrent" @select="saveUnit" />
+
+    <RegisterCrossTestResultModal v-if="typeModal === 'result'" v-model="showModalRegisterResult" @save="saveResult" />
   </div>
 </template>
