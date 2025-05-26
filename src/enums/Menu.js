@@ -28,7 +28,7 @@ export const MenuRoutes = [
   { id: 'networks', label: 'Redes', icon: 'mdi mdi-lan', parentId: 'root' },
   { id: 'networks-associated', label: ' Visualizar redes asociadas', to: '/networks', parentId: 'networks' },
   { id: 'networks-shipments', label: 'Solicitudes de tranferencia', to: '/networks/shipments', parentId: 'networks' },
-  { id: 'networks-my-shipments', label: 'Mis solicitudes de transferencia', parentId: 'networks' },
+  { id: 'networks-my-shipments', label: 'Mis solicitudes de transferencia', to: '/networks/myShipments', parentId: 'networks' },
   { id: 'interoperability', label: 'Interoperabilidad', icon: 'mdi mdi-wan', parentId: 'root' },
   { id: 'interoperability-query', label: 'Consulta información externa', parentId: 'interoperability' }
 ];
@@ -59,7 +59,8 @@ export const extraRoutes = [
   { id: 'donation-physical-exam', label: 'Exámen Físico', to: '/donation/physical', parentId: 'donation-view' },
   { id: 'transfusion-new', label: 'Nueva Solicitud', to: '/transfusion/new', parentId: 'transfusion' },
   { id: 'transfusion-edit', label: 'Editar Solicitud', to: '/transfusion/:id', parentId: 'transfusion' },
-  { id: 'networks-associated-stock', label: ' Visualizar stock', to: '/networks', parentId: 'networks-associated' }
+  { id: 'networks-associated-stock', label: ' Visualizar stock', to: '/networks', parentId: 'networks-associated' },
+  { id: 'networks-shipment-new', label: 'Nueva solicitud de transferencia', to: '/networks/shipment/new', parentId: 'networks-my-shipments' }
 ];
 
 export const breadcrumbs = [...MenuRoutes, ...extraRoutes];

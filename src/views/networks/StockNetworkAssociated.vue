@@ -22,6 +22,7 @@ const filters = reactive({
 });
 
 const loading = ref(false);
+const loadingAll = ref(false);
 const canView = ref(false);
 
 const rules = computed(() => ({
@@ -109,8 +110,10 @@ function visualizarUnidad(unidad) {
 
 // Cargar unidades al montar el componente
 onMounted(async () => {
+  loadingAll.value = true;
   const canViewResponse = await networkCollaborationStore.getOptionsBB(networkId);
   canView.value = canViewResponse;
+  loadingAll.value = false;
 });
 </script>
 <template>
@@ -119,94 +122,99 @@ onMounted(async () => {
     <div class="mb-6">
       <h3>Visualizar Stock en Redes</h3>
     </div>
-    <div v-if="canView">
-      <div class="grid grid-cols-12 gap-4 mb-3">
-        <div class="col-span-12 md:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4 mb-1">
-          <div>
-            <label class="block mb-1">Seleccione un banco de sangre</label>
-            <FloatLabel variant="on">
-              <Select id="idBloodBank" v-model="filters.idBloodBank" :options="networkCollaborationStore.bloodBanksOptions" optionLabel="name" optionValue="id" class="w-full" :invalid="v$.idBloodBank?.$error" />
-              <label for="idBloodBank">Banco de sangre</label>
-            </FloatLabel>
-            <Message v-if="v$.idBloodBank?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.idBloodBank.$errors[0].$message }}</Message>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-12 gap-4 mb-3">
-        <div class="col-span-12 md:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4 mb-1">
-          <div>
-            <FloatLabel variant="on">
-              <DatePicker id="entryDate" v-model="filters.entryDate" showIcon fluid dateFormat="dd/mm/yy" class="w-full" selectionMode="range" :manualInput="false" />
-              <label for="entryDate">Rango fecha inicio</label>
-            </FloatLabel>
-          </div>
-
-          <div>
-            <FloatLabel variant="on">
-              <DatePicker id="expirationDate" v-model="filters.expirationDate" showIcon showClear fluid dateFormat="dd/mm/yy" class="w-full" selectionMode="range" :manualInput="false" />
-              <label for="expirationDate">Rango fecha vencimiento</label>
-            </FloatLabel>
-          </div>
-
-          <div>
-            <FloatLabel variant="on">
-              <Select id="bloodType" v-model="filters.bloodType" :options="bloodTypesOptions" optionLabel="label" optionValue="value" showClear class="w-full" />
-              <label for="bloodType">Grupo sanguíneo</label>
-            </FloatLabel>
-          </div>
-
-          <div>
-            <FloatLabel variant="on">
-              <Select id="type" v-model="filters.type" :options="unitTypesOptions" optionLabel="label" optionValue="value" showClear class="w-full" />
-              <label for="type">Tipo de unidad</label>
-            </FloatLabel>
-          </div>
-        </div>
-        <div class="col-span-12 md:col-span-4 flex flex-col md:flex-row md:grow justify-end items-center">
-          <Button class="h-8 w-full md:mr-2 mb-2 md:mb-0" label="Filtrar" severity="info" @click="searchUnits()" />
-          <Button class="h-8 w-full md:grow btn-clean" label="Limpiar" @click="cleanfilters()" />
-        </div>
-      </div>
-
-      <!-- Sección de resultados -->
-      <div>
-        <h2 class="text-xl font-semibold mb-4">Stock de banco de sangre</h2>
-
-        <DataTable
-          :value="networkCollaborationStore.units"
-          :paginator="true"
-          :rows="10"
-          :totalRecords="networkCollaborationStore.totalRecordsUnits"
-          :loading="loading"
-          paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport"
-          currentPageReportTemplate="{first} - {last} de {totalRecords}"
-          responsiveLayout="scroll"
-          lazy
-          stripedRows
-          showGridlines
-          class="p-datatable-sm"
-          @page="onPage"
-        >
-          <template #empty>
-            <p class="text-gray-600 text-lg py-4">No se encontraron unidades disponibles o reservadas con los filtros seleccionados.</p>
-          </template>
-
-          <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" :sortable="col.sortable"> </Column>
-
-          <Column header="Acciones" :exportable="false" style="min-width: 8rem">
-            <template #body="slotProps">
-              <div class="flex justify-center">
-                <Button class="h-8 btn-view" label="Visualizar" @click="visualizarUnidad(slotProps.data)" />
-              </div>
-            </template>
-          </Column>
-        </DataTable>
-      </div>
+    <div v-if="loadingAll" class="absolute inset-0 bg-white/50 flex items-center justify-center z-10">
+      <ProgressSpinner style="width: 50px; height: 50px" />
     </div>
-    <div v-else class="p-6 text-center text-red-700 border border-red-300 rounded-md bg-red-50">
-      <h3 class="text-lg font-semibold mb-2">Acceso denegado</h3>
-      <p>No puedes ver el stock de la red ya que tu banco de sangre actual no está asociada en a esta red.</p>
+    <div v-else>
+      <div v-if="canView">
+        <div class="grid grid-cols-12 gap-4 mb-3">
+          <div class="col-span-12 md:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4 mb-1">
+            <div>
+              <label class="block mb-1">Seleccione un banco de sangre</label>
+              <FloatLabel variant="on">
+                <Select id="idBloodBank" v-model="filters.idBloodBank" :options="networkCollaborationStore.bloodBanksOptions" optionLabel="name" optionValue="id" class="w-full" :invalid="v$.idBloodBank?.$error" />
+                <label for="idBloodBank">Banco de sangre</label>
+              </FloatLabel>
+              <Message v-if="v$.idBloodBank?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.idBloodBank.$errors[0].$message }}</Message>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-12 gap-4 mb-3">
+          <div class="col-span-12 md:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4 mb-1">
+            <div>
+              <FloatLabel variant="on">
+                <DatePicker id="entryDate" v-model="filters.entryDate" showIcon fluid dateFormat="dd/mm/yy" class="w-full" selectionMode="range" :manualInput="false" />
+                <label for="entryDate">Rango fecha inicio</label>
+              </FloatLabel>
+            </div>
+
+            <div>
+              <FloatLabel variant="on">
+                <DatePicker id="expirationDate" v-model="filters.expirationDate" showIcon showClear fluid dateFormat="dd/mm/yy" class="w-full" selectionMode="range" :manualInput="false" />
+                <label for="expirationDate">Rango fecha vencimiento</label>
+              </FloatLabel>
+            </div>
+
+            <div>
+              <FloatLabel variant="on">
+                <Select id="bloodType" v-model="filters.bloodType" :options="bloodTypesOptions" optionLabel="label" optionValue="value" showClear class="w-full" />
+                <label for="bloodType">Grupo sanguíneo</label>
+              </FloatLabel>
+            </div>
+
+            <div>
+              <FloatLabel variant="on">
+                <Select id="type" v-model="filters.type" :options="unitTypesOptions" optionLabel="label" optionValue="value" showClear class="w-full" />
+                <label for="type">Tipo de unidad</label>
+              </FloatLabel>
+            </div>
+          </div>
+          <div class="col-span-12 md:col-span-4 flex flex-col md:flex-row md:grow justify-end items-center">
+            <Button class="h-8 w-full md:mr-2 mb-2 md:mb-0" label="Filtrar" severity="info" @click="searchUnits()" />
+            <Button class="h-8 w-full md:grow btn-clean" label="Limpiar" @click="cleanfilters()" />
+          </div>
+        </div>
+
+        <!-- Sección de resultados -->
+        <div>
+          <h2 class="text-xl font-semibold mb-4">Stock de banco de sangre</h2>
+
+          <DataTable
+            :value="networkCollaborationStore.units"
+            :paginator="true"
+            :rows="10"
+            :totalRecords="networkCollaborationStore.totalRecordsUnits"
+            :loading="loading"
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport"
+            currentPageReportTemplate="{first} - {last} de {totalRecords}"
+            responsiveLayout="scroll"
+            lazy
+            stripedRows
+            showGridlines
+            class="p-datatable-sm"
+            @page="onPage"
+          >
+            <template #empty>
+              <p class="text-gray-600 text-lg py-4">No se encontraron unidades disponibles o reservadas con los filtros seleccionados.</p>
+            </template>
+
+            <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" :sortable="col.sortable"> </Column>
+
+            <Column header="Acciones" :exportable="false" style="min-width: 8rem">
+              <template #body="slotProps">
+                <div class="flex justify-center">
+                  <Button class="h-8 btn-view" label="Visualizar" @click="visualizarUnidad(slotProps.data)" />
+                </div>
+              </template>
+            </Column>
+          </DataTable>
+        </div>
+      </div>
+      <div v-else class="p-6 text-center text-red-700 border border-red-300 rounded-md bg-red-50">
+        <h3 class="text-lg font-semibold mb-2">Acceso denegado</h3>
+        <p>No puedes ver el stock de la red ya que tu banco de sangre actual no está asociada en a esta red.</p>
+      </div>
     </div>
   </div>
 </template>

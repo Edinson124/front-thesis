@@ -19,6 +19,17 @@ const getShipments = async (filters = {}, page = 0) => {
   }
 };
 
+const getShipmentsNetwork = async () => {
+  try {
+    const response = await get(`/shipments/networks`);
+    return response;
+  } catch (error) {
+    console.error('Error al obtener las redes de banco de sangre: ', error);
+    return [];
+  }
+};
+
 export default {
-  getShipments
+  getShipments,
+  getShipmentsNetwork
 };

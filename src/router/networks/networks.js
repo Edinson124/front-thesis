@@ -1,5 +1,7 @@
+import ListShipmentsRequest from '@/views/networks/ListShipmentsRequest.vue';
+import MyShipmentsRequest from '@/views/networks/MyShipmentsRequest.vue';
 import NetworksAssociated from '@/views/networks/NetworksAssociated.vue';
-import ShipmentsRequest from '@/views/networks/ShipmentsRequest.vue';
+import ShipmentRequestEdit from '@/views/networks/ShipmentRequestEdit.vue';
 import StockNetworkAssociated from '@/views/networks/StockNetworkAssociated.vue';
 
 export default [
@@ -16,6 +18,16 @@ export default [
   {
     path: '/networks/shipments',
     name: 'networks-shipments',
-    component: ShipmentsRequest
+    component: ListShipmentsRequest
+  },
+  {
+    path: '/networks/myShipments',
+    name: 'networks-my-shipments',
+    component: MyShipmentsRequest
+  },
+  {
+    path: '/networks/shipment/new',
+    name: 'networks-shipment-new',
+    component: ShipmentRequestEdit
   }
 ];

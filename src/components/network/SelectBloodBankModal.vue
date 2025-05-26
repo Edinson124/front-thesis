@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineEmits } from 'vue';
+import { ref } from 'vue';
 
 const showModal = defineModel({ type: Boolean, required: true });
 defineProps({

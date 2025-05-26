@@ -8,13 +8,25 @@ export const useShipmentStore = defineStore('shipments', () => {
   const currentPage = ref(0);
 
   const bloodBanksOptions = reactive([]);
+  const networkOptions = reactive([]);
 
-  const getNetworks = async (filters = {}, page = 0) => {
+  const getShipments = async (filters = {}, page = 0) => {
     try {
-      const response = await shipmentService.getNetworks(filters, page);
+      const response = await shipmentService.getShipments(filters, page);
       shipments.splice(0, shipments.length, ...response.content);
       totalRecords.value = response.totalElements;
       currentPage.value = page;
+      return true;
+    } catch (error) {
+      console.error('Error al obtener solicitudes de transferencia: ', error);
+      return false;
+    }
+  };
+
+  const getShipmentsNetwork = async () => {
+    try {
+      const response = await shipmentService.getShipmentsNetwork();
+      networkOptions.splice(0, networkOptions.length, ...response);
       return true;
     } catch (error) {
       console.error('Error al obtener redes bancos de sangre: ', error);
@@ -27,6 +39,8 @@ export const useShipmentStore = defineStore('shipments', () => {
     totalRecords,
     currentPage,
     bloodBanksOptions,
-    getNetworks
+    networkOptions,
+    getShipments,
+    getShipmentsNetwork
   };
 });
