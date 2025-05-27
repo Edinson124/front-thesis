@@ -13,8 +13,8 @@ const route = useRoute();
 const isLoading = ref(true);
 const newPhysical = ref(true);
 const idPhysical = ref(null);
-
 const donationId = ref(null);
+
 const physicalStore = usePhysicalStore();
 const physicalExam = reactive({
   weight: '',
@@ -72,7 +72,6 @@ const handleSave = async () => {
   if (newPhysical.value) {
     await physicalStore.createPhysical(physicalExamNormalized);
   } else {
-    console.log('id', idPhysical.value);
     await physicalStore.updatePhysicalAssessment(idPhysical.value, physicalExamNormalized);
   }
 };

@@ -4,13 +4,18 @@ import router from '@/router';
 import { useExtractionStore } from '@/stores/donation/extraction';
 import { required, requiredIf } from '@/validation/validators';
 import useVuelidate from '@vuelidate/core';
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 const extractionStore = useExtractionStore();
 const route = useRoute();
 
-const extraction = ref({
+const isLoading = ref(true);
+const newExtraction = ref(true);
+const idExtraction = ref(null);
+const donationId = ref(null);
+
+const extraction = reactive({
   startDate: null,
   startTime: null,
   endDateTime: null,
@@ -34,7 +39,7 @@ const rules = computed(() => ({
     arm: { required: required('Brazo de extracción') },
     adverseReactionOccurred: { required: required('¿Se presentó reacciones adversas?') },
     adverseReaction: {
-      required: requiredIf('Reacciones adversas', () => extraction.value.adverseReactionOccurred === 'Si')
+      required: requiredIf('Reacciones adversas', () => extraction.adverseReactionOccurred === true)
     },
     otherReaction: {},
     status: { required: required('Estado de extracción') },
@@ -45,39 +50,65 @@ const rules = computed(() => ({
 const v$ = useVuelidate(rules, { extraction });
 
 const calculateEndTime = computed(() => {
-  if (extraction.value.startDate && extraction.value.startTime && extraction.value.durationMinutes > 0) {
-    const startDateTime = new Date(extraction.value.startDate);
-    const startTime = new Date(extraction.value.startTime);
+  if (extraction.startDate && extraction.startTime && extraction.durationMinutes > 0) {
+    const startDateTime = new Date(extraction.startDate);
+    const startTime = new Date(extraction.startTime);
     // Establece las horas y minutos de startDateTime usando startTime
     startDateTime.setHours(startTime.getHours());
     startDateTime.setMinutes(startTime.getMinutes());
     // Suma la duración en minutos
-    startDateTime.setMinutes(startDateTime.getMinutes() + parseInt(extraction.value.durationMinutes));
+    startDateTime.setMinutes(startDateTime.getMinutes() + parseInt(extraction.durationMinutes));
     return startDateTime;
   }
   return null;
 });
 
-watch([() => extraction.value.startDate, () => extraction.value.startTime, () => extraction.value.durationMinutes], () => {
-  extraction.value.endDateTime = calculateEndTime.value;
+watch([() => extraction.startDate, () => extraction.startTime, () => extraction.durationMinutes], () => {
+  extraction.endDateTime = calculateEndTime.value;
 });
 
 const handleSave = async () => {
   const isValid = await v$.value.$validate();
-  if (isValid) {
-    const extractionData = JSON.parse(JSON.stringify(extraction.value));
-    const donationRoute = route.query.donationId;
-    extractionData.donationId = donationRoute;
-    await extractionStore.createExtraction(extractionData);
-    console.log('Datos a guardar:', extraction.value);
-  } else {
+  if (!isValid) {
     console.log('Errores en el formulario', v$.value);
+    return;
+  }
+  const extractionData = JSON.parse(JSON.stringify(extraction));
+  const donationRoute = route.query.donationId;
+  extractionData.donationId = donationRoute;
+  if (newExtraction.value) {
+    await extractionStore.createExtraction(extractionData);
+  } else {
+    await extractionStore.updateExtraction(idExtraction.value, extractionData);
   }
 };
+onMounted(async () => {
+  isLoading.value = true;
+  const donationRoute = route.query.donationId;
+  donationId.value = donationRoute;
+
+  if (donationId.value) {
+    const extractionResponse = await extractionStore.getExtraction(donationId.value);
+    if (extractionResponse) {
+      console.log('hola', extractionResponse);
+      idExtraction.value = extractionResponse.id;
+      newExtraction.value = false;
+      for (const key in extraction) {
+        if (Object.prototype.hasOwnProperty.call(extractionResponse, key)) {
+          extraction[key] = extractionResponse[key];
+        }
+      }
+    }
+  }
+  isLoading.value = false;
+});
 </script>
 
 <template>
-  <div class="card">
+  <div v-if="isLoading" class="card absolute inset-0 bg-white/50 flex items-center justify-center z-10">
+    <ProgressSpinner style="width: 50px; height: 50px" />
+  </div>
+  <div v-else class="card">
     <h3 class="min-w-[10rem] !mt-2">Extracción de la donación</h3>
     <!-- <div class="mb-4 flex justify-end">
       <Button class="h-8 w-full md:grow md:max-w-[16rem]" label="Diferir donante" severity="danger" @click="() => {}" />

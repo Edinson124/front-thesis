@@ -27,7 +27,7 @@ const updatePhysicalAssessment = async (idPhysical, physical) => {
     const response = await put(`/physical/${idPhysical}`, physical);
     return response;
   } catch (error) {
-    console.error('Error al obtener el examen físico: ', error);
+    console.error('Error al actualizar el examen físico: ', error);
     return null;
   }
 };
