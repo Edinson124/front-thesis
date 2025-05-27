@@ -5,12 +5,18 @@ import router from '@/router';
 import { usePhysicalStore } from '@/stores/donation/physicalAssessment';
 import { required } from '@/validation/validators';
 import useVuelidate from '@vuelidate/core';
-import { computed, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
+
+const isLoading = ref(true);
+const newPhysical = ref(true);
+const idPhysical = ref(null);
+
+const donationId = ref(null);
 const physicalStore = usePhysicalStore();
-const physicalExam = ref({
+const physicalExam = reactive({
   weight: '',
   systolicPressure: '',
   diastolicPressure: '',
@@ -56,19 +62,45 @@ function normalizeEmptyStringsToNull(obj) {
 }
 const handleSave = async () => {
   const isValid = await v$.value.$validate();
-  if (isValid) {
-    let physicalExamNormalized = normalizeEmptyStringsToNull(physicalExam.value);
-    const donationRoute = route.query.donationId;
-    physicalExamNormalized.donationId = donationRoute;
-    await physicalStore.createPhysical(physicalExamNormalized);
-    console.log('GUARDANDO', physicalExamNormalized);
-  } else {
+  if (!isValid) {
     console.log('Errores en el formulario', v$.value);
+    return;
+  }
+  let physicalExamNormalized = normalizeEmptyStringsToNull(physicalExam);
+  const donationRoute = route.query.donationId;
+  physicalExamNormalized.donationId = donationRoute;
+  if (newPhysical.value) {
+    await physicalStore.createPhysical(physicalExamNormalized);
+  } else {
+    console.log('id', idPhysical.value);
+    await physicalStore.updatePhysicalAssessment(idPhysical.value, physicalExamNormalized);
   }
 };
+onMounted(async () => {
+  isLoading.value = true;
+  const donationRoute = route.query.donationId;
+  donationId.value = donationRoute;
+
+  if (donationId.value) {
+    const physicalResponse = await physicalStore.getPhysicalAssessment(donationId.value);
+    if (physicalResponse) {
+      idPhysical.value = physicalResponse.id;
+      newPhysical.value = false;
+      for (const key in physicalExam) {
+        if (Object.prototype.hasOwnProperty.call(physicalResponse, key)) {
+          physicalExam[key] = physicalResponse[key];
+        }
+      }
+    }
+  }
+  isLoading.value = false;
+});
 </script>
 <template>
-  <div class="card">
+  <div v-if="isLoading" class="card absolute inset-0 bg-white/50 flex items-center justify-center z-10">
+    <ProgressSpinner style="width: 50px; height: 50px" />
+  </div>
+  <div v-else class="card">
     <div class="flex justify-between items-center mb-4">
       <h3>Exámen físico</h3>
       <Button class="h-8 w-full md:grow max-w-[16rem] md:max-w-[16rem]" label="Diferir donante" severity="danger" @click="() => {}" />

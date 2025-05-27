@@ -17,6 +17,7 @@ const donationId = ref(null);
 const activeTab = ref(null);
 const toast = useToast();
 const refTitle = ref(null);
+const newInterview = ref(true);
 
 const rules = computed(() => {
   const rulesObject = {};
@@ -122,10 +123,31 @@ onMounted(async () => {
   if (donationId.value) {
     const answersResponse = await interviewStore.getInterviewAnswers(donationId.value);
     if (answersResponse) {
-      Object.assign({}, answers, answersResponse.answer);
+      newInterview.value = false;
+      Object.assign(answers.value, answersResponse.answer);
     }
   }
 
+  for (const section of DonorInterviewQuestions.value.sections || []) {
+    for (const question of section.questions || []) {
+      if (!answers.value[question.id]) {
+        answers.value[question.id] = {
+          name: question.name,
+          answer: question.type === 'datepicker' ? null : ''
+        };
+      }
+
+      // Siempre intenta convertir a Date si es datepicker y la respuesta es string
+      if (question.type === 'datepicker' && answers.value[question.id].answer && typeof answers.value[question.id].answer === 'string') {
+        const parsedDate = new Date(answers.value[question.id].answer);
+        if (!isNaN(parsedDate)) {
+          answers.value[question.id].answer = parsedDate;
+        } else {
+          answers.value[question.id].answer = null;
+        }
+      }
+    }
+  }
   activeTab.value = DonorInterviewQuestions.value.sections?.[0]?.id ?? null;
   isLoading.value = false;
 });
@@ -155,14 +177,14 @@ onMounted(async () => {
 
               <div class="flex items-center justify-between gap-4 px-8 mt-6 mb-2" v-else-if="question.type === 'text'">
                 <span class="w-full md:max-w-[50%]">{{ question.name }}</span>
-                <InputText class="h-8 w-full md:grow" v-model="answers[question.id]" />
+                <InputText class="h-8 w-full md:grow" v-model="answers[question.id].answer" :disabled="!newInterview" />
               </div>
 
               <div class="flex items-center justify-between gap-4 px-8 mt-6 mb-2" v-else-if="question.type === 'radio'">
                 <span>{{ question.name }}</span>
                 <div class="flex items-center gap-8">
                   <div class="flex items-center gap-2" v-for="(option, index) in question.options" :key="index">
-                    <RadioButton :inputId="`${question.id}-${index}`" :name="`option-${index}`" :value="option" v-model="answers[question.id]" />
+                    <RadioButton :inputId="`${question.id}-${index}`" :name="`option-${index}`" :value="option" v-model="answers[question.id].answer" :disabled="!newInterview" />
                     <label :for="`${question.id}-${index}`">{{ option }}</label>
                   </div>
                 </div>
@@ -170,17 +192,17 @@ onMounted(async () => {
 
               <div class="flex items-center justify-between gap-4 px-8 mt-6 mb-2" v-else-if="question.type === 'select'">
                 <span class="w-full md:max-w-[50%]">{{ question.name }}</span>
-                <Select class="w-full md:w-[16rem]" v-model="answers[question.id]" :options="question.options" placeholder="Seleccionar" />
+                <Select class="w-full md:w-[16rem]" v-model="answers[question.id].answer" :options="question.options" placeholder="Seleccionar" :disabled="!newInterview" />
               </div>
 
               <div class="flex items-center justify-between gap-4 px-8 mt-6 mb-2" v-else-if="question.type === 'datepicker'">
                 <span class="w-full md:max-w-[50%]">{{ question.name }}</span>
-                <DatePicker class="w-full md:w-[16rem]" showIcon fluid v-model="answers[question.id]" placeholder="Seleccionar" />
+                <DatePicker class="w-full md:w-[16rem]" showIcon fluid v-model="answers[question.id].answer" placeholder="Seleccionar" :disabled="!newInterview" />
               </div>
 
               <div class="flex flex-col items-start gap-4 px-8 mt-10 mb-6" v-else-if="question.type === 'textarea'">
                 <span class="w-full md:max-w-[50%]">{{ question.name }}</span>
-                <Textarea class="w-full md:grow resize-none" rows="5" v-model="answers[question.id]" />
+                <Textarea class="w-full md:grow resize-none" rows="5" v-model="answers[question.id].answer" :disabled="!newInterview" />
               </div>
 
               <Message v-if="v$.answers[question.id]?.$error" severity="error" size="small" variant="simple" class="px-8 mb-6">{{ v$.answers[question.id].$errors[0].$message }}</Message>
@@ -200,7 +222,7 @@ onMounted(async () => {
           }
         "
       />
-      <Button class="h-10 w-full md:max-w-[16rem]" label="Guardar" severity="success" @click="handleSave" />
+      <Button v-if="newInterview" class="h-10 w-full md:max-w-[16rem]" label="Guardar" severity="success" @click="handleSave" />
     </div>
   </div>
 </template>

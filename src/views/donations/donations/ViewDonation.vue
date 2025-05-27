@@ -98,7 +98,7 @@ onMounted(async () => {
           <div class="mb-1"><span class="font-medium">Editado por : </span>{{ donation.donation.updatedByNamePhysicalAssessment ?? '-' }}</div>
 
           <div class="flex justify-center mt-3">
-            <Button v-if="donation.donation.physicalAssessmentId" class="h-8 btn-view" label="Visualizar" />
+            <Button v-if="donation.donation.physicalAssessmentId" class="h-8 btn-view" label="Visualizar" @click="redirectExam" />
             <Button v-else label="Registrar examen físico" class="p-button-success p-button-sm" @click="redirectExam" />
           </div>
         </Fieldset>
