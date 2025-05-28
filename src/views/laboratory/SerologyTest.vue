@@ -1,13 +1,13 @@
 <script setup>
 // import DonationStatusCard from '@/components/donation/DonationStatusCard.vue';
 import InfoDonation from '@/components/donation/InfoDonation.vue';
-import { resultSerologyOptions } from '@/enums/SerologyResult';
 import InfoDonor from '@/components/donation/InfoDonor.vue';
+import { resultSerologyOptions } from '@/enums/SerologyResult';
 import { useDonationStore } from '@/stores/donation/donations';
 import { useSerologyTestStore } from '@/stores/laboratory/serologyTest';
 import { required } from '@/validation/validators';
 import useVuelidate from '@vuelidate/core';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const donationStore = useDonationStore();
@@ -18,14 +18,16 @@ const donation = ref(null);
 const donationId = computed(() => route.query.donationId);
 const showReactiveWarning = ref(false);
 const fieldPendingReset = ref(null);
+const newSerologyTest = ref(true);
+const idSerologyTest = ref(null);
 
 const isLoading = ref(true);
-const serologyResult = ref({
+const serologyResult = reactive({
   testDate: null,
-  HIV: null,
-  HBsAg: null,
-  HBcAb: null,
-  HCV: null,
+  hiv: null,
+  hbsAg: null,
+  hbcAb: null,
+  hcv: null,
   syphilis: null,
   chagas: null,
   htlvI_II: null,
@@ -34,10 +36,10 @@ const serologyResult = ref({
 
 const rules = computed(() => ({
   testDate: { required: required('Fecha de prueba') },
-  HIV: { required: required('VIH') },
-  HBsAg: { required: required('HBsAg') },
-  HBcAb: { required: required('HBcAb') },
-  HCV: { required: required('VHC') },
+  hiv: { required: required('VIH') },
+  hbsAg: { required: required('HBsAg') },
+  hbcAb: { required: required('HBcAb') },
+  hcv: { required: required('VHC') },
   syphilis: { required: required('Sífilis') },
   chagas: { required: required('Chagas') },
   htlvI_II: { required: required('HtlvI_II') }
@@ -48,7 +50,7 @@ const v$ = useVuelidate(rules, serologyResult);
 const handleSave = async () => {
   const isValid = await v$.value.$validate();
   if (isValid) {
-    let serologyResultNormalized = normalizeEmptyStringsToNull(serologyResult.value);
+    let serologyResultNormalized = normalizeEmptyStringsToNull(serologyResult);
     const donationRoute = route.query.donationId;
     serologyResultNormalized.donationId = donationRoute;
     await serologyStore.createSerologyTest(serologyResultNormalized);
@@ -69,9 +71,9 @@ function normalizeEmptyStringsToNull(obj) {
   return normalized;
 }
 
-Object.keys(serologyResult.value).forEach((key) => {
+Object.keys(serologyResult).forEach((key) => {
   watch(
-    () => serologyResult.value[key],
+    () => serologyResult[key],
     (newValue) => {
       if (newValue === true) {
         fieldPendingReset.value = key;
@@ -88,14 +90,30 @@ const confirmReactive = () => {
 
 const cancelReactive = () => {
   if (fieldPendingReset.value) {
-    serologyResult.value[fieldPendingReset.value] = null;
+    serologyResult[fieldPendingReset.value] = null;
   }
   showReactiveWarning.value = false;
   fieldPendingReset.value = null;
 };
 onMounted(async () => {
+  isLoading.value = true;
   const donationResponse = await donationStore.getDonation(donationId.value);
   donation.value = donationResponse;
+
+  if (donationId.value) {
+    const serologyTestResponse = await serologyStore.getSerologyTestByDonationId(donationId.value);
+    if (serologyTestResponse) {
+      idSerologyTest.value = serologyTestResponse.id;
+      newSerologyTest.value = false;
+      for (const key in serologyResult) {
+        if (Object.prototype.hasOwnProperty.call(serologyTestResponse, key)) {
+          serologyResult[key] = serologyTestResponse[key];
+        }
+      }
+    }
+    console.log(serologyResult);
+  }
+
   isLoading.value = false;
 });
 </script>
@@ -121,7 +139,7 @@ onMounted(async () => {
         </div>
       </div> -->
       <!-- Información de donante -->
-
+      <h3>Test Serológico</h3>
       <Fieldset legend="Datos generales del donante" class="!mb-4">
         <div class="rounded-md px-5 pt-5 pb-2 bg-white">
           <InfoDonor :donor="donation?.donor" :isEditable="false" />
@@ -149,14 +167,14 @@ onMounted(async () => {
           <div class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-center">
             <div class="md:col-span-3 font-medium">VIH</div>
             <div class="md:col-span-9">
-              <Select v-model="serologyResult.HIV" :options="resultSerologyOptions" optionLabel="label" optionValue="value" placeholder="Seleccione resultado" class="w-full md:w-64" :invalid="v$.HIV?.$error">
+              <Select v-model="serologyResult.hiv" :options="resultSerologyOptions" optionLabel="label" optionValue="value" placeholder="Seleccione resultado" class="w-full md:w-64" :invalid="v$.hiv?.$error">
                 <template #value="slotProps">
                   <div :class="slotProps.value === true ? 'text-red-600 font-semibold' : ''">
                     {{ resultSerologyOptions.find((opt) => opt.value === slotProps.value)?.label || slotProps.placeholder }}
                   </div>
                 </template>
               </Select>
-              <Message v-if="v$.HIV?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.HIV.$errors[0].$message }}</Message>
+              <Message v-if="v$.hiv?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.hiv.$errors[0].$message }}</Message>
             </div>
           </div>
 
@@ -164,14 +182,14 @@ onMounted(async () => {
           <div class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-center">
             <div class="md:col-span-3 font-medium">HBsAg</div>
             <div class="md:col-span-9">
-              <Select v-model="serologyResult.HBsAg" :options="resultSerologyOptions" optionLabel="label" optionValue="value" placeholder="Seleccione resultado" class="w-full md:w-64" :invalid="v$.HBsAg?.$error">
+              <Select v-model="serologyResult.hbsAg" :options="resultSerologyOptions" optionLabel="label" optionValue="value" placeholder="Seleccione resultado" class="w-full md:w-64" :invalid="v$.hbsAg?.$error">
                 <template #value="slotProps">
                   <div :class="slotProps.value === true ? 'text-red-600 font-semibold' : ''">
                     {{ resultSerologyOptions.find((opt) => opt.value === slotProps.value)?.label || slotProps.placeholder }}
                   </div>
                 </template>
               </Select>
-              <Message v-if="v$.HBsAg?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.HBsAg.$errors[0].$message }}</Message>
+              <Message v-if="v$.hbsAg?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.hbsAg.$errors[0].$message }}</Message>
             </div>
           </div>
 
@@ -179,14 +197,14 @@ onMounted(async () => {
           <div class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-center">
             <div class="md:col-span-3 font-medium">HBcAb</div>
             <div class="md:col-span-9">
-              <Select v-model="serologyResult.HBcAb" :options="resultSerologyOptions" optionLabel="label" optionValue="value" placeholder="Seleccione resultado" class="w-full md:w-64" :invalid="v$.HBcAb?.$error">
+              <Select v-model="serologyResult.hbcAb" :options="resultSerologyOptions" optionLabel="label" optionValue="value" placeholder="Seleccione resultado" class="w-full md:w-64" :invalid="v$.hbcAb?.$error">
                 <template #value="slotProps">
                   <div :class="slotProps.value === true ? 'text-red-600 font-semibold' : ''">
                     {{ resultSerologyOptions.find((opt) => opt.value === slotProps.value)?.label || slotProps.placeholder }}
                   </div>
                 </template>
               </Select>
-              <Message v-if="v$.HBcAb?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.HBcAb.$errors[0].$message }}</Message>
+              <Message v-if="v$.hbcAb?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.hbcAb.$errors[0].$message }}</Message>
             </div>
           </div>
 
@@ -194,14 +212,14 @@ onMounted(async () => {
           <div class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-center">
             <div class="md:col-span-3 font-medium">VHC</div>
             <div class="md:col-span-9">
-              <Select v-model="serologyResult.HCV" :options="resultSerologyOptions" optionLabel="label" optionValue="value" placeholder="Seleccione resultado" class="w-full md:w-64" :invalid="v$.HCV?.$error">
+              <Select v-model="serologyResult.hcv" :options="resultSerologyOptions" optionLabel="label" optionValue="value" placeholder="Seleccione resultado" class="w-full md:w-64" :invalid="v$.hcv?.$error">
                 <template #value="slotProps">
                   <div :class="slotProps.value === true ? 'text-red-600 font-semibold' : ''">
                     {{ resultSerologyOptions.find((opt) => opt.value === slotProps.value)?.label || slotProps.placeholder }}
                   </div>
                 </template>
               </Select>
-              <Message v-if="v$.HCV?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.HCV.$errors[0].$message }}</Message>
+              <Message v-if="v$.hcv?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.hcv.$errors[0].$message }}</Message>
             </div>
           </div>
 
@@ -261,7 +279,7 @@ onMounted(async () => {
       </Fieldset>
       <div class="flex justify-end px-8 my-8 gap-4">
         <Button class="h-10 w-full md:max-w-[16rem] btn-clean" label="Cancelar" @click="router.back()" />
-        <Button class="h-10 w-full md:max-w-[16rem]" label="Guardar" severity="success" @click="handleSave" />
+        <Button v-if="newSerologyTest.value" class="h-10 w-full md:max-w-[16rem]" label="Guardar" severity="success" @click="handleSave" />
       </div>
       <Dialog v-model:visible="showReactiveWarning" modal header="Resultado Reactivo" :closable="false" class="w-[90%] md:w-[40rem]">
         <div class="text-gray-700">

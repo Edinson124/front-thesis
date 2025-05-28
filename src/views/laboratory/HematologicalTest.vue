@@ -7,7 +7,7 @@ import { useDonationStore } from '@/stores/donation/donations';
 import { useHematologicalTestStore } from '@/stores/laboratory/hematologicalTest';
 import { required } from '@/validation/validators';
 import useVuelidate from '@vuelidate/core';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const donationStore = useDonationStore();
@@ -16,9 +16,11 @@ const route = useRoute();
 const router = useRouter();
 const donation = ref(null);
 const donationId = computed(() => route.query.donationId);
+const newHematologicalTest = ref(true);
+const idHematologicalTest = ref(null);
 
 const isLoading = ref(true);
-const hematologicalResult = ref({
+const hematologicalResult = reactive({
   testDate: null,
   bloodType: null,
   rhFactor: null,
@@ -52,7 +54,7 @@ const v$ = useVuelidate(rules, hematologicalResult);
 const handleSave = async () => {
   const isValid = await v$.value.$validate();
   if (isValid) {
-    let hematologicalResultNormalized = normalizeEmptyStringsToNull(hematologicalResult.value);
+    let hematologicalResultNormalized = normalizeEmptyStringsToNull(hematologicalResult);
     const donationRoute = route.query.donationId;
     hematologicalResultNormalized.donationId = donationRoute;
     await hematologicalStore.createhematologicalTest(hematologicalResultNormalized);
@@ -74,8 +76,22 @@ function normalizeEmptyStringsToNull(obj) {
 }
 
 onMounted(async () => {
+  isLoading.value = true;
   const donationResponse = await donationStore.getDonation(donationId.value);
   donation.value = donationResponse;
+
+  if (donationId.value) {
+    const hematologicalTestResponse = await hematologicalStore.getHematologicalTestByDonationId(donationId.value);
+    if (hematologicalTestResponse) {
+      idHematologicalTest.value = hematologicalTestResponse.id;
+      newHematologicalTest.value = false;
+      for (const key in hematologicalResult) {
+        if (Object.prototype.hasOwnProperty.call(hematologicalTestResponse, key)) {
+          hematologicalResult[key] = hematologicalTestResponse[key];
+        }
+      }
+    }
+  }
   isLoading.value = false;
 });
 </script>
@@ -101,7 +117,7 @@ onMounted(async () => {
         </div>
       </div> -->
       <!-- Información de donante -->
-
+      <h3>Test Hematológico</h3>
       <Fieldset legend="Datos generales del donante" class="!mb-4">
         <div class="rounded-md px-5 pt-5 pb-2 bg-white">
           <InfoDonor :donor="donation?.donor" :isEditable="false" />

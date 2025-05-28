@@ -30,8 +30,8 @@ const fieldPendingReset = ref(null);
 const isLoading = ref(true);
 const serologyResult = ref({
   testDate: null,
-  HIV: null,
-  HBsAg: null,
+  hiv: null,
+  hbsAg: null,
   HBcAb: null,
   HCV: null,
   syphilis: null,
@@ -42,10 +42,10 @@ const serologyResult = ref({
 
 const rules = computed(() => ({
   testDate: { required: required('Fecha de prueba') },
-  HIV: { required: required('VIH') },
-  HBsAg: { required: required('HBsAg') },
-  HBcAb: { required: required('HBcAb') },
-  HCV: { required: required('VHC') },
+  hiv: { required: required('VIH') },
+  hbsAg: { required: required('HBsAg') },
+  hbcAb: { required: required('HBcAb') },
+  hcv: { required: required('VHC') },
   syphilis: { required: required('Sífilis') },
   chagas: { required: required('Chagas') },
   htlvI_II: { required: required('HtlvI_II') }
