@@ -67,7 +67,7 @@ const getTranfusionAllInfo = async (id) => {
 
 const registerTransfusionRequest = async (transfusion) => {
   try {
-    const response = await post(`/transfusion`, { transfusion });
+    const response = await post(`/transfusion`, transfusion);
     return response;
   } catch (error) {
     console.error('Error al registrar nueva transfusión: ', error);

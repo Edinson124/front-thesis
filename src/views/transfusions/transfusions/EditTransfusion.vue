@@ -1,7 +1,8 @@
 <script setup>
 import UnitTable from '@/components/unit/UnitTable.vue';
-import { bloodGroupOptions } from '@/enums/BloodType';
+import { bloodGroupOptions, rhFactorOptions } from '@/enums/BloodType';
 import { documentTypesPatientOptions } from '@/enums/DocumentTypes';
+import userService from '@/services/admin/users';
 import { usePatientStore } from '@/stores/transfusion/patient';
 import { useTransfusionStore } from '@/stores/transfusion/transfusions';
 import { required } from '@/validation/validators';
@@ -15,32 +16,47 @@ const patientStore = usePatientStore();
 const transfusionStore = useTransfusionStore();
 const router = useRouter();
 
-const priorityOptions = [];
+// const priorityOptions = [];
+
+const medicUsersRequest = ref([]);
+const getMedicRequestOptions = async (bloodBankId) => {
+  try {
+    const response = await userService.getUserRequestByBloodBank(bloodBankId);
+    medicUsersRequest.value = response;
+  } catch (error) {
+    console.error('Error obteniendo variables:', error);
+  }
+};
+const patient = reactive({
+  documentType: '',
+  documentNumber: '',
+  names: '',
+  bloodType: '',
+  rhFactor: ''
+});
 
 const transfusion = reactive({
-  patient: {
-    documentType: '',
-    documentNumber: '',
-    names: '',
-    bloodGroup: ''
-  },
-  doctorRequest: '',
+  documentTypePatient: null,
+  documentNumberPatient: null,
+  attendingDoctor: '',
   bed: '',
-  service: '',
-  priority: '',
-  crossTests: '',
+  medicalService: '',
+  // priority: '',
+  hasCrossmatch: '',
   diagnosis: '',
-  reason: '',
+  requestReason: '',
   requestedUnits: []
 });
 
 const patientFound = ref(false);
 const searchPatient = async () => {
   try {
-    const response = await patientStore.getPatient(transfusion.patient.documentNumber, transfusion.patient.documentType);
+    const response = await patientStore.getPatient(transfusion.documentNumberPatient, transfusion.documentTypePatient);
+    if (response == null) return;
     patientFound.value = true;
-    transfusion.patient.names = `${response.firstName} ${response.lastName}`;
-    // transfusion.patient.bloodGroup = response.bloodGroup;
+    patient.names = `${response.firstName} ${response.lastName} ${response.secondLastName}`;
+    patient.bloodType = response.bloodType;
+    patient.rhFactor = response.rhFactor;
   } catch (err) {
     patientFound.value = false;
     console.error(err);
@@ -48,27 +64,35 @@ const searchPatient = async () => {
 };
 
 const addRequestedUnit = async (unit) => {
-  transfusion.requestedUnits.push({ id: transfusion.requestedUnits.length + 1, ...unit });
+  const newUnit = {
+    id: transfusion.requestedUnits.length + 1,
+    unitType: unit.unitType,
+    requestedQuantity: unit.requestedQuantity
+  };
+  transfusion.requestedUnits.push(newUnit);
 };
+
 const editRequestedUnit = async (index, updatedUnit) => {
-  transfusion.requestedUnits[index] = { ...transfusion.requestedUnits[index], ...updatedUnit };
+  transfusion.requestedUnits[index] = {
+    ...transfusion.requestedUnits[index],
+    unitType: updatedUnit.unitType,
+    requestedQuantity: updatedUnit.requestedQuantity
+  };
 };
 const removeRequestedUnit = async (index) => {
   transfusion.requestedUnits.splice(index, 1);
 };
 
 const rules = computed(() => ({
-  patient: {
-    documentType: { required: required('Tipo de documento') },
-    documentNumber: { required: required('Número de documento') }
-  },
-  doctorRequest: { required: required('Médico') },
+  documentTypePatient: { required: required('Tipo de documento') },
+  documentNumberPatient: { required: required('Número de documento') },
+  attendingDoctor: { required: required('Médico') },
   bed: { required: required('Cama') },
-  service: { required: required('Servicio') },
-  priority: { required: required('Prioridad') },
-  crossTests: { required: required('Pruebas cruzadas') },
+  medicalService: { required: required('Servicio') },
+  // priority: { required: required('Prioridad') },
+  hasCrossmatch: { required: required('Pruebas cruzadas') },
   diagnosis: { required: required('Diagnostico') },
-  reason: { required: required('Motivo') },
+  requestReason: { required: required('Motivo') },
   requestedUnits: {
     required: required('Unidades solicitadas'),
     minLength: minLength(1)
@@ -77,7 +101,8 @@ const rules = computed(() => ({
 
 const v$ = useVuelidate(rules, transfusion);
 
-onMounted(() => {
+onMounted(async () => {
+  await getMedicRequestOptions();
   isLoading.value = false;
 });
 
@@ -100,6 +125,7 @@ const cancel = () => {
     <ProgressSpinner style="width: 50px; height: 50px" />
   </div>
   <form v-else class="card" @submit.prevent="saveTransfusion">
+    <h3>Solicitud de transfusión</h3>
     <Fieldset legend="Datos generales">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
@@ -109,10 +135,10 @@ const cancel = () => {
             </div>
             <span class="w-full mr-2">
               <FloatLabel variant="on">
-                <Select id="documentType" v-model="transfusion.patient.documentType" :options="documentTypesPatientOptions" optionLabel="label" optionValue="value" class="w-full" :invalid="v$.patient.documentType?.$error" />
-                <label for="documentType">Tipo Documento</label>
+                <Select id="documentTypePatient" v-model="transfusion.documentTypePatient" :options="documentTypesPatientOptions" optionLabel="label" optionValue="value" class="w-full" :invalid="v$.documentTypePatient?.$error" />
+                <label for="documentTypePatient">Tipo Documento</label>
               </FloatLabel>
-              <Message v-if="v$.patient.documentType?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.patient.documentType.$errors[0].$message }}</Message>
+              <Message v-if="v$.documentTypePatient?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.documentTypePatient.$errors[0].$message }}</Message>
             </span>
           </div>
         </div>
@@ -121,12 +147,19 @@ const cancel = () => {
             <span class="w-full mr-2">
               <InputGroup>
                 <FloatLabel variant="on" class="w-full">
-                  <InputText id="documentNumber" v-model="transfusion.patient.documentNumber" aria-describedby="documentNumber" :disabled="!transfusion.patient.documentType" @focusout="searchPatient" :invalid="v$.patient.documentNumber?.$error" />
-                  <label for="documentNumber">Nro Documento</label>
+                  <InputText
+                    id="documentNumberPatient"
+                    v-model="transfusion.documentNumberPatient"
+                    aria-describedby="documentNumber"
+                    :disabled="!transfusion.documentTypePatient"
+                    @focusout="searchPatient"
+                    :invalid="v$.documentNumberPatient?.$error"
+                  />
+                  <label for="documentNumberPatient">Nro Documento</label>
                 </FloatLabel>
                 <InputGroupAddon><Button icon="pi pi-search" severity="secondary" variant="text" @click="searchPatient" /></InputGroupAddon>
               </InputGroup>
-              <Message v-if="v$.patient.documentNumber?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.patient.documentNumber.$errors[0].$message }}</Message>
+              <Message v-if="v$.documentNumberPatient?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.patient.documentNumber.$errors[0].$message }}</Message>
               <Message v-if="patientFound === true" severity="success" size="small" variant="simple" class="pt-1">Paciente encontrado</Message>
               <Message v-else-if="patientFound === false" severity="error" size="small" variant="simple" class="pt-1">Paciente no encontrado</Message>
             </span>
@@ -137,7 +170,7 @@ const cancel = () => {
       <div class="grid grid-cols-1 gap-4 mb-4">
         <div>
           <FloatLabel variant="on">
-            <InputText id="names" v-model="transfusion.patient.names" class="w-full" disabled />
+            <InputText id="names" v-model="patient.names" class="w-full" disabled />
             <label for="names">Nombres del paciente</label>
           </FloatLabel>
         </div>
@@ -146,20 +179,26 @@ const cancel = () => {
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <div>
           <FloatLabel variant="on">
-            <Select id="id_bloodGroup" v-model="transfusion.patient.bloodGroup" :options="bloodGroupOptions" optionLabel="label" optionValue="value" class="w-full" disabled />
-            <label for="id_bloodGroup">Grupo sanguíneo</label>
+            <Select id="bloodType" v-model="patient.bloodType" :options="bloodGroupOptions" optionLabel="label" optionValue="value" class="w-full" disabled />
+            <label for="bloodType">Grupo sanguíneo</label>
+          </FloatLabel>
+        </div>
+        <div>
+          <FloatLabel variant="on">
+            <Select id="rhFactor" v-model="patient.rhFactor" :options="rhFactorOptions" optionLabel="label" optionValue="value" class="w-full" disabled />
+            <label for="rhFactor">Rh factor</label>
           </FloatLabel>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
           <h6 class="mb-2">Médico solicitante</h6>
           <FloatLabel variant="on">
-            <Select id="doctor_request" v-model="transfusion.doctorRequest" :options="[]" optionLabel="label" optionValue="value" class="w-full" :invalid="v$.doctorRequest?.$error" />
+            <Select id="doctor_request" v-model="transfusion.attendingDoctor" :options="medicUsersRequest" optionLabel="fullName" optionValue="id" class="w-full" :invalid="v$.attendingDoctor?.$error" />
             <label for="doctor_request">Médico</label>
           </FloatLabel>
-          <Message v-if="v$.doctorRequest?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.doctorRequest.$errors[0].$message }}</Message>
+          <Message v-if="v$.attendingDoctor?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.attendingDoctor.$errors[0].$message }}</Message>
         </div>
       </div>
 
@@ -173,21 +212,21 @@ const cancel = () => {
         </div>
         <div>
           <FloatLabel variant="on">
-            <InputText id="service" v-model="transfusion.service" class="w-full" :invalid="v$.service?.$error" />
-            <label for="service">Servicio</label>
+            <InputText id="medicalService" v-model="transfusion.medicalService" class="w-full" :invalid="v$.medicalService?.$error" />
+            <label for="medicalService">Servicio</label>
           </FloatLabel>
-          <Message v-if="v$.service?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.service.$errors[0].$message }}</Message>
+          <Message v-if="v$.medicalService?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.medicalService.$errors[0].$message }}</Message>
         </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <div>
+        <!-- <div>
           <FloatLabel variant="on">
             <Select id="id_priority" v-model="transfusion.priority" :options="priorityOptions" optionLabel="label" optionValue="value" class="w-full" :invalid="v$.priority?.$error" />
             <label for="id_priority">Prioridad</label>
           </FloatLabel>
           <Message v-if="v$.priority?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.priority.$errors[0].$message }}</Message>
-        </div>
+        </div> -->
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-8">
@@ -201,10 +240,10 @@ const cancel = () => {
             ]"
             :key="index"
           >
-            <RadioButton :inputId="`tests-${index}`" :value="option.value" v-model="transfusion.crossTests" name="tests" :invalid="v$.crossTests?.$error" />
+            <RadioButton :inputId="`tests-${index}`" :value="option.value" v-model="transfusion.hasCrossmatch" name="tests" :invalid="v$.hasCrossmatch?.$error" />
             <label :for="`tests-${index}`">{{ option.label }}</label>
           </div>
-          <Message v-if="v$.crossTests?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.crossTests.$errors[0].$message }}</Message>
+          <Message v-if="v$.hasCrossmatch?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.hasCrossmatch.$errors[0].$message }}</Message>
         </div>
       </div>
 
@@ -218,10 +257,10 @@ const cancel = () => {
 
       <div class="mb-4">
         <FloatLabel variant="on">
-          <Textarea id="reason" v-model="transfusion.reason" rows="5" class="w-full resize-none" :invalid="v$.reason?.$error" />
-          <label for="reason">Motivo</label>
+          <Textarea id="requestReason" v-model="transfusion.requestReason" rows="5" class="w-full resize-none" :invalid="v$.requestReason?.$error" />
+          <label for="requestReason">Motivo</label>
         </FloatLabel>
-        <Message v-if="v$.reason?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.reason.$errors[0].$message }}</Message>
+        <Message v-if="v$.requestReason?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.requestReason.$errors[0].$message }}</Message>
       </div>
     </Fieldset>
 

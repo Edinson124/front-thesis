@@ -182,6 +182,7 @@ const v$ = useVuelidate(rules, patient);
 const documentNumberVerified = ref(null);
 
 const verifyDocumentNumber = async () => {
+  if (!patient.documentType) return;
   const response = await patientStore.verifyPatient(patient.documentNumber, patient.documentType);
   documentNumberVerified.value = response;
 };

@@ -45,9 +45,9 @@ const getBloodBank = async (bloodBankId) => {
   }
 };
 
-const newBloodBank = async (user) => {
+const newBloodBank = async (bloodBank) => {
   try {
-    const response = await post('/blood-bank', user);
+    const response = await post('/blood-bank', bloodBank);
     return response;
   } catch (error) {
     console.error('Error al crear usuario: ', error);
@@ -55,12 +55,12 @@ const newBloodBank = async (user) => {
   }
 };
 
-const editBloodBank = async (user) => {
+const editBloodBank = async (bloodBank) => {
   try {
-    const response = await put(`/blood-bank/${user.id}`, user);
+    const response = await put(`/blood-bank/${bloodBank.id}`, bloodBank);
     return response;
   } catch (error) {
-    console.error('Error al editar usuario: ', error);
+    console.error('Error al editar banco de sangre: ', error);
     return null;
   }
 };

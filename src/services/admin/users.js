@@ -64,7 +64,17 @@ const getUserMedicByBloodBank = async (bloodBankId) => {
     const response = await get(`/users/medic/${bloodBankId}`);
     return response;
   } catch (error) {
-    console.error('Error al crear usuario: ', error);
+    console.error('Error al crear usuario medico de banco de sangre: ', error);
+    return null;
+  }
+};
+
+const getUserRequestByBloodBank = async () => {
+  try {
+    const response = await get(`/users/medicRequest`);
+    return response;
+  } catch (error) {
+    console.error('Error al obtener usuario medico solicitante: ', error);
     return null;
   }
 };
@@ -86,5 +96,6 @@ export default {
   newUser,
   editUser,
   getUserMedicByBloodBank,
+  getUserRequestByBloodBank,
   toogleStatusUser
 };

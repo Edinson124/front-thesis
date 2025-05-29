@@ -43,9 +43,9 @@ export const useBloodBanksStore = defineStore('blood-banks', () => {
     }
   };
 
-  const newBloodBank = async (user) => {
+  const newBloodBank = async (bloodBank) => {
     try {
-      await bloodBanksService.newBloodBank(user);
+      await bloodBanksService.newBloodBank(bloodBank);
       return true;
     } catch (error) {
       console.error('Error al crear usuario: ', error);
@@ -53,9 +53,9 @@ export const useBloodBanksStore = defineStore('blood-banks', () => {
     }
   };
 
-  const editBloodBank = async (user) => {
+  const editBloodBank = async (bloodBank) => {
     try {
-      await bloodBanksService.editBloodBank(user);
+      await bloodBanksService.editBloodBank(bloodBank);
       return true;
     } catch (error) {
       console.error('Error al crear usuario: ', error);
