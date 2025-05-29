@@ -1,5 +1,5 @@
 <script setup>
-import { bloodGroupOptions } from '@/enums/BloodType';
+import { bloodGroupOptions, rhFactorOptions } from '@/enums/BloodType';
 import { DocumentTypes } from '@/enums/DocumentTypes';
 import { genderOptions } from '@/enums/Gender';
 import router from '@/router';
@@ -31,9 +31,10 @@ const patient = reactive({
   province: null,
   district: null,
   address: '',
-  allergies: '',
-  bloodGroup: '',
-  womanBirths: null
+  allergic: '',
+  bloodType: '',
+  rhFactor: '',
+  numberBirths: null
 });
 
 const maxDate = ref(new Date());
@@ -172,8 +173,9 @@ const rules = computed(() => ({
   province: { requiredIf: requiredIf('Provincia', () => patient.region) },
   district: { requiredIf: requiredIf('Distrito', () => patient.province) },
   address: { required: required('Dirección'), minLength: minLength('Dirección', 5) },
-  bloodGroup: { required: required('Grupo sanguíneo') },
-  womanBirths: { requiredIf: requiredIf('Número de partos', () => patient.gender === 'Femenino') }
+  bloodType: { required: required('Grupo sanguíneo') },
+  rhFactor: { required: required('Rh factor') },
+  numberBirths: { requiredIf: requiredIf('Número de partos', () => patient.gender === 'Femenino') }
 }));
 
 const v$ = useVuelidate(rules, patient);
@@ -197,8 +199,10 @@ const resetPatientForm = () => {
   patient.province = null;
   patient.district = null;
   patient.address = '';
-  patient.allergies = '';
-  patient.bloodGroup = '';
+  patient.allergic = '';
+  patient.bloodType = '';
+  patient.rhFactor = '';
+  patient.numberBirths = null;
 
   documentNumberVerified.value = false;
   v$.value.$reset();
@@ -386,25 +390,32 @@ const cancel = () => {
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
       <div>
         <FloatLabel variant="on">
-          <Select id="id_bloodGroup" v-model="patient.bloodGroup" :options="bloodGroupOptions" optionLabel="label" optionValue="value" class="w-full" :invalid="v$.bloodGroup?.$error" />
-          <label for="id_bloodGroup">Grupo sanguíneo</label>
+          <Select id="bloodType" v-model="patient.bloodType" :options="bloodGroupOptions" optionLabel="label" optionValue="value" class="w-full" :invalid="v$.bloodType?.$error" />
+          <label for="bloodType">Grupo sanguíneo</label>
         </FloatLabel>
-        <Message v-if="v$.bloodGroup?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.bloodGroup.$errors[0].$message }}</Message>
+        <Message v-if="v$.bloodType?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.bloodType.$errors[0].$message }}</Message>
+      </div>
+      <div>
+        <FloatLabel variant="on">
+          <Select id="rhFactor" v-model="patient.rhFactor" :options="rhFactorOptions" optionLabel="label" optionValue="value" class="w-full" :invalid="v$.rhFactor?.$error" />
+          <label for="rhFactor">Rh factor</label>
+        </FloatLabel>
+        <Message v-if="v$.rhFactor?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.rhFactor.$errors[0].$message }}</Message>
       </div>
 
       <div v-if="patient.gender === 'Femenino'">
         <FloatLabel variant="on">
-          <InputNumber id="womanBirths" v-model="patient.womanBirths" class="w-full" :invalid="v$.womanBirths?.$error" />
-          <label for="womanBirths">Número de partos</label>
+          <InputNumber id="numberBirths" v-model="patient.numberBirths" class="w-full" :invalid="v$.numberBirths?.$error" />
+          <label for="numberBirths">Número de partos</label>
         </FloatLabel>
-        <Message v-if="v$.womanBirths?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.womanBirths.$errors[0].$message }}</Message>
+        <Message v-if="v$.numberBirths?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.numberBirths.$errors[0].$message }}</Message>
       </div>
     </div>
 
     <div class="mb-4">
       <FloatLabel variant="on">
-        <Textarea id="allergies" v-model="patient.allergies" rows="5" class="w-full resize-none" />
-        <label for="allergies">Alergias</label>
+        <Textarea id="allergic" v-model="patient.allergic" rows="5" class="w-full resize-none" />
+        <label for="allergic">Alergias</label>
       </FloatLabel>
     </div>
 

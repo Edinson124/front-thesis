@@ -33,7 +33,7 @@ export const usePatientStore = defineStore('patient', () => {
 
   const newPatient = async (patient) => {
     try {
-      // await patientService.newPatient(patient);
+      await patientService.newPatient(patient);
       return true;
     } catch (error) {
       console.error('Error al crear paciente: ', error);
@@ -43,7 +43,7 @@ export const usePatientStore = defineStore('patient', () => {
 
   const editPatient = async (patient) => {
     try {
-      // await patientService.editPatient(patient);
+      await patientService.editPatient(patient);
       return true;
     } catch (error) {
       console.error('Error al editar paciente: ', error);

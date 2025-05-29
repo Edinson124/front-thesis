@@ -1,4 +1,4 @@
-import { post } from '@/api';
+import { post, put } from '@/api';
 
 const validatePatient = async (documentNumber, documentType) => {
   try {
@@ -30,8 +30,30 @@ const getPatient = async (documentNumber, documentType) => {
   }
 };
 
+const newPatient = async (patient) => {
+  try {
+    const response = await post('/patient', patient);
+    return response;
+  } catch (error) {
+    console.error('Error al crear paciente: ', error);
+    return null;
+  }
+};
+
+const editPatient = async (patient) => {
+  try {
+    const response = await put(`/patient`, patient);
+    return response;
+  } catch (error) {
+    console.error('Error al editar paciente: ', error);
+    return null;
+  }
+};
+
 export default {
   validatePatient,
   verifyPatient,
-  getPatient
+  getPatient,
+  newPatient,
+  editPatient
 };
