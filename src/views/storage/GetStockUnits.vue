@@ -1,8 +1,12 @@
 <script setup>
 import StockUnits from '@/components/storage/StockUnits.vue';
+import { useUnitStore } from '@/stores/storage/units';
 import { onMounted } from 'vue';
 
-onMounted(async () => {});
+const unitStore = useUnitStore();
+onMounted(async () => {
+  await unitStore.getSelectBloodTypesAll();
+});
 </script>
 <template>
   <div class="card">

@@ -1,4 +1,6 @@
+import { bloodTypesOptions } from '@/enums/BloodType';
 import unitsService from '@/services/storage/units';
+import transfusionAssignmentService from '@/services/tranfusion/transfusionAssignment';
 import { defineStore } from 'pinia';
 import { reactive, ref } from 'vue';
 
@@ -6,6 +8,9 @@ export const useUnitStore = defineStore('unit', () => {
   const units = reactive([]);
   const totalRecords = ref(0);
   const currentPage = ref(0);
+
+  const idTranfusion = ref(0);
+  const bloodTypesSelect = reactive([...bloodTypesOptions]);
 
   const getUnits = async (filters = {}, page = 0) => {
     try {
@@ -30,11 +35,41 @@ export const useUnitStore = defineStore('unit', () => {
     }
   };
 
+  const getSelectBloodTypesByTransfusion = async (idTranfusion) => {
+    try {
+      const response = await transfusionAssignmentService.getBloodOptions(idTranfusion);
+      bloodTypesSelect.splice(0, bloodTypesSelect.length, ...response);
+      return true;
+    } catch (error) {
+      console.error('Error al obtener los tipos de sangre: ', error);
+      return false;
+    }
+  };
+
+  const getSelectBloodTypesAll = async () => {
+    try {
+      bloodTypesSelect.splice(0, bloodTypesSelect.length, ...bloodTypesOptions);
+      return true;
+    } catch (error) {
+      console.error('Error al obtener los tipos de sangre: ', error);
+      return false;
+    }
+  };
+
+  const setNullIdTranfusion = () => {
+    idTranfusion.value = null;
+  };
+
   return {
     getUnits,
     getUnitById,
+    getSelectBloodTypesByTransfusion,
+    getSelectBloodTypesAll,
+    setNullIdTranfusion,
     units,
     totalRecords,
-    currentPage
+    currentPage,
+    bloodTypesSelect,
+    idTranfusion
   };
 });

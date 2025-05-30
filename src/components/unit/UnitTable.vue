@@ -76,8 +76,8 @@ const openEditUnitModal = (unit, index) => {
 
 const emit = defineEmits(['edit', 'add', 'remove', 'result']);
 
-const removeItem = (index) => {
-  emit('remove', index);
+const removeItem = (index, assign) => {
+  emit('remove', index, assign);
 };
 
 const saveResult = (result) => {
@@ -110,11 +110,11 @@ const columns = [
     : []),
   ...(props.type === 'resultData'
     ? [
-        { field: 'id', header: 'Código', width: '10%' },
-        { field: 'unitType', header: 'Unidad', width: '25%' },
-        { field: 'bloodType', header: 'Grupo sanguíneo', width: '15%' },
-        { field: 'result', header: 'Resultado', width: '15%' },
-        { field: 'resultBy', header: 'Resultado registrado por', width: '15%' }
+        { field: 'id', header: 'Código', width: '5%' },
+        { field: 'unitType', header: 'Unidad', width: '22%' },
+        { field: 'bloodType', header: 'Grupo sanguíneo', width: '18%' },
+        { field: 'validateResult', header: 'Resultado', width: '15%' },
+        { field: 'performedTestByName', header: 'Resultado registrado por', width: '18%' }
       ]
     : []),
   ...(props.audit ? [{ field: 'updatedBy', header: 'Actualizado por', width: '12%' }] : [])
@@ -158,7 +158,7 @@ const columns = [
               <div class="flex flex-wrap w-full">
                 <Button v-if="typeModal !== 'result'" class="h-8 w-[6rem] mr-1 my-1 btn-edit" label="Editar" @click="() => openEditUnitModal(slotProps.data, slotProps.index)" />
                 <Button v-if="typeModal === 'result'" class="h-8 w-[12rem] mr-1 my-1 btn-edit" label="Registrar resultado" @click="() => openRegisterResultModal(slotProps.data, slotProps.index)" />
-                <Button class="h-8 w-[6rem] mr-1 my-1" label="Eliminar" severity="danger" @click="removeItem(slotProps.index)" />
+                <Button class="h-8 w-[6rem] mr-1 my-1" label="Eliminar" severity="danger" @click="removeItem(slotProps.index, slotProps.data)" />
               </div>
             </template>
           </Column>

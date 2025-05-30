@@ -1,5 +1,4 @@
 <script setup>
-import { bloodTypesOptions } from '@/enums/BloodType';
 import { unitStatusOptions, unitTypesOptions } from '@/enums/Units';
 import { useUnitStore } from '@/stores/storage/units';
 import { onMounted, reactive, ref } from 'vue';
@@ -74,7 +73,9 @@ const searchUnits = async (event) => {
       params.endExpirationDate = formatDate(end);
     }
   }
-
+  if (unitStore.idTranfusion) {
+    params.idTranfusion = unitStore.idTranfusion;
+  }
   await unitStore.getUnits(params, page);
   loading.value = false;
 };
@@ -131,7 +132,7 @@ onMounted(async () => {
 
           <div>
             <FloatLabel variant="on">
-              <Select id="bloodType" v-model="filters.bloodType" :options="bloodTypesOptions" optionLabel="label" optionValue="value" class="w-full" />
+              <Select id="bloodType" v-model="filters.bloodType" :options="unitStore.bloodTypesSelect" optionLabel="label" optionValue="value" class="w-full" />
               <label for="bloodType">Grupo sanguíneo</label>
             </FloatLabel>
           </div>
