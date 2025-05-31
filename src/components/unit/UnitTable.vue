@@ -30,6 +30,14 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
+  assignPermit: {
+    type: Boolean,
+    default: false
+  },
+  returnAction: {
+    type: Boolean,
+    default: false
+  },
   audit: {
     type: Boolean,
     default: false
@@ -127,7 +135,7 @@ const columns = [
       <h4>{{ title }}</h4>
       <template v-if="!readOnly">
         <Button v-if="typeModal !== 'result'" label="Nueva Unidad" icon="pi pi-plus" class="p-button-success" @click="openNewUnitModal" />
-        <Button v-else label="Asignar Unidad" icon="pi pi-plus" class="p-button-success" @click="openAssignUnitModal" />
+        <Button v-else-if="typeModal == 'result' && assignPermit" label="Asignar Unidad" icon="pi pi-plus" class="p-button-success" @click="openAssignUnitModal" />
       </template>
     </div>
 
@@ -157,8 +165,9 @@ const columns = [
             <template #body="slotProps">
               <div class="flex flex-wrap w-full">
                 <Button v-if="typeModal !== 'result'" class="h-8 w-[6rem] mr-1 my-1 btn-edit" label="Editar" @click="() => openEditUnitModal(slotProps.data, slotProps.index)" />
-                <Button v-if="typeModal === 'result'" class="h-8 w-[12rem] mr-1 my-1 btn-edit" label="Registrar resultado" @click="() => openRegisterResultModal(slotProps.data, slotProps.index)" />
-                <Button class="h-8 w-[6rem] mr-1 my-1" label="Eliminar" severity="danger" @click="removeItem(slotProps.index, slotProps.data)" />
+                <Button v-if="typeModal === 'result' && !returnAction" class="h-8 w-[12rem] mr-1 my-1 btn-edit" label="Registrar resultado" @click="() => openRegisterResultModal(slotProps.data, slotProps.index)" />
+                <Button v-if="typeModal === 'result' && returnAction" class="h-8 w-[12rem] mr-1 my-1 btn-edit" label="Devolución" @click="() => openRegisterResultModal(slotProps.data, slotProps.index)" />
+                <Button v-if="typeModal === 'result' && !returnAction" class="h-8 w-[6rem] mr-1 my-1" label="Eliminar" severity="danger" @click="removeItem(slotProps.index, slotProps.data)" />
               </div>
             </template>
           </Column>

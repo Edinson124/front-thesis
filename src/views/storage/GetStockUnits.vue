@@ -6,6 +6,7 @@ import { onMounted } from 'vue';
 const unitStore = useUnitStore();
 onMounted(async () => {
   await unitStore.getSelectBloodTypesAll();
+  await unitStore.setStatusUnits();
 });
 </script>
 <template>

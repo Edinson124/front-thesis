@@ -1,5 +1,5 @@
 <script setup>
-import { unitStatusOptions, unitTypesOptions } from '@/enums/Units';
+import { unitTypesOptions } from '@/enums/Units';
 import { useUnitStore } from '@/stores/storage/units';
 import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -146,7 +146,7 @@ onMounted(async () => {
 
           <div>
             <FloatLabel variant="on">
-              <Select id="status" v-model="filters.status" :options="unitStatusOptions" optionLabel="label" optionValue="value" class="w-full" />
+              <Select id="status" v-model="filters.status" :options="unitStore.statusTypesSelect" optionLabel="label" optionValue="value" class="w-full" />
               <label for="status">Estado</label>
             </FloatLabel>
           </div>

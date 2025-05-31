@@ -1,6 +1,7 @@
 <script setup>
 import InfoTransfusions from '@/components/transfusion/InfoTransfusions.vue';
 import UnitTable from '@/components/unit/UnitTable.vue';
+import { transfusionStatusAssignPermit, transfusionStatusReturnAction } from '@/enums/Status';
 import { useUnitStore } from '@/stores/storage/units';
 import { useTransfusionResultStore } from '@/stores/transfusion/transfusionAssignment';
 import { useTransfusionStore } from '@/stores/transfusion/transfusions';
@@ -12,8 +13,12 @@ import { useRoute, useRouter } from 'vue-router';
 const transfusionAssignmentStore = useTransfusionResultStore();
 const transfusionStore = useTransfusionStore();
 const unitStore = useUnitStore();
+
 const transfusionId = computed(() => route.query.transfusionId);
+const assignPermit = ref(null);
+const returnAction = ref(null);
 const isLoading = ref(true);
+
 const route = useRoute();
 const router = useRouter();
 
@@ -32,8 +37,11 @@ const transfusion = ref(null);
 onMounted(async () => {
   unitStore.idTranfusion = transfusionId;
   await unitStore.getSelectBloodTypesByTransfusion(transfusionId.value);
+  await unitStore.setStatusAptoUnits();
   const response = await transfusionStore.getTranfusionAllInfo(transfusionId.value);
   transfusion.value = response;
+  assignPermit.value = transfusionStatusAssignPermit.includes(response.transfusion.status);
+  returnAction.value = transfusionStatusReturnAction.includes(response.transfusion.status);
   isLoading.value = false;
 });
 
@@ -64,11 +72,9 @@ const freeUnits = async () => {
   await transfusionAssignmentStore.dispensedUnits(transfusionId.value, recieved);
   const response = await transfusionStore.getTranfusionAllInfo(transfusionId.value);
   transfusion.value = response;
+  assignPermit.value = transfusionStatusAssignPermit.includes(response.transfusion.status);
+  returnAction.value = transfusionStatusReturnAction.includes(response.transfusion.status);
   showModalFreeUnits.value = false;
-};
-
-const handleSave = () => {
-  console.log(transfusion.value);
 };
 </script>
 <template>
@@ -98,6 +104,8 @@ const handleSave = () => {
         title="Unidades asignadas"
         type="resultData"
         type-modal="result"
+        :assign-permit="assignPermit"
+        :return-action="returnAction"
         :loading="isLoading"
         edit-text="Registrar resultado"
         v-model="transfusion.assignments"
@@ -109,11 +117,11 @@ const handleSave = () => {
       <!-- Acciones -->
       <div class="flex justify-between">
         <div class="flex flex-1 justify-start px-8 my-8 gap-4">
-          <Button class="h-10 w-full md:max-w-[16rem]" label="Liberar unidades" severity="success" @click="() => (showModalFreeUnits = true)" />
+          <Button v-if="assignPermit" class="h-10 w-full md:max-w-[16rem]" label="Liberar unidades" severity="success" @click="() => (showModalFreeUnits = true)" />
         </div>
         <div class="flex flex-1 justify-end px-8 my-8 gap-4">
           <Button class="h-10 w-full md:max-w-[16rem] btn-clean" label="Cancelar" @click="router.back()" />
-          <Button class="h-10 w-full md:max-w-[16rem]" label="Guardar" severity="success" @click="handleSave" />
+          <!-- <Button class="h-10 w-full md:max-w-[16rem]" label="Guardar" severity="success" @click="handleSave" /> -->
         </div>
       </div>
 

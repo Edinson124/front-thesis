@@ -20,8 +20,12 @@ export const TranfusionStatus = {
   Pendiente: { label: 'Pendiente', edit: true },
   Aceptada: { label: 'Aceptada', edit: false },
   Finalizada: { label: 'Finalizada', edit: false },
-  'No atendida': { label: 'No atendida', edit: false }
+  // 'No atendida': { label: 'No atendida', edit: false },
+  Liberada: { label: 'Liberada', edit: false }
 };
+
+export const transfusionStatusAssignPermit = [TranfusionStatus.Pendiente.label, TranfusionStatus.Aceptada.label];
+export const transfusionStatusReturnAction = [TranfusionStatus.Liberada.label];
 
 export const ExtractionStatus = {
   Interrumpida: { label: 'Interrumpida' },

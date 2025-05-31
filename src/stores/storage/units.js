@@ -1,4 +1,5 @@
 import { bloodTypesOptions } from '@/enums/BloodType';
+import { unitStatusApto, unitStatusOptions } from '@/enums/Units';
 import unitsService from '@/services/storage/units';
 import transfusionAssignmentService from '@/services/tranfusion/transfusionAssignment';
 import { defineStore } from 'pinia';
@@ -11,6 +12,7 @@ export const useUnitStore = defineStore('unit', () => {
 
   const idTranfusion = ref(0);
   const bloodTypesSelect = reactive([...bloodTypesOptions]);
+  const statusTypesSelect = reactive([...unitStatusOptions]);
 
   const getUnits = async (filters = {}, page = 0) => {
     try {
@@ -56,6 +58,26 @@ export const useUnitStore = defineStore('unit', () => {
     }
   };
 
+  const setStatusAptoUnits = async () => {
+    try {
+      bloodTypesSelect.splice(0, bloodTypesSelect.length, ...unitStatusApto);
+      return true;
+    } catch (error) {
+      console.error('Error al obtener losestado de sangre: ', error);
+      return false;
+    }
+  };
+
+  const setStatusUnits = async () => {
+    try {
+      bloodTypesSelect.splice(0, bloodTypesSelect.length, ...unitStatusOptions);
+      return true;
+    } catch (error) {
+      console.error('Error al obtener losestado de sangre: ', error);
+      return false;
+    }
+  };
+
   const setNullIdTranfusion = () => {
     idTranfusion.value = null;
   };
@@ -65,11 +87,14 @@ export const useUnitStore = defineStore('unit', () => {
     getUnitById,
     getSelectBloodTypesByTransfusion,
     getSelectBloodTypesAll,
+    setStatusUnits,
+    setStatusAptoUnits,
     setNullIdTranfusion,
     units,
     totalRecords,
     currentPage,
     bloodTypesSelect,
+    statusTypesSelect,
     idTranfusion
   };
 });

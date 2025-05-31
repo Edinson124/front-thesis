@@ -80,6 +80,11 @@ export const unitStatusOptions = Object.entries(UnitStatus).map(([value, label])
   label
 }));
 
+export const unitStatusApto = Object.entries(UnitStatus.Apto).map(([value, label]) => ({
+  value,
+  label
+}));
+
 export const UnitTypesTransformationSearch = {
   'Sangre total': 'Sangre total',
   'Plasma fresco congelado': 'Plasma fresco congelado'

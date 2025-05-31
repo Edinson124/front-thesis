@@ -33,7 +33,7 @@ const patient = reactive({
 const columns = [
   { field: 'id', header: 'Código', width: '12%' },
   { field: 'bloodBankName', header: 'Banco de sangre', width: '30%' },
-  { field: 'date', header: 'Fecha de donación', width: '20%' },
+  { field: 'date', header: 'Fecha de transfusión', width: '20%' },
   { field: 'status', header: 'Estado', width: '12%' }
 ];
 
