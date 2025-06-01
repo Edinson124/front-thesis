@@ -111,14 +111,15 @@ const columns = [
     : []),
   ...(props.type === 'singleData'
     ? [
-        { field: 'id', header: 'Código', width: '10%' },
+        { field: 'index', header: 'Indice', width: '10%' },
         { field: 'unitType', header: 'Unidad', width: '25%' },
         { field: 'requestedQuantity', header: 'Cantidad', width: '15%' }
       ]
     : []),
   ...(props.type === 'resultData'
     ? [
-        { field: 'id', header: 'Código', width: '5%' },
+        { field: 'index', header: 'Indice', width: '5%' },
+        { field: 'unitId', header: 'Código', width: '5%' },
         { field: 'unitType', header: 'Unidad', width: '22%' },
         { field: 'bloodType', header: 'Grupo sanguíneo', width: '18%' },
         { field: 'validateResult', header: 'Resultado', width: '15%' },
@@ -148,7 +149,7 @@ const columns = [
         <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" :style="`width: ${col.width}`">
           <template #body="slotProps">
             <span>
-              <template v-if="col.field === 'id' && type === 'resultData'">
+              <template v-if="col.field === 'index'">
                 {{ slotProps.index + 1 }}
               </template>
               <template v-else-if="col.field === 'type'">
