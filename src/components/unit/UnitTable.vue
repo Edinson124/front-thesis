@@ -44,7 +44,7 @@ const props = defineProps({
   }
 });
 
-const units = defineModel({ type: Array, required: true });
+const units = defineModel({ type: Array, default: () => [] });
 
 const unitCurrent = reactive({
   type: '',
@@ -148,7 +148,10 @@ const columns = [
         <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" :style="`width: ${col.width}`">
           <template #body="slotProps">
             <span>
-              <template v-if="col.field === 'type'">
+              <template v-if="col.field === 'id' && type === 'resultData'">
+                {{ slotProps.index + 1 }}
+              </template>
+              <template v-else-if="col.field === 'type'">
                 {{ UnitTypes[slotProps.data.type] }}
               </template>
               <template v-else-if="col.field === 'bag'">

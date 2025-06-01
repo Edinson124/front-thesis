@@ -63,5 +63,8 @@ defineProps({
         </div>
       </div>
     </div>
+    <div class="flex justify-end mt-4">
+      <Button label="Editar" class="h-8 w-[6rem] btn-edit" as="router-link" :to="`/transfusion/${transfusion.id}`" />
+    </div>
   </Fieldset>
 </template>

@@ -12,6 +12,7 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const isLoading = ref(true);
+const isNewTransfusion = ref(true);
 const patientStore = usePatientStore();
 const transfusionStore = useTransfusionStore();
 const router = useRouter();
@@ -48,6 +49,8 @@ const transfusion = reactive({
   requestedUnits: []
 });
 
+const doctors = reactive([]);
+
 const patientFound = ref(false);
 const searchPatient = async () => {
   try {
@@ -80,7 +83,7 @@ const editRequestedUnit = async (index, updatedUnit) => {
   };
 };
 const removeRequestedUnit = async (index) => {
-  transfusion.requestedUnits.splice(index, 1);
+  transfusion.request.splice(index, 1);
 };
 
 const rules = computed(() => ({
@@ -101,8 +104,22 @@ const rules = computed(() => ({
 
 const v$ = useVuelidate(rules, transfusion);
 
+// const route = useRoute();
+
 onMounted(async () => {
   await getMedicRequestOptions();
+
+  // onMounted(async () => {
+  //   isLoading.value = true;
+  //   const transfusionId = route.params.id;
+  //   if (transfusionId) {
+  //     isNewTransfusion.value = false;
+  //     const response = await transfusionStore.getTranfusionAllInfo(transfusionId);
+  //     Object.assign(transfusion, response.transfusion);
+  //     transfusion.request = response.request || [];
+  //     patientFound.value = true;
+  //     doctors.push(transfusion.attendingDoctorName);
+  //   }
   isLoading.value = false;
 });
 
@@ -135,7 +152,16 @@ const cancel = () => {
             </div>
             <span class="w-full mr-2">
               <FloatLabel variant="on">
-                <Select id="documentTypePatient" v-model="transfusion.documentTypePatient" :options="documentTypesPatientOptions" optionLabel="label" optionValue="value" class="w-full" :invalid="v$.documentTypePatient?.$error" />
+                <Select
+                  id="documentTypePatient"
+                  v-model="transfusion.documentTypePatient"
+                  :options="documentTypesPatientOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  class="w-full"
+                  :invalid="v$.documentTypePatient?.$error"
+                  :disabled="!isNewTransfusion"
+                />
                 <label for="documentTypePatient">Tipo Documento</label>
               </FloatLabel>
               <Message v-if="v$.documentTypePatient?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.documentTypePatient.$errors[0].$message }}</Message>
@@ -269,12 +295,12 @@ const cancel = () => {
       type="singleData"
       type-modal="request"
       :loading="isLoading"
-      v-model="transfusion.requestedUnits"
+      v-model="transfusion.request"
       @edit="(index, unit) => editRequestedUnit(index, unit)"
       @add="(unit) => addRequestedUnit(unit)"
       @remove="(unit) => removeRequestedUnit(unit)"
     />
-    <Message v-if="v$.requestedUnits?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.requestedUnits.$errors[0].$message }}</Message>
+    <Message v-if="v$.request?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.request.$errors[0].$message }}</Message>
 
     <div class="flex justify-end mt-4 gap-2">
       <Button class="min-w-40 btn-clean" label="Cancelar" @click="cancel" />
