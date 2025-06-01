@@ -176,7 +176,7 @@ const cancel = () => {
                     id="patientDocumentNumber"
                     v-model="transfusion.patientDocumentNumber"
                     aria-describedby="documentNumber"
-                    :disabled="!transfusion.patientDocumentType"
+                    :disabled="!isNewTransfusion || !transfusion.patientDocumentType"
                     @focusout="searchPatient"
                     :invalid="v$.patientDocumentNumber?.$error"
                   />
