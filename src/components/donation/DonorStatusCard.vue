@@ -1,5 +1,4 @@
 <script setup>
-import { Gender } from '@/enums/Gender';
 import { DonorStatus } from '@/enums/Status';
 import { computed } from 'vue';
 
@@ -10,7 +9,8 @@ const props = defineProps({
   deferralReason: String,
   gender: String,
   lastDonationDate: String,
-  dateEnabled: String
+  dateEnabled: String,
+  requiredAdvertisement: Boolean
 });
 
 const STATUS_STYLES = {
@@ -22,11 +22,11 @@ const STATUS_STYLES = {
     bgColor: 'bg-yellow-500',
     icon: 'mdi mdi-alert-circle'
   },
-  'Diferido temporalmente': {
+  'Diferido Temporalmente': {
     bgColor: 'bg-yellow-500',
     icon: 'mdi mdi-alert-circle'
   },
-  'Diferido permanentemente': {
+  'Diferido Permanentemente': {
     bgColor: 'bg-red-500',
     icon: 'mdi mdi-close-circle'
   }
@@ -36,22 +36,23 @@ const enrichedStatus = computed(() => {
   return DonorStatus[props.status] || { label: props.status, enableToNewDonation: false };
 });
 
-function necesitaAdvertenciaPorDonacion() {
-  if (props.status !== 'Apto' || !props.lastDonationDate || !props.gender) return false;
+// function necesitaAdvertenciaPorDonacion() {
+//   if (props.status !== 'Apto' || !props.lastDonationDate || !props.gender) return false;
 
-  const generoConfig = Gender[props.gender];
-  if (!generoConfig || !generoConfig.minMonthsBetweenDonations) return false;
+//   const generoConfig = Gender[props.gender];
+//   if (!generoConfig || !generoConfig.minMonthsBetweenDonations) return false;
 
-  const ultima = new Date(props.lastDonationDate);
-  const hoy = new Date();
-  let diferenciaMeses = (hoy.getFullYear() - ultima.getFullYear()) * 12 + hoy.getMonth() - ultima.getMonth();
-  if (hoy.getDate() < ultima.getDate()) diferenciaMeses--;
+//   const [day, month, year] = props.lastDonationDate.split('/');
+//   const ultima = new Date(year, month - 1, day);
+//   const hoy = new Date();
+//   let diferenciaMeses = (hoy.getFullYear() - ultima.getFullYear()) * 12 + hoy.getMonth() - ultima.getMonth();
+//   if (hoy.getDate() < ultima.getDate()) diferenciaMeses--;
 
-  return diferenciaMeses < generoConfig.minMonthsBetweenDonations;
-}
+//   return diferenciaMeses < generoConfig.minMonthsBetweenDonations;
+// }
 
 const statusStyle = computed(() => {
-  if (props.status === 'Apto' && necesitaAdvertenciaPorDonacion()) {
+  if (props.status === 'Apto' && props.requiredAdvertisement) {
     return STATUS_STYLES['AptoAdvertencia'];
   }
   return (
@@ -71,15 +72,15 @@ const statusStyle = computed(() => {
       <div class="font-semibold text-lg">Documento del donante: {{ documentNumber }}</div>
       <div class="font-semibold text-lg">Estado del donante: {{ enrichedStatus.label }}</div>
 
-      <div v-if="enrichedStatus.label === 'Diferido temporalmente'" class="text-lg">
+      <div v-if="enrichedStatus.label === 'Diferido Temporalmente'" class="text-lg">
         Fecha final de diferimiento: <span class="font-semibold">{{ deferralEndDate }}</span>
       </div>
 
-      <div v-if="enrichedStatus.label === 'Diferido temporalmente' || enrichedStatus.label === 'Diferido permanentemente'" class="text-lg">
+      <div v-if="enrichedStatus.label === 'Diferido Temporalmente' || enrichedStatus.label === 'Diferido Permanentemente'" class="text-lg">
         Motivo del diferimiento: <span class="font-semibold">{{ deferralReason }}</span>
       </div>
 
-      <div v-if="enrichedStatus.label === 'Apto' && necesitaAdvertenciaPorDonacion()" class="text-lg">
+      <div v-if="enrichedStatus.label === 'Apto' && props.requiredAdvertisement" class="text-lg">
         Fecha de última donación: <span class="font-semibold">{{ lastDonationDate }} </span> — Próxima fecha disponible: <span class="font-semibold">{{ dateEnabled }}</span>
       </div>
     </div>

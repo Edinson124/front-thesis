@@ -76,6 +76,15 @@ export const useDonationStore = defineStore('donation', () => {
       return null;
     }
   };
+  const deferralDonor = async (idDonation, deferral) => {
+    try {
+      const response = await donationService.deferralDonor(idDonation, deferral);
+      return response;
+    } catch (error) {
+      console.error('Error al diferir al donante:  ', error);
+      return null;
+    }
+  };
 
   return {
     donationsByDonor,
@@ -84,6 +93,7 @@ export const useDonationStore = defineStore('donation', () => {
     getDonationsByDocumentDonor,
     newDonation,
     getActualDonation,
+    deferralDonor,
     getLastDateDonation,
     verifyDonationByCode,
     verifyDonationByDonor,

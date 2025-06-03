@@ -28,6 +28,7 @@ const createdDonationId = ref(null);
 const actuadlDonationId = ref(null);
 const lastDonationDateDetail = ref(null);
 const canDonateDateLastDonation = ref(true);
+const isLoading = ref(true);
 
 const nombrePaciente = ref('');
 const pacienteBuscado = ref(false);
@@ -181,10 +182,14 @@ onMounted(async () => {
   lastDonationDateDetail.value = lastDonationDateDetailResponse;
   //Si puedes donar despues del tiempo de la última donación
   canDonateDateLastDonation.value = lastDonationDateDetailResponse ? lastDonationDateDetailResponse.isEnableDonation : true;
+  isLoading.value = false;
 });
 </script>
 <template>
-  <div class="card">
+  <div v-if="isLoading" class="card absolute inset-0 bg-white/50 flex items-center justify-center z-10">
+    <ProgressSpinner style="width: 50px; height: 50px" />
+  </div>
+  <div v-else class="card">
     <div class="mb-4">
       <h3>Registrar Donación</h3>
     </div>
@@ -194,6 +199,7 @@ onMounted(async () => {
       :deferral-end-date="donor.deferralEndDate"
       :deferral-reason="donor.deferralReason"
       :gender="donor.gender"
+      :required-advertisement="lastDonationDateDetail?.requiredAdvertisement || false"
       :last-donation-date="lastDonationDateDetail?.dateDonation || null"
       :date-enabled="lastDonationDateDetail?.dateEnabledDonation || null"
     />

@@ -1,6 +1,10 @@
 <script setup>
+import DeferralModal from '@/components/donation/DeferralModal.vue';
+import { adverseReactionDonationOptions } from '@/enums/AdverseReaction';
+import { DeferralReasonsExtraction } from '@/enums/DeferralType';
 import { extractionStatusOptions } from '@/enums/Status';
 import router from '@/router';
+import { useDonationStore } from '@/stores/donation/donations';
 import { useExtractionStore } from '@/stores/donation/extraction';
 import { required, requiredIf } from '@/validation/validators';
 import useVuelidate from '@vuelidate/core';
@@ -8,12 +12,15 @@ import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 const extractionStore = useExtractionStore();
+const donationStore = useDonationStore();
 const route = useRoute();
 
 const isLoading = ref(true);
 const newExtraction = ref(true);
 const idExtraction = ref(null);
 const donationId = ref(null);
+const editDonation = ref(null);
+const showModalDeferralDonor = ref(false);
 
 const extraction = reactive({
   startDate: null,
@@ -41,9 +48,7 @@ const rules = computed(() => ({
     adverseReaction: {
       required: requiredIf('Reacciones adversas', () => extraction.adverseReactionOccurred === true)
     },
-    otherReaction: {},
-    status: { required: required('Estado de extracción') },
-    observation: {}
+    status: { required: required('Estado de extracción') }
   }
 }));
 
@@ -66,6 +71,28 @@ const calculateEndTime = computed(() => {
 watch([() => extraction.startDate, () => extraction.startTime, () => extraction.durationMinutes], () => {
   extraction.endDateTime = calculateEndTime.value;
 });
+watch(
+  () => extraction.adverseReactionOccurred,
+  (newVal) => {
+    if (newVal === false) {
+      extraction.adverseReaction = null;
+    }
+  }
+);
+const openDeferralDonorModal = () => {
+  // if (newPhysical.value) {
+  //   openModalRegister.value = true;
+  //   return;
+  // }
+  showModalDeferralDonor.value = true;
+};
+const deferralDonor = async (deferral) => {
+  const response = await donationStore.deferralDonor(donationId.value, deferral);
+  console.log(response);
+  if (response) {
+    router.push({ path: 'view', query: { donationId: donationId } });
+  }
+};
 
 const handleSave = async () => {
   const isValid = await v$.value.$validate();
@@ -86,6 +113,8 @@ onMounted(async () => {
   isLoading.value = true;
   const donationRoute = route.query.donationId;
   donationId.value = donationRoute;
+  const donationResponse = await donationStore.getDonation(donationId.value);
+  editDonation.value = donationResponse.donation.status === 'En proceso';
 
   if (donationId.value) {
     const extractionResponse = await extractionStore.getExtraction(donationId.value);
@@ -109,16 +138,16 @@ onMounted(async () => {
     <ProgressSpinner style="width: 50px; height: 50px" />
   </div>
   <div v-else class="card">
-    <h3 class="min-w-[10rem] !mt-2">Extracción de la donación</h3>
-    <!-- <div class="mb-4 flex justify-end">
-      <Button class="h-8 w-full md:grow md:max-w-[16rem]" label="Diferir donante" severity="danger" @click="() => {}" />
-    </div> -->
+    <div class="mb-4 flex flex-wrap justify-between items-center gap-2">
+      <h3 class="min-w-[10rem] !mt-2">Extracción de la donación</h3>
+      <Button class="h-8 w-full md:grow md:max-w-[16rem]" label="Diferir donante" severity="danger" @click="openDeferralDonorModal()" />
+    </div>
 
     <Fieldset legend="Datos de la extracción">
       <div class="flex items-center justify-between gap-4 px-8 mt-6 mb-2">
         <span class="w-full md:w-1/4">
           <FloatLabel variant="on" class="w-full">
-            <DatePicker v-model="extraction.startDate" class="w-full" showIcon fluid />
+            <DatePicker v-model="extraction.startDate" class="w-full" showIcon fluid :disabled="!editDonation" />
             <label for="startDate">Fecha de Inicio</label>
           </FloatLabel>
           <Message v-if="v$.extraction.startDate?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.extraction.startDate.$errors[0].$message }}</Message>
@@ -126,7 +155,7 @@ onMounted(async () => {
 
         <span class="w-full md:w-1/4">
           <FloatLabel variant="on" class="w-full">
-            <DatePicker v-model="extraction.startTime" class="w-full" showIcon fluid iconDisplay="input" timeOnly>
+            <DatePicker v-model="extraction.startTime" class="w-full" showIcon fluid iconDisplay="input" timeOnly :disabled="!editDonation">
               <template #inputicon="slotProps">
                 <i class="pi pi-clock" @click="slotProps.clickCallback" />
               </template>
@@ -148,7 +177,7 @@ onMounted(async () => {
         <span class="w-full">
           <div class="w-full flex items-center gap-4">
             <FloatLabel variant="on" class="w-full md:w-1/4">
-              <InputText v-model="extraction.durationMinutes" class="w-full" id="durationMinutes" />
+              <InputText v-model="extraction.durationMinutes" class="w-full" id="durationMinutes" :disabled="!editDonation" />
               <label for="durationMinutes">Duración</label>
             </FloatLabel>
             <span>min</span>
@@ -163,7 +192,7 @@ onMounted(async () => {
         <span class="w-full">
           <div class="w-full flex items-center gap-4">
             <FloatLabel variant="on" class="w-full md:w-1/4">
-              <InputText v-model="extraction.processedBloodVolumeMl" class="w-full" id="processedBloodVolumeMl" />
+              <InputText v-model="extraction.processedBloodVolumeMl" class="w-full" id="processedBloodVolumeMl" :disabled="!editDonation" />
               <label for="processedBloodVolumeMl">Volumen total procesado</label>
             </FloatLabel>
             <span>ml</span>
@@ -187,6 +216,7 @@ onMounted(async () => {
               optionLabel="label"
               optionValue="value"
               showClear
+              :disabled="!editDonation"
             />
             <label>Brazo de extracción</label>
           </FloatLabel>
@@ -207,7 +237,7 @@ onMounted(async () => {
             ]"
             :key="index"
           >
-            <RadioButton :inputId="`reaction-${index}`" :value="option.value" v-model="extraction.adverseReactionOccurred" name="adverseReactionOccurred" />
+            <RadioButton :inputId="`reaction-${index}`" :value="option.value" v-model="extraction.adverseReactionOccurred" name="adverseReactionOccurred" :disabled="!editDonation" />
             <label :for="`reaction-${index}`">{{ option.label }}</label>
           </div>
         </div>
@@ -219,17 +249,7 @@ onMounted(async () => {
       <div class="flex items-center gap-4 px-8 mt-6 mb-2">
         <span class="w-full md:w-1/4">
           <FloatLabel variant="on" class="w-full">
-            <Select
-              v-model="extraction.adverseReaction"
-              class="w-full"
-              :options="[
-                { label: 'Mareos', value: 'dizziness' },
-                { label: 'Náuseas', value: 'nausea' }
-              ]"
-              optionLabel="label"
-              optionValue="value"
-              showClear
-            />
+            <Select v-model="extraction.adverseReaction" class="w-full" :options="adverseReactionDonationOptions" optionLabel="label" optionValue="value" showClear :disabled="!editDonation || !extraction.adverseReactionOccurred" />
             <label>Reacciones adversas</label>
           </FloatLabel>
           <Message v-if="v$.extraction.adverseReaction?.$error" severity="error" size="small" variant="simple" class="mt-2">
@@ -238,17 +258,17 @@ onMounted(async () => {
         </span>
       </div>
 
-      <div class="flex items-center gap-4 px-8 mt-6 mb-2">
+      <!-- <div class="flex items-center gap-4 px-8 mt-6 mb-2">
         <FloatLabel variant="on" class="w-full md:w-1/4">
-          <InputText v-model="extraction.otherReaction" class="w-full" id="other-reaction" />
+          <InputText v-model="extraction.otherReaction" class="w-full" id="other-reaction" :disabled="!editDonation" />
           <label for="other-reaction">Otra reacción</label>
         </FloatLabel>
-      </div>
+      </div> -->
 
       <div class="flex items-center gap-4 px-8 mt-6 mb-2">
         <span class="w-full md:w-1/4">
           <FloatLabel variant="on" class="w-full">
-            <Select v-model="extraction.status" class="w-full" :options="extractionStatusOptions" optionLabel="label" optionValue="value" showClear />
+            <Select v-model="extraction.status" class="w-full" :options="extractionStatusOptions" optionLabel="label" optionValue="value" showClear :disabled="!editDonation" />
             <label>Estado de extracción</label>
           </FloatLabel>
           <Message v-if="v$.extraction.status?.$error" severity="error" size="small" variant="simple" class="mt-2">
@@ -259,7 +279,7 @@ onMounted(async () => {
 
       <div class="flex flex-col items-start gap-4 px-8 mt-10 mb-6">
         <FloatLabel variant="on" class="w-full">
-          <Textarea id="observation" v-model="extraction.observation" class="w-full md:grow resize-none" rows="5" />
+          <Textarea id="observation" v-model="extraction.observation" class="w-full md:grow resize-none" rows="5" :disabled="!editDonation" />
           <label for="observation">Observaciones</label>
         </FloatLabel>
       </div>
@@ -267,7 +287,8 @@ onMounted(async () => {
 
     <div class="flex justify-end px-8 my-8 gap-4">
       <Button class="h-10 w-full md:max-w-[16rem] btn-clean" label="Cancelar" @click="router.back()" />
-      <Button class="h-10 w-full md:max-w-[16rem]" label="Guardar" severity="success" @click="handleSave" />
+      <Button v-if="editDonation" class="h-10 w-full md:max-w-[16rem]" label="Guardar" severity="success" @click="handleSave" />
     </div>
+    <DeferralModal v-model="showModalDeferralDonor" :options-reason="DeferralReasonsExtraction" @save="deferralDonor" />
   </div>
 </template>

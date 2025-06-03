@@ -1,7 +1,9 @@
 <script setup>
+import DeferralModal from '@/components/donation/DeferralModal.vue';
 import DonationStatusCard from '@/components/donation/DonationStatusCard.vue';
 import InfoDonation from '@/components/donation/InfoDonation.vue';
 import InfoDonor from '@/components/donation/InfoDonor.vue';
+import { deferralOptionsGrouped } from '@/enums/DeferralType';
 import { useDonationStore } from '@/stores/donation/donations';
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -10,7 +12,9 @@ const donationStore = useDonationStore();
 const route = useRoute();
 const router = useRouter();
 const donation = ref(null);
+const editDonation = ref(null);
 const donationId = computed(() => route.query.donationId);
+const showModalDeferralDonor = ref(false);
 
 const isLoading = ref(true);
 
@@ -42,9 +46,22 @@ const redirectSamples = () => {
   });
 };
 
+const deferralDonor = async (deferral) => {
+  const response = await donationStore.deferralDonor(donationId.value, deferral);
+  console.log(response);
+  if (response) {
+    router.push({ path: 'view', query: { donationId: donationId.value } });
+  }
+};
+
+const openDeferralDonorModal = () => {
+  showModalDeferralDonor.value = true;
+};
+
 onMounted(async () => {
   const donationResponse = await donationStore.getDonation(donationId.value);
   donation.value = donationResponse;
+  editDonation.value = donationResponse.donation.status === 'En proceso';
   isLoading.value = false;
 });
 </script>
@@ -66,7 +83,7 @@ onMounted(async () => {
           <DonationStatusCard :code-donation="donation.donation.id" :status="donation.donation.status" :deferral-end-date="donation.donor.deferralEndDate" :deferral-reason="donation.donor.deferralReason" />
         </div>
         <div class="md:col-span-1 flex justify-end items-center">
-          <Button label="Diferir donante" class="h-8 w-full md:grow md:max-w-[16rem]" severity="danger" />
+          <Button v-if="editDonation" label="Diferir donante" class="h-8 w-full md:grow md:max-w-[16rem]" severity="danger" @click="openDeferralDonorModal" />
         </div>
       </div>
       <!-- Información de donante -->
@@ -152,5 +169,6 @@ onMounted(async () => {
         </Fieldset>
       </div>
     </div>
+    <DeferralModal v-model="showModalDeferralDonor" :options-reason="deferralOptionsGrouped" @save="deferralDonor" />
   </div>
 </template>

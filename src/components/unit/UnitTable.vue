@@ -119,7 +119,7 @@ const columns = [
   ...(props.type === 'resultData'
     ? [
         { field: 'index', header: 'Indice', width: '5%' },
-        { field: 'unitId', header: 'Código', width: '5%' },
+        { field: 'idUnit', header: 'Código', width: '5%' },
         { field: 'unitType', header: 'Unidad', width: '22%' },
         { field: 'bloodType', header: 'Grupo sanguíneo', width: '18%' },
         { field: 'validateResult', header: 'Resultado', width: '15%' },

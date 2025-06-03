@@ -19,7 +19,7 @@ export const MenuRoutes = [
   { id: 'laboratory-units-transformation', label: 'Unidades para fraccionar', to: '/laboratory/units/transformation', parentId: 'laboratory' },
   { id: 'inventory', label: 'Unidades', icon: 'mdi mdi-database-outline', parentId: 'root' },
   { id: 'inventory-stock', label: 'Unidades en stock', to: '/units/stock', parentId: 'inventory' },
-  { id: 'inventory-maturity', label: 'Unidades por vencer', parentId: 'inventory' },
+  // { id: 'inventory-maturity', label: 'Unidades por vencer', parentId: 'inventory' },
   { id: 'transfusion', label: 'Transfusión', icon: 'mdi mdi-blood-bag', parentId: 'root' },
   { id: 'transfusion-patient-new', label: 'Registrar paciente', to: '/transfusion/patient/new', parentId: 'transfusion' },
   { id: 'transfusion-patient-search', label: 'Consultar paciente', to: '/transfusion/patient/search', parentId: 'transfusion' },

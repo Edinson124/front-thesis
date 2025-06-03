@@ -72,9 +72,19 @@ const getDonation = async (id) => {
     return null;
   }
 };
+const deferralDonor = async (idDonation, deferral) => {
+  try {
+    const response = await post(`/donation/deferral/${idDonation}`, deferral);
+    return response;
+  } catch (error) {
+    console.error('Error al diferir al donante: ', error);
+    return null;
+  }
+};
 export default {
   getDonation,
   getDonationsByDocumentDonor,
+  deferralDonor,
   newDonation,
   getActualDonation,
   getLastDateDonation,

@@ -2,7 +2,6 @@
 import DonationForm from '@/components/donation/DonationForm.vue';
 import DonorStatusCard from '@/components/donation/DonorStatusCard.vue';
 import InfoDonor from '@/components/donation/InfoDonor.vue';
-import { Gender } from '@/enums/Gender';
 import { useDonationStore } from '@/stores/donation/donations';
 import { useDonorStore } from '@/stores/donation/donor';
 
@@ -66,19 +65,18 @@ const goViewDonation = (id) => {
   });
 };
 
-function necesitaAdvertenciaPorDonacion(status, lastDonationDate, gender) {
-  if (status !== 'Apto' || !lastDonationDate || !gender) return false;
+// function necesitaAdvertenciaPorDonacion(status, lastDonationDate, gender) {
+//   if (status !== 'Apto' || !lastDonationDate || !gender) return false;
 
-  const generoConfig = Gender[gender];
-  if (!generoConfig || !generoConfig.minMonthsBetweenDonations) return false;
-
-  const ultima = new Date(lastDonationDate);
-  const hoy = new Date();
-  let diferenciaMeses = (hoy.getFullYear() - ultima.getFullYear()) * 12 + hoy.getMonth() - ultima.getMonth();
-  if (hoy.getDate() < ultima.getDate()) diferenciaMeses--;
-
-  return diferenciaMeses < generoConfig.minMonthsBetweenDonations;
-}
+//   const generoConfig = Gender[gender];
+//   if (!generoConfig || !generoConfig.minMonthsBetweenDonations) return false;
+//   const [day, month, year] = lastDonationDate.split('/');
+//   const ultima = new Date(year, month - 1, day);
+//   const hoy = new Date();
+//   let diferenciaMeses = (hoy.getFullYear() - ultima.getFullYear()) * 12 + hoy.getMonth() - ultima.getMonth();
+//   if (hoy.getDate() < ultima.getDate()) diferenciaMeses--;
+//   return diferenciaMeses < generoConfig.minMonthsBetweenDonations;
+// }
 
 onMounted(async () => {
   const documentNumber = route.params.doc;
@@ -86,6 +84,7 @@ onMounted(async () => {
   await donationStore.getDonationsByDocumentDonor(documentNumber, documentType);
   const donorResponse = await donorStore.getDonor(documentNumber, documentType);
   Object.assign(donor, { ...donor, ...donorResponse });
+  console.log(donor);
 
   const actualDonationResponse = await donationStore.getActualDonation(documentNumber, documentType);
   //Id actual donación en proceso
@@ -95,7 +94,8 @@ onMounted(async () => {
   lastDonationDateDetail.value = lastDonationDateDetailResponse;
   //Si puedes donar despues del tiempo de la última donación
   canDonateDateLastDonation.value = lastDonationDateDetailResponse ? lastDonationDateDetailResponse.isEnableDonation : true;
-  necesitaAdvertencia.value = necesitaAdvertenciaPorDonacion(donor.status, lastDonationDateDetail.value?.dateDonation || null, donor.gender);
+  necesitaAdvertencia.value = lastDonationDateDetailResponse ? lastDonationDateDetailResponse.requiredAdvertisement : false;
+  // necesitaAdvertencia.value = necesitaAdvertenciaPorDonacion(donor.status, lastDonationDateDetail.value?.dateDonation || null, donor.gender);
   isLoading.value = false;
 });
 
@@ -115,6 +115,7 @@ const isOpenDialogDonation = ref(false);
       :deferral-end-date="donor.deferralEndDate"
       :deferral-reason="donor.deferralReason"
       :gender="donor.gender"
+      :required-advertisement="lastDonationDateDetail?.requiredAdvertisement || false"
       :last-donation-date="lastDonationDateDetail?.dateDonation || null"
       :date-enabled="lastDonationDateDetail?.dateEnabledDonation || null"
     />

@@ -27,6 +27,7 @@ export const useAuthStore = defineStore('auth', () => {
         user.value = response.username;
 
         localStorage.setItem('user', response.username);
+        localStorage.setItem('fullName', response.fullName);
         localStorage.setItem('session_time', response.session_time?.toString());
         loading.value = false;
         return true;
@@ -72,20 +73,21 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = null;
     localStorage.removeItem('user');
     localStorage.removeItem('session_time');
+    localStorage.removeItem('fullName');
   };
 
   watch(
     user,
     (newUser) => {
       if (newUser) {
-        localStorage.setItem('user', newUser);
+        localStorage.setItem('fullName', newUser);
       }
     },
     { deep: true }
   );
 
   function getUserFromLocalStorage() {
-    return localStorage.getItem('user');
+    return localStorage.getItem('fullName');
   }
 
   return { user, loading, error, isLoggedIn, login, register, logout };

@@ -1,6 +1,9 @@
 <script setup>
 // import { DonorInterviewQuestions } from '@/enums/DonorInterviewQuestions';
+import DeferralModal from '@/components/donation/DeferralModal.vue';
+import { deferralOptionsInterview } from '@/enums/DeferralType';
 import router from '@/router';
+import { useDonationStore } from '@/stores/donation/donations';
 import { useInterviewStore } from '@/stores/donation/interview';
 import { requiredIfMessage, requiredMessage } from '@/validation/validators';
 import useVuelidate from '@vuelidate/core';
@@ -11,13 +14,18 @@ import { useRoute } from 'vue-router';
 const answers = ref({});
 const DonorInterviewQuestions = ref({});
 const interviewStore = useInterviewStore();
+const donationStore = useDonationStore();
 const route = useRoute();
+
 const isLoading = ref(true);
 const donationId = ref(null);
 const activeTab = ref(null);
 const toast = useToast();
 const refTitle = ref(null);
 const newInterview = ref(true);
+const showModalDeferralDonor = ref(false);
+const openModalRegister = ref(false);
+const editDonation = ref(null);
 
 const rules = computed(() => {
   const rulesObject = {};
@@ -51,6 +59,21 @@ const rules = computed(() => {
 });
 
 const v$ = useVuelidate(rules, { answers });
+
+const deferralDonor = async (deferral) => {
+  const response = await donationStore.deferralDonor(donationId.value, deferral);
+  if (response) {
+    router.push({ path: 'view', query: { donationId: donationId } });
+  }
+};
+
+const openDeferralDonorModal = () => {
+  if (newInterview.value) {
+    openModalRegister.value = true;
+    return;
+  }
+  showModalDeferralDonor.value = true;
+};
 
 const handleSave = async () => {
   const isValid = await v$.value.$validate();
@@ -119,6 +142,8 @@ onMounted(async () => {
   DonorInterviewQuestions.value = response;
   const donationRoute = route.query.donationId;
   donationId.value = donationRoute;
+  const donationResponse = await donationStore.getDonation(donationId.value);
+  editDonation.value = donationResponse.donation.status === 'En proceso';
 
   if (donationId.value) {
     const answersResponse = await interviewStore.getInterviewAnswers(donationId.value);
@@ -160,7 +185,7 @@ onMounted(async () => {
   <div v-else class="card">
     <div class="mb-4 flex flex-wrap justify-between items-center gap-2" ref="refTitle">
       <h3 class="min-w-[10rem] !mt-2">Entrevista de donación</h3>
-      <Button class="h-8 w-full md:grow max-w-[16rem] md:max-w-[16rem]" label="Diferir donante" severity="danger" @click="() => {}" />
+      <Button v-if="editDonation" class="h-8 w-full md:grow max-w-[16rem] md:max-w-[16rem]" label="Diferir donante" severity="danger" @click="openDeferralDonorModal" />
     </div>
 
     <Tabs v-model:value="activeTab">
@@ -224,5 +249,13 @@ onMounted(async () => {
       />
       <Button v-if="newInterview" class="h-10 w-full md:max-w-[16rem]" label="Guardar" severity="success" @click="handleSave" />
     </div>
+    <DeferralModal v-model="showModalDeferralDonor" :options-reason="deferralOptionsInterview" @save="deferralDonor" />
+
+    <Dialog v-model:visible="openModalRegister" header=" " :modal="true" class="w-[30rem]">
+      <p><strong>Debe registrar primero la entrevista para poder diferir al donante</strong></p>
+      <template #footer>
+        <Button label="Aceptar" class="min-w-40 p-button-success" @click="() => (openModalRegister = false)" />
+      </template>
+    </Dialog>
   </div>
 </template>
