@@ -40,6 +40,7 @@ const enrichedStatus = computed(() => {
 //   if (props.status !== 'Apto' || !props.lastDonationDate || !props.gender) return false;
 
 //   const generoConfig = Gender[props.gender];
+
 //   if (!generoConfig || !generoConfig.minMonthsBetweenDonations) return false;
 
 //   const [day, month, year] = props.lastDonationDate.split('/');
