@@ -24,7 +24,7 @@ const loading = ref(false);
 // Columnas de la tabla
 const columns = [
   { field: 'id', header: 'Código' },
-  { field: 'bloodBankNameDestination', header: 'Banco de Sangre' },
+  { field: 'bloodBankNameOrigin', header: 'Banco de Sangre' },
   { field: 'createdByName', header: 'Medico Solicitante' },
   { field: 'requestDate', header: 'Fecha' },
   { field: 'status', header: 'Estado' }

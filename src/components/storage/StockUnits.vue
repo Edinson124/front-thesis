@@ -7,10 +7,14 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 const unitStore = useUnitStore();
 
-defineProps({
+const props = defineProps({
   mode: {
     type: String,
     default: 'viewable' // 'selectable'
+  },
+  onlySuitable: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -75,6 +79,9 @@ const searchUnits = async (event) => {
   }
   if (unitStore.idTranfusion) {
     params.idTranfusion = unitStore.idTranfusion;
+  }
+  if (props.onlySuitable) {
+    params.onlySuitable = props.onlySuitable;
   }
   await unitStore.getUnits(params, page);
   loading.value = false;

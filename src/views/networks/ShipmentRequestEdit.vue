@@ -1,6 +1,6 @@
 <script setup>
 import BloodBankInfo from '@/components/network/BloodBankInfo.vue';
-import UnitTable from '@/components/unit/UnitTable.vue';
+import UnitTableAssignShipment from '@/components/unit/UnitTableAssignShipment.vue';
 import { reasonOptions } from '@/enums/ShipmentRequest';
 import { useShipmentStore } from '@/stores/networks/shipments';
 import { required } from '@/validation/validators';
@@ -79,7 +79,7 @@ onMounted(async () => {
   isLoading.value = true;
   const response = await shipmentStore.getShipment(shipmentId.value);
   canViewRequest.value = response.canViewRequest;
-  bloodBank.value = response.bloodBank;
+  bloodBank.value = response.bloodBankOrigin;
   shipmentRequest.reason = response.shipmentRequest.reason;
   shipmentRequest.details = response.shipmentRequest.details;
   shipmentRequest.units = response.units;
@@ -113,7 +113,7 @@ onMounted(async () => {
       <BloodBankInfo :blood-bank="bloodBank" />
 
       <!-- Unidades solicitadas -->
-      <UnitTable
+      <UnitTableAssignShipment
         title="Unidades solicitadas"
         type="shipmentData"
         type-modal="request"

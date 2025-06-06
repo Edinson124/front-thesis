@@ -82,16 +82,46 @@ const getShipmentById = async (idShipment) => {
     return response;
   } catch (error) {
     console.error('Error al obtener solicitud de transferencia: ', error);
+    return null;
+  }
+};
+
+const getShipmentWithAssignmentResponse = async (idShipment) => {
+  try {
+    const response = await get(`/shipments/response/assignment/${idShipment}`);
+    return response;
+  } catch (error) {
+    console.error('Error al obtener solicitud de transferencia: ', error);
+    return null;
+  }
+};
+
+const getShipmentWithAssignmentView = async (idShipment) => {
+  try {
+    const response = await get(`/shipments/view/assignment/${idShipment}`);
+    return response;
+  } catch (error) {
+    console.error('Error al obtener solicitud de transferencia: ', error);
     return [];
   }
 };
 
-const getShipmentWithAssignment = async (idShipment) => {
+const freeUnit = async (idShipment) => {
   try {
-    const response = await get(`/shipments/assignment/${idShipment}`);
+    const response = await post(`/shipments/freeUnit/${idShipment}`);
     return response;
   } catch (error) {
-    console.error('Error al obtener solicitud de transferencia: ', error);
+    console.error('Error al liberar unidades de la solicitud de transferencia: ', error);
+    return [];
+  }
+};
+
+const confirmReception = async (idShipment) => {
+  try {
+    const response = await post(`/shipments/reception/${idShipment}`);
+    return response;
+  } catch (error) {
+    console.error('Error al liberar unidades de la solicitud de transferencia: ', error);
     return [];
   }
 };
@@ -104,5 +134,8 @@ export default {
   editShipment,
   sendShipment,
   getShipmentById,
-  getShipmentWithAssignment
+  getShipmentWithAssignmentResponse,
+  getShipmentWithAssignmentView,
+  freeUnit,
+  confirmReception
 };

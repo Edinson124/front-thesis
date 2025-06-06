@@ -7,6 +7,12 @@ const emit = defineEmits(['select']);
 const close = () => {
   showModal.value = false;
 };
+defineProps({
+  onlySuitable: {
+    type: Boolean,
+    default: false
+  }
+});
 
 const select = (unit) => {
   emit('select', unit);
@@ -16,6 +22,6 @@ const select = (unit) => {
 
 <template>
   <Dialog v-model:visible="showModal" header="Búsqueda de unidades" modal class="w-[90%] p-4">
-    <StockUnits mode="selectable" @select="select" />
+    <StockUnits mode="selectable" @select="select" :only-suitable="onlySuitable" />
   </Dialog>
 </template>

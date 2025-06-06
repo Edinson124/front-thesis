@@ -1,7 +1,8 @@
 <script setup>
 import BloodBankInfo from '@/components/network/BloodBankInfo.vue';
-import UnitTable from '@/components/unit/UnitTable.vue';
+import UnitTableAssignShipment from '@/components/unit/UnitTableAssignShipment.vue';
 import { shipmentStatusAssignPermit } from '@/enums/Status';
+import { useShipmentAssignmentStore } from '@/stores/networks/shipmentAssignment';
 import { useShipmentStore } from '@/stores/networks/shipments';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -9,6 +10,7 @@ import { useRoute, useRouter } from 'vue-router';
 const router = useRouter();
 const route = useRoute();
 const shipmentStore = useShipmentStore();
+const shipmentAssignStore = useShipmentAssignmentStore();
 
 const shipmentId = computed(() => route.params.id);
 const bloodBank = ref(null);
@@ -16,6 +18,7 @@ const isLoading = ref(false);
 const canViewRequest = ref(null);
 const shipment = ref(null);
 const assignPermit = ref(null);
+const readOnly = ref(false);
 
 const shipmentRequest = reactive({
   reason: null,
@@ -31,20 +34,25 @@ const returnBack = () => {
 };
 
 const assignShipmentUnit = async (unit) => {
-  const newUnit = {
-    id: shipmentRequest.assignment.length + 1,
-    unitType: unit.unitType,
-    requestedQuantity: unit.requestedQuantity,
-    bloodGroup: unit.bloodGroup,
-    rhFactor: unit.rhFactor,
-    expirationDate: unit.expirationDate
-  };
-  shipmentRequest.assignment.push(newUnit);
+  const shipmentAssignmentResponse = await shipmentAssignStore.saveShipmentAssignment(shipmentId.value, unit.id);
+  shipmentRequest.assignment.push(shipmentAssignmentResponse);
+};
+
+const removeShipmentUnit = async (index, assign) => {
+  await shipmentAssignStore.deleteShipmentAssignment(assign.id);
+  shipmentRequest.assignment.splice(index, 1);
+};
+
+const freeUnit = async () => {
+  await shipmentStore.freeUnit(shipmentId.value);
+  router.push({
+    path: '/networks/shipments'
+  });
 };
 
 onMounted(async () => {
   isLoading.value = true;
-  const response = await shipmentStore.getShipmentWithAssignment(shipmentId.value);
+  const response = await shipmentStore.getShipmentWithAssignmentResponse(shipmentId.value);
   canViewRequest.value = response.canViewRequest;
   if (canViewRequest.value) {
     bloodBank.value = response.bloodBankDestination;
@@ -54,6 +62,7 @@ onMounted(async () => {
     shipmentRequest.assignment = response.assignment;
     shipment.value = response.shipmentRequest;
     assignPermit.value = shipmentStatusAssignPermit.includes(response.shipmentRequest.status);
+    readOnly.value = ['Liberado', 'Finalizado'].includes(response.shipmentRequest.status);
   }
   isLoading.value = false;
 });
@@ -85,7 +94,7 @@ onMounted(async () => {
       <BloodBankInfo :blood-bank="bloodBank" />
 
       <!-- Unidades solicitadas -->
-      <UnitTable title="Unidades solicitadas" type="shipmentData" type-modal="request" subtype="shipment" :loading="isLoading" :read-only="true" v-model="shipmentRequest.units" />
+      <UnitTableAssignShipment title="Unidades solicitadas" type="shipmentData" type-modal="request" subtype="shipment" :loading="isLoading" :read-only="true" v-model="shipmentRequest.units" />
 
       <!-- Motivo -->
       <div class="mb-6">
@@ -98,23 +107,23 @@ onMounted(async () => {
       </div>
 
       <!-- Unidades asignada -->
-      <UnitTable
+      <UnitTableAssignShipment
         class="my-4"
         title="Unidades asignadas"
         type="shipmentDataAssign"
-        type-modal="result"
+        type-modal="assign"
         subtype="shipment"
         :assign-permit="assignPermit"
         :loading="isLoading"
+        :readOnly="readOnly"
         v-model="shipmentRequest.assignment"
         @add="(unit) => assignShipmentUnit(unit)"
-        @result="(index, result) => registerResult(index, result)"
-        @remove="(index, assign) => removeTransfusionUnit(index, assign)"
+        @remove="(index, assign) => removeShipmentUnit(index, assign)"
       />
 
       <!-- Botones de acción -->
-      <div :class="['flex flex-col sm:flex-row gap-2', shipment.status === 'Liberada' ? 'justify-between' : 'justify-end']">
-        <Button v-if="shipment.status === 'Liberada'" class="min-w-40 p-button-success mt-4" label="Confirmar recepción" @click="save" />
+      <div :class="['flex flex-col sm:flex-row gap-2', shipment.status === 'Solicitado' ? 'justify-between' : 'justify-end']">
+        <Button v-if="shipment.status === 'Solicitado'" class="min-w-40 p-button-success mt-4" label="Liberar unidades" @click="freeUnit" />
         <div class="flex justify-end mt-4 gap-2">
           <Button class="min-w-40 btn-clean" label="Regresar" @click="returnBack" />
           <!-- <Button class="min-w-40 p-button-success" label="Guardar" @click="save" /> -->

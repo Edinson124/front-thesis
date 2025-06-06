@@ -12,15 +12,11 @@ const props = defineProps({
   },
   type: {
     type: String,
-    default: 'allData' // 'allData', 'singleData', 'resultData','shipmentData'
-  },
-  subtype: {
-    type: String,
-    default: null //'shipment'
+    default: 'allData' // 'allData', 'singleData', 'resultData'
   },
   typeModal: {
     type: String,
-    default: 'creation' // 'transformation', "request", "result", "shipment"
+    default: 'creation' // 'transformation', "request", "result"
   },
   loading: {
     type: Boolean,
@@ -121,24 +117,6 @@ const columns = [
         { field: 'requestedQuantity', header: 'Cantidad', width: '15%' }
       ]
     : []),
-  ...(props.type === 'shipmentData'
-    ? [
-        { field: 'index', header: 'Indice', width: '10%' },
-        { field: 'unitType', header: 'Unidad', width: '25%' },
-        { field: 'bloodGroup', header: 'Grupo Sanguíneo', width: '15%' },
-        { field: 'rhFactor', header: 'Rh', width: '15%' },
-        { field: 'requestedQuantity', header: 'Cantidad', width: '15%' }
-      ]
-    : []),
-  ...(props.type === 'shipmentDataAssign'
-    ? [
-        { field: 'index', header: 'Indice', width: '10%' },
-        { field: 'unitType', header: 'Unidad', width: '25%' },
-        { field: 'bloodGroup', header: 'Grupo Sanguíneo', width: '15%' },
-        { field: 'rhFactor', header: 'Rh', width: '15%' },
-        { field: 'expirationDate', header: 'Fecha de vencimiento', width: '15%' }
-      ]
-    : []),
   ...(props.type === 'resultData'
     ? [
         { field: 'index', header: 'Indice', width: '5%' },
@@ -202,7 +180,7 @@ const columns = [
       </DataTable>
     </div>
 
-    <UnitModal v-if="typeModal !== 'result'" v-model="showUnitModal" :unit="unitCurrent" :type="typeModal" :subtype="subtype" @save="saveUnit" />
+    <UnitModal v-if="typeModal !== 'result'" v-model="showUnitModal" :unit="unitCurrent" :type="typeModal" @save="saveUnit" />
     <StockUnitsModal v-else v-model="showModalStockUnits" :unit="unitCurrent" @select="saveUnit" />
 
     <RegisterCrossTestResultModal v-if="typeModal === 'result'" v-model="showModalRegisterResult" @save="saveResult" />

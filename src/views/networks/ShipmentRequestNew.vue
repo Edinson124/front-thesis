@@ -1,12 +1,14 @@
 <script setup>
 import BloodBankInfo from '@/components/network/BloodBankInfo.vue';
-import UnitTable from '@/components/unit/UnitTable.vue';
+import UnitTableAssignShipment from '@/components/unit/UnitTableAssignShipment.vue';
 import { reasonOptions } from '@/enums/ShipmentRequest';
 import { useShipmentStore } from '@/stores/networks/shipments';
 import { required } from '@/validation/validators';
 import useVuelidate from '@vuelidate/core';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const shipmentStore = useShipmentStore();
 
 // Variables reactivas
@@ -67,14 +69,18 @@ const onNetworkChange = () => {
 };
 
 const cancelar = () => {
-  console.log('Operación cancelada');
-  // Aquí iría la lógica para cancelar
+  router.push({
+    path: '/networks/myShipments'
+  });
 };
 
 const save = async () => {
   const isValid = await vRequest$.value.$validate();
   if (!isValid) return;
   await shipmentStore.createShipment(shipmentRequest);
+  router.push({
+    path: '/networks/myShipments'
+  });
 };
 
 watch(bloodBankSelected, (newVal) => {
@@ -112,7 +118,7 @@ onMounted(async () => {
     <BloodBankInfo :blood-bank="bloodBankSelected" />
 
     <!-- Unidades solicitadas -->
-    <UnitTable
+    <UnitTableAssignShipment
       title="Unidades solicitadas"
       type="shipmentData"
       type-modal="request"

@@ -1,6 +1,6 @@
 <script setup>
 import BloodBankInfo from '@/components/network/BloodBankInfo.vue';
-import UnitTable from '@/components/unit/UnitTable.vue';
+import UnitTableAssignShipment from '@/components/unit/UnitTableAssignShipment.vue';
 import { useShipmentStore } from '@/stores/networks/shipments';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -28,18 +28,16 @@ const returnBack = () => {
   });
 };
 
-// const save = async () => {
-//   const isValid = await vRequest$.value.$validate();
-//   if (!isValid) return;
-//   await shipmentStore.editShipment(shipmentId.value, shipmentRequest);
-//   router.push({
-//     path: '/networks/myShipments'
-//   });
-// };
+const confirmReception = async () => {
+  await shipmentStore.confirmReception(shipmentId.value);
+  router.push({
+    path: '/networks/myShipments'
+  });
+};
 
 onMounted(async () => {
   isLoading.value = true;
-  const response = await shipmentStore.getShipmentWithAssignment(shipmentId.value);
+  const response = await shipmentStore.getShipmentWithAssignmentView(shipmentId.value);
   canViewRequest.value = response.canViewRequest;
   if (canViewRequest.value) {
     bloodBank.value = response.bloodBankOrigin;
@@ -79,7 +77,7 @@ onMounted(async () => {
       <BloodBankInfo :blood-bank="bloodBank" />
 
       <!-- Unidades solicitadas -->
-      <UnitTable title="Unidades solicitadas" type="shipmentData" type-modal="request" subtype="shipment" :loading="isLoading" :read-only="true" v-model="shipmentRequest.units" />
+      <UnitTableAssignShipment title="Unidades solicitadas" type="shipmentData" type-modal="request" subtype="shipment" :loading="isLoading" :read-only="true" v-model="shipmentRequest.units" />
 
       <!-- Motivo -->
       <div class="mb-6">
@@ -92,11 +90,11 @@ onMounted(async () => {
       </div>
 
       <!-- Unidades asignada -->
-      <UnitTable class="my-4" title="Unidades asignadas" type="shipmentDataAssign" type-modal="result" subtype="shipment" :read-only="true" :loading="isLoading" v-model="shipmentRequest.assignment" />
+      <UnitTableAssignShipment class="my-4" title="Unidades asignadas" type="shipmentDataAssign" type-modal="assign" subtype="shipment" :read-only="true" :loading="isLoading" v-model="shipmentRequest.assignment" />
 
       <!-- Botones de acción -->
-      <div :class="['flex flex-col sm:flex-row gap-2', shipment.status === 'Liberada' ? 'justify-between' : 'justify-end']">
-        <Button v-if="shipment.status === 'Liberada'" class="min-w-40 p-button-success mt-4" label="Confirmar recepción" @click="save" />
+      <div :class="['flex flex-col sm:flex-row gap-2', shipment.status === 'Liberado' ? 'justify-between' : 'justify-end']">
+        <Button v-if="shipment.status === 'Liberado'" class="min-w-40 p-button-success mt-4" label="Confirmar recepción" @click="confirmReception" />
         <div class="flex justify-end mt-4 gap-2">
           <Button class="min-w-40 btn-clean" label="Regresar" @click="returnBack" />
           <!-- <Button class="min-w-40 p-button-success" label="Guardar" @click="save" /> -->

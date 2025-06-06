@@ -88,12 +88,42 @@ export const useShipmentStore = defineStore('shipments', () => {
     }
   };
 
-  const getShipmentWithAssignment = async (idShipment) => {
+  const getShipmentWithAssignmentResponse = async (idShipment) => {
     try {
-      const response = await shipmentService.getShipmentWithAssignment(idShipment);
+      const response = await shipmentService.getShipmentWithAssignmentResponse(idShipment);
       return response;
     } catch (error) {
-      console.error('Error al crear una solicitud de transferencia: ', error);
+      console.error('Error al obtener solicitud de transferencia: ', error);
+      return false;
+    }
+  };
+
+  const getShipmentWithAssignmentView = async (idShipment) => {
+    try {
+      const response = await shipmentService.getShipmentWithAssignmentView(idShipment);
+      return response;
+    } catch (error) {
+      console.error('Error al obtener solicitud de transferencia: ', error);
+      return false;
+    }
+  };
+
+  const freeUnit = async (idShipment) => {
+    try {
+      const response = await shipmentService.freeUnit(idShipment);
+      return response;
+    } catch (error) {
+      console.error('Error al liberar unidades de la solicitud de transferencia: ', error);
+      return false;
+    }
+  };
+
+  const confirmReception = async (idShipment) => {
+    try {
+      const response = await shipmentService.confirmReception(idShipment);
+      return response;
+    } catch (error) {
+      console.error('Error al confirmar recepción de unidades de la solicitud de transferencia: ', error);
       return false;
     }
   };
@@ -111,6 +141,9 @@ export const useShipmentStore = defineStore('shipments', () => {
     editShipment,
     sendShipment,
     getShipment,
-    getShipmentWithAssignment
+    getShipmentWithAssignmentResponse,
+    getShipmentWithAssignmentView,
+    freeUnit,
+    confirmReception
   };
 });
