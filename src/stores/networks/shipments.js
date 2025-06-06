@@ -23,6 +23,19 @@ export const useShipmentStore = defineStore('shipments', () => {
     }
   };
 
+  const getMyShipments = async (filters = {}, page = 0) => {
+    try {
+      const response = await shipmentService.getMyShipments(filters, page);
+      shipments.splice(0, shipments.length, ...response.content);
+      totalRecords.value = response.totalElements;
+      currentPage.value = page;
+      return true;
+    } catch (error) {
+      console.error('Error al obtener mis solicitudes de transferencia: ', error);
+      return false;
+    }
+  };
+
   const getShipmentsNetwork = async () => {
     try {
       const response = await shipmentService.getShipmentsNetwork();
@@ -34,6 +47,57 @@ export const useShipmentStore = defineStore('shipments', () => {
     }
   };
 
+  const createShipment = async (shipmentRequest) => {
+    try {
+      const response = await shipmentService.createShipment(shipmentRequest);
+      return response;
+    } catch (error) {
+      console.error('Error al crear una solicitud de transferencia: ', error);
+      return false;
+    }
+  };
+
+  const editShipment = async (idShipment, shipmentRequest) => {
+    try {
+      console.log('store', shipmentRequest);
+      const response = await shipmentService.editShipment(idShipment, shipmentRequest);
+      return response;
+    } catch (error) {
+      console.error('Error al crear una solicitud de transferencia: ', error);
+      return false;
+    }
+  };
+
+  const getShipment = async (idShipment) => {
+    try {
+      const response = await shipmentService.getShipmentById(idShipment);
+      return response;
+    } catch (error) {
+      console.error('Error al obtener una solicitud de transferencia: ', error);
+      return false;
+    }
+  };
+
+  const sendShipment = async (idShipment) => {
+    try {
+      const response = await shipmentService.sendShipment(idShipment);
+      return response;
+    } catch (error) {
+      console.error('Error al solicitar una transferencia: ', error);
+      return false;
+    }
+  };
+
+  const getShipmentWithAssignment = async (idShipment) => {
+    try {
+      const response = await shipmentService.getShipmentWithAssignment(idShipment);
+      return response;
+    } catch (error) {
+      console.error('Error al crear una solicitud de transferencia: ', error);
+      return false;
+    }
+  };
+
   return {
     shipments,
     totalRecords,
@@ -41,6 +105,12 @@ export const useShipmentStore = defineStore('shipments', () => {
     bloodBanksOptions,
     networkOptions,
     getShipments,
-    getShipmentsNetwork
+    getMyShipments,
+    getShipmentsNetwork,
+    createShipment,
+    editShipment,
+    sendShipment,
+    getShipment,
+    getShipmentWithAssignment
   };
 });

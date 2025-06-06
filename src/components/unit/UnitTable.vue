@@ -12,11 +12,15 @@ const props = defineProps({
   },
   type: {
     type: String,
-    default: 'allData' // 'allData', 'singleData', 'resultData'
+    default: 'allData' // 'allData', 'singleData', 'resultData','shipmentData'
+  },
+  subtype: {
+    type: String,
+    default: null //'shipment'
   },
   typeModal: {
     type: String,
-    default: 'creation' // 'transformation', "request", "result"
+    default: 'creation' // 'transformation', "request", "result", "shipment"
   },
   loading: {
     type: Boolean,
@@ -77,6 +81,7 @@ const openRegisterResultModal = (unit, index) => {
 };
 
 const openEditUnitModal = (unit, index) => {
+  console.log(unit, index);
   editingIndex.value = index;
   Object.assign(unitCurrent, unit);
   showUnitModal.value = true;
@@ -114,6 +119,24 @@ const columns = [
         { field: 'index', header: 'Indice', width: '10%' },
         { field: 'unitType', header: 'Unidad', width: '25%' },
         { field: 'requestedQuantity', header: 'Cantidad', width: '15%' }
+      ]
+    : []),
+  ...(props.type === 'shipmentData'
+    ? [
+        { field: 'index', header: 'Indice', width: '10%' },
+        { field: 'unitType', header: 'Unidad', width: '25%' },
+        { field: 'bloodGroup', header: 'Grupo Sanguíneo', width: '15%' },
+        { field: 'rhFactor', header: 'Rh', width: '15%' },
+        { field: 'requestedQuantity', header: 'Cantidad', width: '15%' }
+      ]
+    : []),
+  ...(props.type === 'shipmentDataAssign'
+    ? [
+        { field: 'index', header: 'Indice', width: '10%' },
+        { field: 'unitType', header: 'Unidad', width: '25%' },
+        { field: 'bloodGroup', header: 'Grupo Sanguíneo', width: '15%' },
+        { field: 'rhFactor', header: 'Rh', width: '15%' },
+        { field: 'expirationDate', header: 'Fecha de vencimiento', width: '15%' }
       ]
     : []),
   ...(props.type === 'resultData'
@@ -171,7 +194,7 @@ const columns = [
                 <Button v-if="typeModal !== 'result'" class="h-8 w-[6rem] mr-1 my-1 btn-edit" label="Editar" @click="() => openEditUnitModal(slotProps.data, slotProps.index)" />
                 <Button v-if="typeModal === 'result' && !returnAction" class="h-8 w-[12rem] mr-1 my-1 btn-edit" label="Registrar resultado" @click="() => openRegisterResultModal(slotProps.data, slotProps.index)" />
                 <Button v-if="typeModal === 'result' && returnAction" class="h-8 w-[12rem] mr-1 my-1 btn-edit" label="Devolución" @click="() => openRegisterResultModal(slotProps.data, slotProps.index)" />
-                <Button v-if="typeModal === 'result' && !returnAction" class="h-8 w-[6rem] mr-1 my-1" label="Eliminar" severity="danger" @click="removeItem(slotProps.index, slotProps.data)" />
+                <Button v-if="!returnAction" class="h-8 w-[6rem] mr-1 my-1" label="Eliminar" severity="danger" @click="removeItem(slotProps.index, slotProps.data)" />
               </div>
             </template>
           </Column>
@@ -179,7 +202,7 @@ const columns = [
       </DataTable>
     </div>
 
-    <UnitModal v-if="typeModal !== 'result'" v-model="showUnitModal" :unit="unitCurrent" :type="typeModal" @save="saveUnit" />
+    <UnitModal v-if="typeModal !== 'result'" v-model="showUnitModal" :unit="unitCurrent" :type="typeModal" :subtype="subtype" @save="saveUnit" />
     <StockUnitsModal v-else v-model="showModalStockUnits" :unit="unitCurrent" @select="saveUnit" />
 
     <RegisterCrossTestResultModal v-if="typeModal === 'result'" v-model="showModalRegisterResult" @save="saveResult" />

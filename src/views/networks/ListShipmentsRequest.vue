@@ -1,5 +1,5 @@
 <script setup>
-import { tranfusionStatusOptions } from '@/enums/Status';
+import { shipmentStatusOptions } from '@/enums/Status';
 import { useBloodBanksStore } from '@/stores/admin/blodd-banks';
 import { useShipmentStore } from '@/stores/networks/shipments';
 import { onMounted, reactive, ref } from 'vue';
@@ -24,9 +24,9 @@ const loading = ref(false);
 // Columnas de la tabla
 const columns = [
   { field: 'id', header: 'Código' },
-  { field: 'bloodBankName', header: 'Banco de Sangre' },
-  { field: 'attendingDoctorName', header: 'Medico Solicitante' },
-  { field: 'date', header: 'Fecha' },
+  { field: 'bloodBankNameDestination', header: 'Banco de Sangre' },
+  { field: 'createdByName', header: 'Medico Solicitante' },
+  { field: 'requestDate', header: 'Fecha' },
   { field: 'status', header: 'Estado' }
 ];
 
@@ -37,7 +37,7 @@ const formatDate = (date) => {
   return `${day}/${month}/${year}`;
 };
 
-const searchTranfusions = async (event) => {
+const searchShipments = async (event) => {
   loading.value = true;
   const page = event ? event.page + 1 : shipmentsStore.currentPage;
 
@@ -57,7 +57,7 @@ const searchTranfusions = async (event) => {
     }
   }
 
-  await shipmentsStore.getTransfusions(params, page);
+  await shipmentsStore.getShipments(params, page);
   loading.value = false;
 };
 
@@ -66,24 +66,23 @@ function cleanfilters() {
   filters.code = null;
   filters.idBloodBank = null;
   filters.status = null;
-  searchTranfusions();
+  searchShipments();
 }
 
 function onPage(event) {
   console.log('Cambio de página:', event);
 }
 
-function visualizarUnidad(transfusion) {
+const viewShipmentRquest = async (shipment) => {
   router.push({
-    path: '/transfusion/view',
-    query: { transfusionId: transfusion.id }
+    path: `/networks/shipment/view/${shipment.id}`
   });
-}
+};
 
 // Cargar unidades al montar el componente
 onMounted(async () => {
   loadingBlooBanks.value = true;
-  await Promise.all([bloodBanksStore.getBloodBanksOptions()]);
+  await Promise.all([bloodBanksStore.getBloodBanksOptions(), searchShipments()]);
   loadingBlooBanks.value = false;
 });
 </script>
@@ -118,13 +117,13 @@ onMounted(async () => {
 
           <div>
             <FloatLabel variant="on">
-              <Select id="status" v-model="filters.status" :options="tranfusionStatusOptions" optionLabel="label" optionValue="value" class="w-full" />
+              <Select id="status" v-model="filters.status" :options="shipmentStatusOptions" optionLabel="label" optionValue="value" class="w-full" />
               <label for="status">Estado</label>
             </FloatLabel>
           </div>
         </div>
         <div class="col-span-12 md:col-span-4 flex flex-col md:flex-row md:grow justify-end items-center">
-          <Button class="h-8 w-full md:mr-2 mb-2 md:mb-0" label="Filtrar" severity="info" @click="searchTranfusions()" />
+          <Button class="h-8 w-full md:mr-2 mb-2 md:mb-0" label="Filtrar" severity="info" @click="searchShipments()" />
           <Button class="h-8 w-full md:grow btn-clean" label="Limpiar" @click="cleanfilters()" />
         </div>
       </div>
@@ -159,7 +158,7 @@ onMounted(async () => {
         <Column header="Acciones" :exportable="false" style="min-width: 8rem">
           <template #body="slotProps">
             <div class="flex justify-center">
-              <Button class="h-8 btn-view" label="Visualizar" @click="visualizarUnidad(slotProps.data)" />
+              <Button class="h-8 btn-view" label="Visualizar" @click="viewShipmentRquest(slotProps.data)" />
             </div>
           </template>
         </Column>

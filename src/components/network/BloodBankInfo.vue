@@ -11,6 +11,7 @@ defineProps({
         <div><span class="font-medium">Dirección:</span> {{ bloodBank.address }}</div>
         <div><span class="font-medium">Ubicación:</span> {{ bloodBank.ubication }}</div>
         <div><span class="font-medium">Coordinador:</span> {{ bloodBank.coordinatorName }}</div>
+        <div><span class="font-medium">Tipo de banco de sangre:</span> {{ bloodBank.type }}</div>
       </div>
       <div v-else class="py-4 text-center">
         <i class="pi pi-info-circle text-blue-500 text-2xl mb-2"></i>
