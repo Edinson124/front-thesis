@@ -82,6 +82,16 @@ export const useUnitStore = defineStore('unit', () => {
     idTranfusion.value = null;
   };
 
+  const discardUnit = async (idUnit, reason) => {
+    try {
+      const response = await unitsService.discardUnit(idUnit, reason);
+      return response?.payload?.id ?? null;
+    } catch (error) {
+      console.error('Error al descartar unidad: ', error);
+      return null;
+    }
+  };
+
   return {
     getUnits,
     getUnitById,
@@ -90,6 +100,7 @@ export const useUnitStore = defineStore('unit', () => {
     setStatusUnits,
     setStatusAptoUnits,
     setNullIdTranfusion,
+    discardUnit,
     units,
     totalRecords,
     currentPage,

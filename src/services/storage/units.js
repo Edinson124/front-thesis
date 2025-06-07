@@ -1,4 +1,4 @@
-import { get } from '@/api';
+import { get, put } from '@/api';
 
 const getUnits = async (filters = {}, page = 0) => {
   try {
@@ -29,7 +29,18 @@ const getUnitById = async (idUnit) => {
   }
 };
 
+const discardUnit = async (idUnit, reason) => {
+  try {
+    const response = await put(`/units/discard/${idUnit}`, { reason });
+    return response;
+  } catch (error) {
+    console.error('Error al descartar unidad: ', error);
+    return [];
+  }
+};
+
 export default {
   getUnits,
-  getUnitById
+  getUnitById,
+  discardUnit
 };

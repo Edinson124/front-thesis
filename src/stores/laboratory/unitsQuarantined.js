@@ -30,9 +30,20 @@ export const useUnitsQuarantinedStore = defineStore('unitQuarantined', () => {
     }
   };
 
+  const discardUnit = async (idUnit, reason) => {
+    try {
+      const response = await unitsQuarantinedService.discardUnit(idUnit, reason);
+      return response?.payload?.id ?? null;
+    } catch (error) {
+      console.error('Error al descartar unidad: ', error);
+      return null;
+    }
+  };
+
   return {
     getUnits,
     unitSuitable,
+    discardUnit,
     units,
     totalRecords,
     currentPage

@@ -1,4 +1,5 @@
 <script setup>
+import { RhFactor } from '@/enums/BloodType';
 import { unitTypesOptions } from '@/enums/Units';
 import { useUnitStore } from '@/stores/storage/units';
 import { onMounted, reactive, ref } from 'vue';
@@ -33,7 +34,8 @@ const loading = ref(false);
 const columns = [
   { field: 'id', header: 'Código' },
   { field: 'unitType', header: 'Tipo de Unidad' },
-  { field: 'bloodType', header: 'Grupo Sanguíneo' },
+  { field: 'bloodGroup', header: 'Grupo Sanguíneo' },
+  { field: 'rhFactor', header: 'Factor Rh' },
   { field: 'entryDate', header: 'Fecha Ingreso' },
   { field: 'expirationDate', header: 'Fecha Vencimiento' },
   { field: 'status', header: 'Estado' }
@@ -112,6 +114,18 @@ const select = (unit) => {
   emit('select', unit);
 };
 
+const getBloodGroup = (bloodType) => {
+  if (!bloodType) return '';
+  return bloodType.replace(/[+-]/, '');
+};
+
+const getRhFactorLabel = (bloodType) => {
+  if (!bloodType) return '';
+  if (bloodType.endsWith(RhFactor.POSITIVO.symbol)) return RhFactor.POSITIVO.label;
+  if (bloodType.endsWith(RhFactor.NEGATIVO.symbol)) return RhFactor.NEGATIVO.label;
+  return '';
+};
+
 // Cargar unidades al montar el componente
 onMounted(async () => {
   await searchUnits();
@@ -187,8 +201,19 @@ onMounted(async () => {
           <p class="text-gray-600 text-lg py-4">No se encontraron unidades disponibles o reservadas con los filtros seleccionados.</p>
         </template>
 
-        <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" :sortable="col.sortable"> </Column>
+        <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" :sortable="col.sortable">
+          <template v-if="col.field === 'bloodGroup'" #body="slotProps">
+            {{ getBloodGroup(slotProps.data.bloodType) }}
+          </template>
 
+          <template v-else-if="col.field === 'rhFactor'" #body="slotProps">
+            {{ getRhFactorLabel(slotProps.data.bloodType) }}
+          </template>
+
+          <template v-else #body="slotProps">
+            {{ slotProps.data[col.field] }}
+          </template>
+        </Column>
         <Column header="Acciones" :exportable="false" style="min-width: 8rem">
           <template #body="slotProps">
             <div class="flex justify-center">

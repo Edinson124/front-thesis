@@ -1,21 +1,20 @@
 <script setup>
 // import DonationStatusCard from '@/components/donation/DonationStatusCard.vue';
 import UnitCardStatus from '@/components/unit/UnitCardStatus.vue';
+import UnitDiscardModal from '@/components/unit/UnitDiscardModal.vue';
 import UnitInfoCard from '@/components/unit/UnitInfoCard.vue';
 import UnitSerologyTest from '@/components/unit/UnitSerologyTest.vue';
+import { discardReasonOptions } from '@/enums/Units';
 import { useDonationStore } from '@/stores/donation/donations';
 import { useSerologyTestStore } from '@/stores/laboratory/serologyTest';
 import { useUnitStore } from '@/stores/storage/units';
-import { required } from '@/validation/validators';
-import useVuelidate from '@vuelidate/core';
 import { computed, onMounted, ref, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 
 const donationStore = useDonationStore();
 const serologyStore = useSerologyTestStore();
-const unitSore = useUnitStore();
+const unitStore = useUnitStore();
 const route = useRoute();
-const router = useRouter();
 
 const donation = ref(null);
 const serologyTest = ref(null);
@@ -26,6 +25,7 @@ const donationId = computed(() => route.query.donationId);
 const unitId = computed(() => route.query.unitId);
 const showReactiveWarning = ref(false);
 const fieldPendingReset = ref(null);
+const showDiscardModal = ref(false);
 
 const isLoading = ref(true);
 const serologyResult = ref({
@@ -40,43 +40,6 @@ const serologyResult = ref({
   observations: ''
 });
 
-const rules = computed(() => ({
-  testDate: { required: required('Fecha de prueba') },
-  hiv: { required: required('VIH') },
-  hbsAg: { required: required('HBsAg') },
-  hbcAb: { required: required('HBcAb') },
-  hcv: { required: required('VHC') },
-  syphilis: { required: required('Sífilis') },
-  chagas: { required: required('Chagas') },
-  htlvI_II: { required: required('HtlvI_II') }
-}));
-
-const v$ = useVuelidate(rules, serologyResult);
-
-const handleSave = async () => {
-  const isValid = await v$.value.$validate();
-  if (isValid) {
-    let serologyResultNormalized = normalizeEmptyStringsToNull(serologyResult.value);
-    const donationRoute = route.query.donationId;
-    serologyResultNormalized.donationId = donationRoute;
-    await serologyStore.createSerologyTest(serologyResultNormalized);
-  } else {
-    console.log('Errores en el formulario', v$.value);
-  }
-};
-
-function normalizeEmptyStringsToNull(obj) {
-  const normalized = {};
-  for (const [key, value] of Object.entries(obj)) {
-    if (typeof value === 'string' && value.trim() === '') {
-      normalized[key] = null;
-    } else {
-      normalized[key] = value;
-    }
-  }
-  return normalized;
-}
-
 Object.keys(serologyResult.value).forEach((key) => {
   watch(
     () => serologyResult.value[key],
@@ -88,11 +51,18 @@ Object.keys(serologyResult.value).forEach((key) => {
     }
   );
 });
+const openModalDiscard = () => {
+  showDiscardModal.value = true;
+};
+const handleDiscardSave = async (reason) => {
+  const response = await unitStore.discardUnit(unitId.value, reason);
+  console.log('resp', response);
+};
 
 onMounted(async () => {
   const donationResponse = await donationStore.getDonation(donationId.value);
   const serologyTestResponse = await serologyStore.getSerologyTestByDonationId(donationId.value);
-  const unitReponse = await unitSore.getUnitById(unitId.value);
+  const unitReponse = await unitStore.getUnitById(unitId.value);
   unit.value = unitReponse;
   donation.value = donationResponse;
   serologyTest.value = serologyTestResponse;
@@ -122,9 +92,10 @@ onMounted(async () => {
       <UnitSerologyTest :serologyTest="serologyTest" :bloodType="bloodType" :showBloodType="false" />
 
       <div v-if="serologyTest" class="flex justify-center px-8 my-8 gap-4">
-        <Button class="h-10 w-full md:max-w-[16rem]" label="Descartar Unidad" severity="danger" />
+        <Button class="h-10 w-full md:max-w-[16rem]" label="Descartar Unidad" severity="danger" @click="openModalDiscard" />
         <Button class="h-10 w-full md:max-w-[16rem]" label="Obtener Etiqueta" severity="success" />
       </div>
     </div>
+    <UnitDiscardModal v-model="showDiscardModal" :reasons="discardReasonOptions" @save="handleDiscardSave" />
   </div>
 </template>

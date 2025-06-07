@@ -6,18 +6,20 @@ import UnitCardStatus from '@/components/unit/UnitCardStatus.vue';
 import UnitDiscardModal from '@/components/unit/UnitDiscardModal.vue';
 import UnitSerologyTest from '@/components/unit/UnitSerologyTest.vue';
 import { RhFactor } from '@/enums/BloodType';
+import { discardReasonQuarantinedOptions } from '@/enums/Units';
 import { useDonationStore } from '@/stores/donation/donations';
 import { useHematologicalTestStore } from '@/stores/laboratory/hematologicalTest';
 import { useSerologyTestStore } from '@/stores/laboratory/serologyTest';
 import { useUnitsQuarantinedStore } from '@/stores/laboratory/unitsQuarantined';
 import { computed, onMounted, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const donationStore = useDonationStore();
 const serologyStore = useSerologyTestStore();
 const hematologicStore = useHematologicalTestStore();
 const unitsQuarantinedStore = useUnitsQuarantinedStore();
 const route = useRoute();
+const router = useRouter();
 
 const donation = ref(null);
 const hematologicTest = ref(null);
@@ -31,7 +33,7 @@ const fieldPendingReset = ref(null);
 const isLoading = ref(true);
 const showDiscardModal = ref(false);
 
-const openModal = () => {
+const openModalDiscard = () => {
   showDiscardModal.value = true;
 };
 const serologyResult = ref({
@@ -59,8 +61,13 @@ Object.keys(serologyResult.value).forEach((key) => {
 });
 
 const unitSuitable = async () => {
-  const response = await unitsQuarantinedStore.unitSuitable(unitId.value);
-  console.log('resp', response);
+  await unitsQuarantinedStore.unitSuitable(unitId.value);
+  router.push('/laboratory/units/quarantined');
+};
+
+const handleDiscardSave = async (reason) => {
+  await unitsQuarantinedStore.discardUnit(unitId.value, reason);
+  router.push('/laboratory/units/quarantined');
 };
 
 onMounted(async () => {
@@ -118,9 +125,9 @@ onMounted(async () => {
 
       <div v-if="serologyTest" class="flex justify-center px-8 my-8 gap-4">
         <Button v-if="serologyTest.status != 'REACTIVO'" class="h-10 w-full md:max-w-[16rem]" label="Unidad Apta" severity="success" @click="unitSuitable" />
-        <Button class="h-10 w-full md:max-w-[16rem]" label="Descartar Unidad" severity="danger" @click="openModal" />
+        <Button class="h-10 w-full md:max-w-[16rem]" label="Descartar Unidad" severity="danger" @click="openModalDiscard" />
       </div>
     </div>
-    <UnitDiscardModal v-model="showDiscardModal" @save="handleDiscardSave" />
+    <UnitDiscardModal v-model="showDiscardModal" :reasons="discardReasonQuarantinedOptions" @save="handleDiscardSave" />
   </div>
 </template>

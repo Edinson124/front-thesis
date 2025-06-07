@@ -29,7 +29,18 @@ const unitSuitable = async (unitId) => {
   }
 };
 
+const discardUnit = async (unitId, reason) => {
+  try {
+    const response = await put(`/units/quarantined/discard/${unitId}`, { reason });
+    return response;
+  } catch (error) {
+    console.error('Error al descartar la unidad: ', error);
+    return null;
+  }
+};
+
 export default {
   getUnits,
-  unitSuitable
+  unitSuitable,
+  discardUnit
 };

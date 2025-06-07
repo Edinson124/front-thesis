@@ -1,9 +1,15 @@
 <script setup>
 import { resultSerology } from '@/enums/SerologyResult';
-defineProps({
+import { computed } from 'vue';
+const props = defineProps({
   serologyTest: Object,
   bloodType: String,
   showBloodType: Boolean
+});
+const bloodLetter = computed(() => props.bloodType?.slice(0, -1)); // O, A, B, AB
+const rhSign = computed(() => props.bloodType?.slice(-1)); // + o -
+const rhText = computed(() => {
+  return rhSign.value === '+' ? 'POSITIVO' : rhSign.value === '-' ? 'NEGATIVO' : '';
 });
 </script>
 <template>
@@ -80,7 +86,8 @@ defineProps({
         <!-- Columna derecha -->
         <div v-if="showBloodType" class="flex flex-col">
           <div class="text-xl mb-2 font-medium">Grupo sanguíneo</div>
-          <div class="text-4xl font-bold">{{ bloodType }}</div>
+          <div class="text-4xl font-bold">{{ bloodLetter }}</div>
+          <div class="text-xl font-semibold">Rh {{ rhText }}</div>
         </div>
       </div>
     </div>

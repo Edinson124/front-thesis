@@ -49,7 +49,8 @@ defineProps({
         <!-- Columna derecha -->
         <div class="flex flex-col">
           <div class="text-xl mb-2 font-medium">Grupo sanguíneo</div>
-          <div class="text-4xl font-bold">{{ transfusion.patientBloodType }} {{ RhFactor[transfusion.patientRhFactor]?.symbol || '' }}</div>
+          <div class="text-4xl font-bold">{{ transfusion.patientBloodType }}</div>
+          <div class="text-xl font-semibold">Rh {{ RhFactor[transfusion.patientRhFactor]?.label }}</div>
         </div>
       </div>
       <div class="grid grid-cols-1 gap-4 mt-2">

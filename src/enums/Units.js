@@ -94,3 +94,39 @@ export const unitTypesTransformationSearchOptions = Object.entries(UnitTypesTran
   value,
   label
 }));
+
+export const discardReasons = [
+  'Coagulación de la unidad',
+  'Contaminación visible',
+  'Rotura de la bolsa',
+  'Pérdida de integridad del sello',
+  'Mal almacenamiento (temperatura fuera de rango)',
+  'Vencimiento de la unidad',
+  'Fuga o goteo de la bolsa',
+  'Etiqueta ilegible o desprendida',
+  'Error en la identificación',
+  'Color anormal de la sangre o componente',
+  'Unidad devuelta fuera del tiempo permitido',
+  'Presencia de espuma o hemólisis',
+  'Exposición accidental a la luz (si aplica)',
+  'Manipulación no autorizada o indebida'
+];
+export const discardQuarantineReasons = ['Unidad Reactiva'];
+
+export const discardReasonOptions = discardReasons
+  .slice()
+  .sort((a, b) => a.localeCompare(b))
+  .map((reason) => ({
+    value: reason,
+    label: reason
+  }));
+
+export const discardReasonQuarantinedOptions = [
+  // Primero las específicas de cuarentena (sin ordenar)
+  ...discardQuarantineReasons.map((reason) => ({ value: reason, label: reason })),
+  // Luego las otras razones, ordenadas alfabéticamente
+  ...discardReasons
+    .slice()
+    .sort((a, b) => a.localeCompare(b))
+    .map((reason) => ({ value: reason, label: reason }))
+];
