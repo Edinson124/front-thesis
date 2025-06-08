@@ -41,11 +41,8 @@ const v$ = useVuelidate(rules, transfusionPerformed);
 
 const handleSave = async () => {
   const isValid = await v$.value.$validate();
-  if (isValid) {
-    await tranfusionResultStore.newTransfusionResult(transfusionId.value, transfusionPerformed);
-  } else {
-    console.log('Errores en el formulario', v$.value);
-  }
+  if (!isValid) return;
+  await tranfusionResultStore.newTransfusionResult(transfusionId.value, transfusionPerformed);
 };
 watch(transfusionId, (newVal) => {
   if (newVal) {

@@ -136,6 +136,26 @@ const freeUnits = async () => {
               <i class="pi pi-info-circle text-blue-500 text-2xl mb-2"></i>
               <p class="text-gray-700 font-medium">Resultados de transfusión pendiente</p>
             </div>
+            <div v-else>
+              <div class="grid grid-cols-1 md:grid-cols-4 md:gap-y-3 gap-x-6">
+                <div class="mb-2 md:col-span-2">
+                  <div class="mt-2"><span class="font-medium">Fecha de transfusión: </span> {{ transfusion.result.transfusionDate }}</div>
+                  <div class="mt-2"><span class="font-medium">N° Colegiatura médico que realizo la transfusion: </span> {{ transfusion.result.transfusionDoctorLicenseNumber }}</div>
+                </div>
+                <div class="mb-2 md:col-span-2">
+                  <div class="mt-2"><span class="font-medium">Registrado el: </span> {{ transfusion.result.createdAt }}</div>
+                  <div class="mt-2"><span class="font-medium">Registrado por: </span> {{ transfusion.result.createdByName }}</div>
+                </div>
+              </div>
+              <div class="grid grid-cols-1">
+                <div class="mt-2"><span class="font-medium">Nombre médico que realizo la transfusion: </span> {{ transfusion.result.transfusionDoctorName }}</div>
+                <div class="mt-2">
+                  <span class="font-medium"> Presentó reacción advsersa: </span><span class="font-bold">{{ transfusion.result.reactionAdverse ? 'SI' : 'NO' }}</span>
+                </div>
+                <div class="mt-2"><span class="font-medium">Reaccion adversa: </span> {{ transfusion.result.reactionAdverse ?? '-' }}</div>
+                <div class="mt-2"><span class="font-medium">Observaciones: </span> {{ transfusion.result.observations }}</div>
+              </div>
+            </div>
           </div>
         </Fieldset>
       </div>

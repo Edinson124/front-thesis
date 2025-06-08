@@ -10,6 +10,8 @@ const router = useRouter();
 const tranfusionStore = useTransfusionStore();
 const errorMessageNotFound = ref(false);
 const errorMessageNotCanView = ref(false);
+const errorMessageHasResult = ref(false);
+const errorMessageNotAllowedResult = ref(false);
 
 const tranfusion = reactive({
   transfusionCode: ''
@@ -24,11 +26,14 @@ const v2$ = useVuelidate(rulesCode, tranfusion);
 const setFalseMessages = () => {
   errorMessageNotFound.value = false;
   errorMessageNotCanView.value = false;
+  errorMessageHasResult.value = false;
+  errorMessageNotAllowedResult.value = false;
 };
 
 const resetCode = () => {
   tranfusion.transfusionCode = '';
   v2$.value.$reset();
+  setFalseMessages();
 };
 
 const searchTranfusionByCode = async () => {
@@ -45,6 +50,16 @@ const searchTranfusionByCode = async () => {
   }
   if (!response.canViewTransfusion) {
     errorMessageNotCanView.value = true;
+    loading.value = false;
+    return;
+  }
+  if (!response.isResultRegistrationAllowed) {
+    errorMessageNotAllowedResult.value = true;
+    loading.value = false;
+    return;
+  }
+  if (response.transfusionResultId) {
+    errorMessageHasResult.value = true;
     loading.value = false;
     return;
   }
@@ -82,6 +97,8 @@ watch(
           <!-- Mensaje si no se encuentra la donación -->
           <div v-if="errorMessageNotFound" class="text-red-600 mt-2 text-center">No se encontró ninguna tranfusión con el codigo ingresado.</div>
           <div v-if="errorMessageNotCanView" class="text-red-600 mt-2 text-center">No puedes consultar la tranfusión porque pertenece a otro banco de sangre.</div>
+          <div v-if="errorMessageNotAllowedResult" class="text-red-600 mt-2 text-center">La transfusión aún no ha liberado las unidades asignadas.</div>
+          <div v-if="errorMessageHasResult" class="text-red-600 mt-2 text-center">La transfusión presenta resultado registrado.</div>
           <div class="flex justify-center gap-4 mt-4">
             <Button class="h-8 w-40 btn-clean" label="Limpiar" @click="resetCode()" />
             <Button class="h-8 w-40" label="Buscar" severity="info" @click="searchTranfusionByCode()" />
