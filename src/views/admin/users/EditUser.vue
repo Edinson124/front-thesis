@@ -1,5 +1,8 @@
 <script setup>
+import ConfirmModal from '@/components/utils/ConfirmModal.vue';
+import ErrorModal from '@/components/utils/ErrorModal.vue';
 import InputPhone from '@/components/utils/InputPhone.vue';
+import SuccessModal from '@/components/utils/SuccessModal.vue';
 import { DocumentTypes } from '@/enums/DocumentTypes';
 import { genderOptions } from '@/enums/Gender';
 import { Status } from '@/enums/Status';
@@ -189,15 +192,17 @@ const rules = computed(() => ({
 const v$ = useVuelidate(rules, user);
 const documentNumberVerified = ref(null);
 
-const saveUser = async () => {
-  const isValid = await v$.value.$validate();
-  // await verifyDocumentNumber();
-  if (!isValid) return;
+const showConfirmModal = ref(false);
+const showSuccessModal = ref(false);
+const showErrorModal = ref(false);
 
+const saveUser = async () => {
   const saveMethod = isNewUser.value ? usersStore.newUser : usersStore.editUser;
   const success = await saveMethod(user);
   if (success) {
-    router.push('/admin/users');
+    showSuccessModal.value = true;
+  } else {
+    showErrorModal.value = true;
   }
 };
 
@@ -208,6 +213,13 @@ const cancel = () => {
 const verifyDocumentNumber = async () => {
   const response = await usersStore.verifyUser(user.id, user.documentNumber);
   documentNumberVerified.value = response;
+};
+
+const handleSaveUser = async () => {
+  const isValid = await v$.value.$validate();
+  if (!isValid) return;
+
+  showConfirmModal.value = true;
 };
 </script>
 
@@ -230,7 +242,7 @@ const verifyDocumentNumber = async () => {
       <Skeleton width="8rem" height="2rem"></Skeleton>
     </div>
   </div>
-  <form class="card" v-if="!loadingUser" @submit.prevent="saveUser">
+  <form class="card" v-if="!loadingUser" @submit.prevent="handleSaveUser">
     <div class="page-title | mb-8">
       <h3 v-if="isNewUser">Registro de nuevo usuario</h3>
       <h3 v-else>Editar usuario</h3>
@@ -400,4 +412,8 @@ const verifyDocumentNumber = async () => {
       <Button class="min-w-40 p-button-success" label="Guardar" type="submit" />
     </div>
   </form>
+
+  <ConfirmModal v-model="showConfirmModal" header="¿Estás seguro de guardar este usuario?" accept-text="Guardar" @accept="saveUser" />
+  <SuccessModal v-model="showSuccessModal" message="El usuario fue guardado con éxito" @close="() => router.push('/admin/users')" />
+  <ErrorModal v-model="showErrorModal" />
 </template>

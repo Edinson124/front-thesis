@@ -1,4 +1,7 @@
 <script setup>
+import ConfirmModal from '@/components/utils/ConfirmModal.vue';
+import ErrorModal from '@/components/utils/ErrorModal.vue';
+import SuccessModal from '@/components/utils/SuccessModal.vue';
 import { Status } from '@/enums/Status';
 import { useRolesStore } from '@/stores/admin/roles';
 import { useUsersStore } from '@/stores/admin/users';
@@ -49,15 +52,22 @@ const statusesOptions = statuses.map((status) => ({
   label: Status[status]
 }));
 
+const showSuccessModal = ref(false);
+const showErrorModal = ref(false);
+
 const desactivateUserDialog = ref(false);
 const selectedUser = ref(null);
 const confirmDesactivateUser = (user) => {
   selectedUser.value = user;
   desactivateUserDialog.value = true;
 };
-const desactivateUser = () => {
-  userStore.toogleStatusUser(selectedUser.value.id);
-  desactivateUserDialog.value = false;
+const desactivateUser = async () => {
+  const success = await userStore.toogleStatusUser(selectedUser.value.id);
+  if (success) {
+    showSuccessModal.value = true;
+  } else {
+    showErrorModal.value = true;
+  }
   selectedUser.value = null;
 };
 
@@ -66,9 +76,13 @@ const confirmReactivateUser = (user) => {
   selectedUser.value = user;
   reactivateUserDialog.value = true;
 };
-const reactivateUser = () => {
-  userStore.toogleStatusUser(selectedUser.value.id);
-  reactivateUserDialog.value = false;
+const reactivateUser = async () => {
+  const success = await userStore.toogleStatusUser(selectedUser.value.id);
+  if (success) {
+    showSuccessModal.value = true;
+  } else {
+    showErrorModal.value = true;
+  }
   selectedUser.value = null;
 };
 </script>
@@ -140,7 +154,18 @@ const reactivateUser = () => {
           </Column>
         </DataTable>
       </div>
-      <Dialog v-model:visible="desactivateUserDialog" :style="{ width: '450px' }" header="Desactivar usuario" :modal="true">
+
+      <ConfirmModal
+        id="desactivateUserDialog"
+        v-model="desactivateUserDialog"
+        severity="warn"
+        header="Desactivar usuario"
+        :message="`¿Estás seguro de desactivar a ${selectedUser?.firstName} ${selectedUser?.lastName}?`"
+        accept-text="Desactivar"
+        accept-button-class="p-button-danger"
+        @accept="desactivateUser"
+      />
+      <!-- <Dialog v-model:visible="desactivateUserDialog" :style="{ width: '450px' }" header="Desactivar usuario" :modal="true">
         <div class="flex items-center gap-4">
           <i class="pi pi-exclamation-triangle !text-3xl" />
           <span v-if="selectedUser">
@@ -152,9 +177,19 @@ const reactivateUser = () => {
           <Button label="Cancelar" text @click="desactivateUserDialog = false" />
           <Button label="Desactivar" class="p-button-danger" @click="desactivateUser" />
         </template>
-      </Dialog>
+      </Dialog> -->
 
-      <Dialog v-model:visible="reactivateUserDialog" :style="{ width: '450px' }" header="Activar usuario" :modal="true">
+      <ConfirmModal
+        id="reactivateUserDialog"
+        v-model="reactivateUserDialog"
+        severity="warn"
+        header="Activar usuario"
+        :message="`¿Estás seguro de activar a ${selectedUser?.firstName} ${selectedUser?.lastName}?`"
+        accept-text="Activar"
+        accept-button-class="p-button-success"
+        @accept="reactivateUser"
+      />
+      <!-- <Dialog v-model:visible="reactivateUserDialog" :style="{ width: '450px' }" header="Activar usuario" :modal="true">
         <div class="flex items-center gap-4">
           <i class="pi pi-exclamation-triangle !text-3xl" />
           <span v-if="selectedUser">
@@ -166,7 +201,10 @@ const reactivateUser = () => {
           <Button label="Cancelar" text @click="reactivateUserDialog = false" />
           <Button label="Activar" class="p-button-success" @click="reactivateUser" />
         </template>
-      </Dialog>
+      </Dialog> -->
+
+      <SuccessModal v-model="showSuccessModal" />
+      <ErrorModal v-model="showErrorModal" />
     </div>
   </div>
 </template>

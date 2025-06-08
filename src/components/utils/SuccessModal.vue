@@ -1,0 +1,67 @@
+<script setup>
+import { useConfirm } from 'primevue';
+import { watch } from 'vue';
+
+const confirm = useConfirm();
+
+const props = defineProps({
+  id: {
+    type: String,
+    default: 'success-modal'
+  },
+  header: {
+    type: String,
+    default: '¡Éxito!'
+  },
+  message: {
+    type: String,
+    default: 'La operación se completó exitosamente.'
+  },
+  closeText: {
+    type: String,
+    default: 'Cerrar'
+  }
+});
+
+const showModal = defineModel({ type: Boolean, default: false });
+
+const emit = defineEmits(['close']);
+
+const openModal = () => {
+  confirm.require({
+    group: props.id,
+    header: props.header,
+    message: props.message,
+    accept: () => {
+      showModal.value = false;
+      emit('close');
+    }
+  });
+};
+
+watch(
+  () => showModal.value,
+  (newVal) => {
+    if (newVal) {
+      openModal();
+    }
+  }
+);
+</script>
+
+<template>
+  <ConfirmDialog :group="id">
+    <template #container="{ message, acceptCallback }">
+      <div class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded">
+        <div class="rounded-full bg-green-500 text-white inline-flex justify-center items-center h-24 w-24 -mt-20">
+          <i class="pi pi-check-circle !text-4xl"></i>
+        </div>
+        <span class="font-bold text-2xl block mb-2 mt-6">{{ message.header }}</span>
+        <p class="mb-0">{{ message.message }}</p>
+        <div class="flex justify-center mt-6 gap-2">
+          <Button class="min-w-40 btn-clean" :label="closeText" @click="acceptCallback"></Button>
+        </div>
+      </div>
+    </template>
+  </ConfirmDialog>
+</template>
