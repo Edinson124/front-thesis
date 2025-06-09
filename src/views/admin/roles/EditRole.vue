@@ -1,4 +1,7 @@
 <script setup>
+import ConfirmModal from '@/components/utils/ConfirmModal.vue';
+import ErrorModal from '@/components/utils/ErrorModal.vue';
+import SuccessModal from '@/components/utils/SuccessModal.vue';
 import { Status } from '@/enums/Status';
 import { useRolesStore } from '@/stores/admin/roles';
 import useVuelidate from '@vuelidate/core';
@@ -44,19 +47,29 @@ const statusesOptions = statuses.map((status) => ({
 const rules = computed(() => ({}));
 const v$ = useVuelidate(rules, role);
 
-const save = async () => {
-  const isValid = await v$.value.$validate();
-  if (!isValid) return;
+const showConfirmModal = ref(false);
+const showSuccessModal = ref(false);
+const showErrorModal = ref(false);
 
+const saveRole = async () => {
   const saveMethod = isNewRole.value ? rolesStore.editRole : rolesStore.editRole;
   const success = await saveMethod(role);
   if (success) {
-    router.push('/admin/roles');
+    showSuccessModal.value = true;
+  } else {
+    showErrorModal.value = true;
   }
 };
 
 const cancel = () => {
   router.push('/admin/roles');
+};
+
+const handleSaveRole = async () => {
+  const isValid = await v$.value.$validate();
+  if (!isValid) return;
+
+  showConfirmModal.value = true;
 };
 </script>
 
@@ -75,7 +88,7 @@ const cancel = () => {
       <Skeleton width="8rem" height="2rem"></Skeleton>
     </div>
   </div>
-  <form class="card" v-if="!loading" @submit.prevent="save">
+  <form class="card" v-if="!loading" @submit.prevent="handleSaveRole">
     <div class="page-title | mb-8">
       <h3 v-if="isNewRole">Registro de nuevo rol</h3>
       <h3 v-else>Editar rol</h3>
@@ -143,6 +156,10 @@ const cancel = () => {
       <Button class="min-w-40 p-button-success" label="Guardar" type="submit" />
     </div>
   </form>
+
+  <ConfirmModal v-model="showConfirmModal" header="¿Estás seguro de guardar este rol?" accept-text="Guardar" @accept="saveRole" />
+  <SuccessModal v-model="showSuccessModal" message="El rol fue guardado con éxito" @close="() => router.push('/admin/roles')" />
+  <ErrorModal v-model="showErrorModal" />
 </template>
 
 <style>

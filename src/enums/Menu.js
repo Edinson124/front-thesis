@@ -1,6 +1,6 @@
 export const MenuRoutes = [
   { id: 'root', label: '' },
-  { id: 'admin', label: 'Admin', icon: 'mdi mdi-shield-account', parentId: 'root' },
+  { id: 'admin', label: 'Admin', icon: 'mdi mdi-shield-account', parentId: 'root', isAdmin: true },
   { id: 'admin-variables', label: 'Variables globales', to: '/admin/variables', parentId: 'admin' },
   { id: 'admin-users', label: 'Usuarios', to: '/admin/users', parentId: 'admin' },
   { id: 'admin-roles', label: 'Roles', to: '/admin/roles', parentId: 'admin' },

@@ -17,6 +17,10 @@ const props = defineProps({
     type: String,
     default: 'Por favor confirma para continuar'
   },
+  moreMessage: {
+    type: String,
+    default: ''
+  },
   acceptText: {
     type: String,
     default: 'Aceptar'
@@ -102,6 +106,7 @@ const circleBgClass = computed(() => {
         </div>
         <span class="font-bold text-2xl block mb-2 mt-6">{{ message.header }}</span>
         <p class="mb-0">{{ message.message }}</p>
+        <p v-if="message.moreMessage" class="mb-0">{{ message.moreMessage }}</p>
         <div class="flex justify-center mt-6 gap-2">
           <Button class="min-w-40 btn-clean" :label="rejectText" @click="rejectCallback"></Button>
           <Button :class="['min-w-40', acceptButtonClass]" :label="acceptText" @click="acceptCallback"></Button>

@@ -1,5 +1,8 @@
 <script setup>
 import SelectBloodBankModal from '@/components/network/SelectBloodBankModal.vue';
+import ConfirmModal from '@/components/utils/ConfirmModal.vue';
+import ErrorModal from '@/components/utils/ErrorModal.vue';
+import SuccessModal from '@/components/utils/SuccessModal.vue';
 import { useNetworkStore } from '@/stores/admin/network';
 import { required } from '@/validation/validators';
 import useVuelidate from '@vuelidate/core';
@@ -85,17 +88,29 @@ const onSearch = (term) => {
   currentSearchModal.value = term;
   networkStore.getBloodBanksOptionsAddNetwork({ name: term }, 0);
 };
-const handleSave = async () => {
-  const isValid = await v$.value.$validate();
-  if (!isValid) return;
+
+const showConfirmModal = ref(false);
+const showSuccessModal = ref(false);
+const showErrorModal = ref(false);
+
+const saveNetwork = async () => {
   networkBB.idBloodBanks = bloodBankInNetwork.value.map((bank) => bank.id);
 
   const saveMethod = isNewNetwork.value ? networkStore.newNetwork : networkStore.editNetwork;
   const success = await saveMethod(networkBB);
   if (success) {
-    router.push('/admin/network');
+    showSuccessModal.value = true;
+  } else {
+    showErrorModal.value = true;
   }
 };
+
+const handleSaveNetwork = async () => {
+  const isValid = await v$.value.$validate();
+  if (!isValid) return;
+  showConfirmModal.value = true;
+};
+
 onMounted(async () => {
   await networkStore.getBloodBanksOptionsAddNetwork();
   const networkId = route.params.id;
@@ -158,7 +173,7 @@ onMounted(async () => {
     <!-- Botones de acción -->
     <div class="w-full flex items-denter justify-end mb-4 gap-4">
       <Button class="min-w-40 btn-clean" label="Cancelar" @click.prevent="router.back()" />
-      <Button class="min-w-40 p-button-success" label="Guardar" @click="handleSave()" />
+      <Button class="min-w-40 p-button-success" label="Guardar" @click="handleSaveNetwork()" />
     </div>
 
     <SelectBloodBankModal
@@ -173,7 +188,17 @@ onMounted(async () => {
       @search="onSearch"
     />
 
-    <Dialog v-model:visible="showConfirmUnlinkModal" modal header="Confirmar desvinculación" :style="{ width: '400px' }">
+    <ConfirmModal
+      id="confirmUnlinkModal"
+      v-model="showConfirmUnlinkModal"
+      severity="warn"
+      header="Confirmar desvinculación"
+      :message="`¿Estás seguro que deseas desvincular a ${bloodBankDelete?.name}?`"
+      accept-text="Desvincular"
+      accept-button-class="p-button-danger"
+      @accept="deletedBloodBank"
+    />
+    <!-- <Dialog v-model:visible="showConfirmUnlinkModal" modal header="Confirmar desvinculación" :style="{ width: '400px' }">
       <div class="p-4">
         <p>
           ¿Estás seguro que deseas desvincular el banco <strong>{{ bloodBankDelete?.nombre }}</strong
@@ -185,6 +210,10 @@ onMounted(async () => {
           <Button label="Desvincular" severity="danger" @click="deletedBloodBank" />
         </div>
       </div>
-    </Dialog>
+    </Dialog> -->
+
+    <ConfirmModal v-model="showConfirmModal" header="¿Estás seguro de guardar esta red de banco de sangre?" accept-text="Guardar" @accept="saveNetwork" />
+    <SuccessModal v-model="showSuccessModal" message="La red de banco de sangre fue guardada con éxito" @close="() => router.push('/admin/network')" />
+    <ErrorModal v-model="showErrorModal" />
   </div>
 </template>

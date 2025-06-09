@@ -1,4 +1,7 @@
 <script setup>
+import ConfirmModal from '@/components/utils/ConfirmModal.vue';
+import ErrorModal from '@/components/utils/ErrorModal.vue';
+import SuccessModal from '@/components/utils/SuccessModal.vue';
 import ubicationService from '@/services/ubication';
 import { useBloodBanksStore } from '@/stores/admin/blodd-banks';
 import { onMounted, reactive, ref } from 'vue';
@@ -89,15 +92,22 @@ const onSelectProvince = async (event) => {
 //   label: Status[status]
 // }));
 
+const showSuccessModal = ref(false);
+const showErrorModal = ref(false);
+
 const desactivateDialog = ref(false);
 const selectedBloodBank = ref(null);
 const confirmDesactivate = (role) => {
   selectedBloodBank.value = role;
   desactivateDialog.value = true;
 };
-const desactivate = () => {
-  bloodBankStore.toogleStatus(selectedBloodBank.value.id);
-  desactivateDialog.value = false;
+const desactivate = async () => {
+  const success = await bloodBankStore.toogleStatus(selectedBloodBank.value.id);
+  if (success) {
+    showSuccessModal.value = true;
+  } else {
+    showErrorModal.value = true;
+  }
   selectedBloodBank.value = null;
 };
 
@@ -106,9 +116,13 @@ const confirmReactivate = (role) => {
   selectedBloodBank.value = role;
   reactivateDialog.value = true;
 };
-const reactivate = () => {
-  bloodBankStore.toogleStatus(selectedBloodBank.value.id);
-  reactivateDialog.value = false;
+const reactivate = async () => {
+  const success = bloodBankStore.toogleStatus(selectedBloodBank.value.id);
+  if (success) {
+    showSuccessModal.value = true;
+  } else {
+    showErrorModal.value = true;
+  }
   selectedBloodBank.value = null;
 };
 </script>
@@ -183,7 +197,18 @@ const reactivate = () => {
         </div>
       </template>
     </DataView>
-    <Dialog v-model:visible="desactivateDialog" :style="{ width: '450px' }" header="Desactivar banco de sangre" :modal="true">
+
+    <ConfirmModal
+      id="desactivateDialog"
+      v-model="desactivateDialog"
+      severity="warn"
+      header="Desactivar banco de sangre"
+      :message="`¿Estás seguro de desactivar a ${selectedBloodBank?.name}?`"
+      accept-text="Desactivar"
+      accept-button-class="p-button-danger"
+      @accept="desactivate"
+    />
+    <!-- <Dialog v-model:visible="desactivateDialog" :style="{ width: '450px' }" header="Desactivar banco de sangre" :modal="true">
       <div class="flex items-center gap-4">
         <i class="pi pi-exclamation-triangle !text-3xl" />
         <span v-if="selectedBloodBank">
@@ -195,9 +220,19 @@ const reactivate = () => {
         <Button label="Cancelar" text @click="desactivateDialog = false" />
         <Button label="Desactivar" class="p-button-danger" @click="desactivate" />
       </template>
-    </Dialog>
+    </Dialog> -->
 
-    <Dialog v-model:visible="reactivateDialog" :style="{ width: '450px' }" header="Activar banco de sangre" :modal="true">
+    <ConfirmModal
+      id="reactivateDialog"
+      v-model="reactivateDialog"
+      severity="warn"
+      header="Activar banco de sangre"
+      :message="`¿Estás seguro de activar a ${selectedBloodBank?.name}?`"
+      accept-text="Activar"
+      accept-button-class="p-button-success"
+      @accept="reactivate"
+    />
+    <!-- <Dialog v-model:visible="reactivateDialog" :style="{ width: '450px' }" header="Activar banco de sangre" :modal="true">
       <div class="flex items-center gap-4">
         <i class="pi pi-exclamation-triangle !text-3xl" />
         <span v-if="selectedBloodBank">
@@ -209,6 +244,9 @@ const reactivate = () => {
         <Button label="Cancelar" text @click="reactivateDialog = false" />
         <Button label="Activar" class="p-button-success" @click="reactivate" />
       </template>
-    </Dialog>
+    </Dialog> -->
+
+    <SuccessModal v-model="showSuccessModal" />
+    <ErrorModal v-model="showErrorModal" />
   </div>
 </template>

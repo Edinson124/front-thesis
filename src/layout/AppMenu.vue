@@ -6,7 +6,17 @@ import AppMenuItem from './AppMenuItem.vue';
 
 function generateMenu(items, parentId = null) {
   return items
-    .filter((item) => item.parentId === parentId || (parentId === null && !item.parentId))
+    .filter((item) => {
+      if (localStorage.getItem('role') === 'ADMIN') {
+        const isRelatedToAdmin = ['admin', 'root'].includes(item.id) || item.parentId === 'admin';
+        return isRelatedToAdmin && (item.parentId === parentId || (parentId === null && !item.parentId));
+      } else {
+        if (item.isAdmin) {
+          return false;
+        }
+        return item.parentId === parentId || (parentId === null && !item.parentId);
+      }
+    })
     .map((item) => {
       const children = generateMenu(items, item.id);
       if (children.length > 0) {

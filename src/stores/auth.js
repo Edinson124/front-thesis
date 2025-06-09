@@ -28,6 +28,7 @@ export const useAuthStore = defineStore('auth', () => {
 
         localStorage.setItem('user', response.username);
         localStorage.setItem('fullName', response.fullName);
+        localStorage.setItem('role', response.role);
         localStorage.setItem('session_time', response.session_time?.toString());
         loading.value = false;
         return true;

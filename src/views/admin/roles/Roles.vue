@@ -1,4 +1,7 @@
 <script setup>
+import ConfirmModal from '@/components/utils/ConfirmModal.vue';
+import ErrorModal from '@/components/utils/ErrorModal.vue';
+import SuccessModal from '@/components/utils/SuccessModal.vue';
 import { Role } from '@/enums/Role';
 import { Status } from '@/enums/Status';
 import { useRolesStore } from '@/stores/admin/roles';
@@ -42,15 +45,22 @@ const statusesOptions = statuses.map((status) => ({
   label: Status[status]
 }));
 
+const showSuccessModal = ref(false);
+const showErrorModal = ref(false);
+
 const desactivateDialog = ref(false);
 const selectedRole = ref(null);
 const confirmDesactivate = (role) => {
   selectedRole.value = role;
   desactivateDialog.value = true;
 };
-const desactivate = () => {
-  rolesStore.toogleStatus(selectedRole.value.id);
-  desactivateDialog.value = false;
+const desactivate = async () => {
+  const success = await rolesStore.toogleStatus(selectedRole.value.id);
+  if (success) {
+    showSuccessModal.value = true;
+  } else {
+    showErrorModal.value = true;
+  }
   selectedRole.value = null;
 };
 
@@ -59,9 +69,13 @@ const confirmReactivate = (role) => {
   selectedRole.value = role;
   reactivateDialog.value = true;
 };
-const reactivate = () => {
-  rolesStore.toogleStatus(selectedRole.value.id);
-  reactivateDialog.value = false;
+const reactivate = async () => {
+  const success = await rolesStore.toogleStatus(selectedRole.value.id);
+  if (success) {
+    showSuccessModal.value = true;
+  } else {
+    showErrorModal.value = true;
+  }
   selectedRole.value = null;
 };
 </script>
@@ -114,7 +128,17 @@ const reactivate = () => {
         </Column>
       </DataTable>
 
-      <Dialog v-model:visible="desactivateDialog" :style="{ width: '450px' }" header="Desactivar rol" :modal="true">
+      <ConfirmModal
+        id="desactivateDialog"
+        v-model="desactivateDialog"
+        severity="warn"
+        header="Desactivar rol"
+        :message="`¿Estás seguro de desactivar al rol ${Role[selectedRole?.name]}?`"
+        accept-text="Desactivar"
+        accept-button-class="p-button-danger"
+        @accept="desactivate"
+      />
+      <!-- <Dialog v-model:visible="desactivateDialog" :style="{ width: '450px' }" header="Desactivar rol" :modal="true">
         <div class="flex items-center gap-4">
           <i class="pi pi-exclamation-triangle !text-3xl" />
           <span v-if="selectedRole">
@@ -126,9 +150,19 @@ const reactivate = () => {
           <Button label="Cancelar" text @click="desactivateDialog = false" />
           <Button label="Desactivar" class="p-button-danger" @click="desactivate" />
         </template>
-      </Dialog>
+      </Dialog> -->
 
-      <Dialog v-model:visible="reactivateDialog" :style="{ width: '450px' }" header="Activar rol" :modal="true">
+      <ConfirmModal
+        id="reactivateDialog"
+        v-model="reactivateDialog"
+        severity="warn"
+        header="Activar rol"
+        :message="`¿Estás seguro de activar al rol ${Role[selectedRole?.name]}?`"
+        accept-text="Activar"
+        accept-button-class="p-button-success"
+        @accept="reactivate"
+      />
+      <!-- <Dialog v-model:visible="reactivateDialog" :style="{ width: '450px' }" header="Activar rol" :modal="true">
         <div class="flex items-center gap-4">
           <i class="pi pi-exclamation-triangle !text-3xl" />
           <span v-if="selectedRole">
@@ -140,7 +174,10 @@ const reactivate = () => {
           <Button label="Cancelar" text @click="reactivateDialog = false" />
           <Button label="Activar" class="p-button-success" @click="reactivate" />
         </template>
-      </Dialog>
+      </Dialog> -->
+
+      <SuccessModal v-model="showSuccessModal" />
+      <ErrorModal v-model="showErrorModal" />
     </div>
   </div>
 </template>

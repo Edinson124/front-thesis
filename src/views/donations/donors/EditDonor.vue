@@ -1,4 +1,7 @@
 <script setup>
+import ConfirmModal from '@/components/utils/ConfirmModal.vue';
+import ErrorModal from '@/components/utils/ErrorModal.vue';
+import SuccessModal from '@/components/utils/SuccessModal.vue';
 import { DocumentTypes } from '@/enums/DocumentTypes';
 import { genderOptions } from '@/enums/Gender';
 import { MaritalStatus } from '@/enums/MaritalStatus';
@@ -13,7 +16,6 @@ import { useRoute } from 'vue-router';
 const route = useRoute();
 const isNewDonor = ref(true);
 const loadingDonor = ref(false);
-const showSuccessDialog = ref(false);
 const showCancelConfirmDialog = ref(false);
 const donorStore = useDonorStore();
 
@@ -213,27 +215,22 @@ const resetDonorForm = () => {
   v$.value.$reset();
 };
 
+const showConfirmModal = ref(false);
+const showSuccessModal = ref(false);
+const showErrorModal = ref(false);
+
 const saveDonor = async () => {
-  if (isNewDonor.value) {
-    await verifyDocumentNumber();
-    if (!documentNumberVerified.value) return;
-  }
-
-  const isValid = await v$.value.$validate();
-  if (!isValid) return;
-
   const donorNormalized = normalizeEmptyStringsToNull(donor);
   const saveMethod = isNewDonor.value ? donorStore.newDonor : donorStore.editDonor;
   const success = await saveMethod(donorNormalized);
   if (success) {
-    showSuccessDialog.value = true;
-    if (isNewDonor.value) {
-      resetDonorForm();
-    } else {
-      router.back();
-    }
+    showSuccessModal.value = true;
+    resetDonorForm();
+  } else {
+    showErrorModal.value = true;
   }
 };
+
 const confirmResetForm = () => {
   resetDonorForm();
   showCancelConfirmDialog.value = false;
@@ -246,10 +243,22 @@ const cancel = () => {
     router.back();
   }
 };
+
+const handleSaveDonor = async () => {
+  if (isNewDonor.value) {
+    await verifyDocumentNumber();
+    if (!documentNumberVerified.value) return;
+  }
+
+  const isValid = await v$.value.$validate();
+  if (!isValid) return;
+
+  showConfirmModal.value = true;
+};
 </script>
 
 <template>
-  <form class="card" v-if="!loadingDonor" @submit.prevent="saveDonor">
+  <form class="card" v-if="!loadingDonor" @submit.prevent="handleSaveDonor">
     <h3 v-if="isNewDonor">Registrar donante</h3>
     <h3 v-else>Editar donante</h3>
 
@@ -433,17 +442,23 @@ const cancel = () => {
       <Button class="min-w-40 p-button-success" label="Guardar" type="submit" />
     </div>
   </form>
-  <Dialog header="Donante guardado" v-model:visible="showSuccessDialog" modal dismissableMask>
+
+  <ConfirmModal v-model="showConfirmModal" header="¿Estás seguro de guardar este donante?" accept-text="Guardar" @accept="saveDonor" />
+  <SuccessModal v-model="showSuccessModal" message="El donante fue guardado con éxito" @close="() => router.back()" />
+  <ErrorModal v-model="showErrorModal" />
+
+  <!-- <Dialog header="Donante guardado" v-model:visible="showSuccessDialog" modal dismissableMask>
     <p>El donante se ha guardado correctamente.</p>
     <template #footer>
       <Button label="Aceptar" class="p-button-success" @click="showSuccessDialog = false" />
     </template>
-  </Dialog>
-  <Dialog v-model:visible="showCancelConfirmDialog" modal header="Confirmación" :style="{ width: '350px' }">
+  </Dialog> -->
+  <ConfirmModal id="cancelConfirmDialog" v-model="showCancelConfirmDialog" header="¿Estás seguro de que deseas limpiar el formulario?" accept-text="Sí" accept-button-class="p-button-danger" @accept="confirmResetForm" reject-text="No" />
+  <!-- <Dialog v-model:visible="showCancelConfirmDialog" modal header="Confirmación" :style="{ width: '350px' }">
     <span>¿Estás seguro de que deseas limpiar el formulario?</span>
     <template #footer>
       <Button label="No" @click="showCancelConfirmDialog = false" />
       <Button label="Sí" class="p-button-danger" @click="confirmResetForm" />
     </template>
-  </Dialog>
+  </Dialog> -->
 </template>
