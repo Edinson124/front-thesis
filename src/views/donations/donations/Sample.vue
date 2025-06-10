@@ -1,6 +1,7 @@
 <script setup>
 import UnitTable from '@/components/unit/UnitTable.vue';
 import { testOptions } from '@/enums/Sample';
+import { useDonationStore } from '@/stores/donation/donations';
 import { useSampleUnitsStore } from '@/stores/donation/units';
 import { required } from '@/validation/validators';
 import { useVuelidate } from '@vuelidate/core';
@@ -12,11 +13,13 @@ const router = useRouter();
 const loading = ref(false);
 const donationId = computed(() => route.query.donationId);
 
+const donationStore = useDonationStore();
 const sampleUnitsStore = useSampleUnitsStore();
 const selectedSample1 = ref(null);
 const selectedSample2 = ref(null);
 const codeSample1 = ref(null);
 const codeSample2 = ref(null);
+const editDonation = ref(null);
 
 const state1 = { selectedSample1 };
 const state2 = { selectedSample2 };
@@ -51,6 +54,8 @@ const saveSample = async (number) => {
 onMounted(async () => {
   loading.value = true;
   try {
+    const donationResponse = await donationStore.getDonation(donationId.value);
+    editDonation.value = donationResponse.donation.status === 'En proceso';
     await Promise.all([sampleUnitsStore.fetchUnits(donationId.value), sampleUnitsStore.fetchUnitTypesCreate(), sampleUnitsStore.fetchUnitBags(), sampleUnitsStore.fetchUnitAnticoagunlants()]);
     const samples = await sampleUnitsStore.getSamples(donationId.value);
     if (samples && samples.length > 0) {
@@ -152,7 +157,7 @@ watch(selectedSample2, (newVal) => {
       </div>
     </Panel>
 
-    <UnitTable v-model="sampleUnitsStore.units" :loading="loading" :totalUnits="sampleUnitsStore.totalUnits" @edit="editUnit" @add="saveUnit" />
+    <UnitTable v-model="sampleUnitsStore.units" :read-only="!editDonation" :loading="loading" :totalUnits="sampleUnitsStore.totalUnits" @edit="editUnit" @add="saveUnit" />
 
     <div class="flex justify-end px-8 my-8 gap-4">
       <Button class="w-full md:max-w-[16rem] btn-clean" label="Regresar" @click="router.back()" />

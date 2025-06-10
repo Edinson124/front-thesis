@@ -17,6 +17,10 @@ const props = defineProps({
     type: String,
     default: 'La operación se completó exitosamente.'
   },
+  moreMessage: {
+    type: String,
+    default: ''
+  },
   closeText: {
     type: String,
     default: 'Cerrar'
@@ -32,6 +36,7 @@ const openModal = () => {
     group: props.id,
     header: props.header,
     message: props.message,
+    moreMessage: props.moreMessage,
     accept: () => {
       showModal.value = false;
       emit('close');
@@ -58,6 +63,7 @@ watch(
         </div>
         <span class="font-bold text-2xl block mb-2 mt-6">{{ message.header }}</span>
         <p class="mb-0">{{ message.message }}</p>
+        <p v-if="message.moreMessage" class="mb-0">{{ message.moreMessage }}</p>
         <div class="flex justify-center mt-6 gap-2">
           <Button class="min-w-40 btn-clean" :label="closeText" @click="acceptCallback"></Button>
         </div>

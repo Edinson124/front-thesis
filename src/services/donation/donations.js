@@ -81,6 +81,15 @@ const deferralDonor = async (idDonation, deferral) => {
     return null;
   }
 };
+const getDonationStatus = async (id) => {
+  try {
+    const response = await get(`/donation/status/${id}`);
+    return response;
+  } catch (error) {
+    console.error('Error al obtener estado de la donación: ', error);
+    return null;
+  }
+};
 export default {
   getDonation,
   getDonationsByDocumentDonor,
@@ -89,5 +98,6 @@ export default {
   getActualDonation,
   getLastDateDonation,
   verifyDonationByCode,
-  verifyDonationByDonor
+  verifyDonationByDonor,
+  getDonationStatus
 };

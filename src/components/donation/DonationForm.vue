@@ -299,7 +299,7 @@ onMounted(async () => {
   </div>
 
   <ConfirmModal v-model="showConfirmModal" header="¿Estás seguro de guardar este donación?" accept-text="Guardar" @accept="saveDonation" />
-  <SuccessModal v-model="showSuccessModal" message="Se ha creado la donación fue guardado con éxito" :more-message="`El código de la donación es: ${createdDonationId}`" @close="confirmSuccess" />
+  <SuccessModal v-model="showSuccessModal" message="Se ha creado la donación con éxito" :more-message="`El código de la donación es: ${createdDonationId}`" @close="confirmSuccess" />
   <ErrorModal v-model="showErrorModal" />
 
   <Dialog v-model:visible="showModalDocument" header="Validación de documento de paciente" :modal="true" :closable="false" width="400px">

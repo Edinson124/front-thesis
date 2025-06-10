@@ -1,5 +1,8 @@
 <script setup>
 import DeferralModal from '@/components/donation/DeferralModal.vue';
+import ConfirmModal from '@/components/utils/ConfirmModal.vue';
+import ErrorModal from '@/components/utils/ErrorModal.vue';
+import SuccessModal from '@/components/utils/SuccessModal.vue';
 import { adverseReactionDonationOptions } from '@/enums/AdverseReaction';
 import { DeferralReasonsExtraction } from '@/enums/DeferralType';
 import { extractionStatusOptions } from '@/enums/Status';
@@ -21,6 +24,12 @@ const idExtraction = ref(null);
 const donationId = ref(null);
 const editDonation = ref(null);
 const showModalDeferralDonor = ref(false);
+
+const showConfirmModal = ref(false);
+const showSuccessModal = ref(false);
+const showErrorModal = ref(false);
+
+const showCancelConfirmDialog = ref(false);
 
 const extraction = reactive({
   startDate: null,
@@ -94,20 +103,27 @@ const deferralDonor = async (deferral) => {
   }
 };
 
-const handleSave = async () => {
-  const isValid = await v$.value.$validate();
-  if (!isValid) {
-    console.log('Errores en el formulario', v$.value);
-    return;
-  }
+const cancel = () => {
+  showCancelConfirmDialog.value = true;
+};
+
+const returnDonationView = () => {
+  router.push({ path: 'view', query: { donationId: donationId.value } });
+};
+
+const saveExtraction = async () => {
   const extractionData = JSON.parse(JSON.stringify(extraction));
   const donationRoute = route.query.donationId;
   extractionData.donationId = donationRoute;
-  if (newExtraction.value) {
-    await extractionStore.createExtraction(extractionData);
-  } else {
-    await extractionStore.updateExtraction(idExtraction.value, extractionData);
-  }
+  const result = newExtraction.value ? await extractionStore.createExtraction(extractionData) : await extractionStore.updateExtraction(idExtraction.value, extractionData);
+  showSuccessModal.value = result !== null;
+  showErrorModal.value = result === null;
+};
+
+const handleSave = async () => {
+  const isValid = await v$.value.$validate();
+  if (!isValid) return;
+  showConfirmModal.value = true;
 };
 onMounted(async () => {
   isLoading.value = true;
@@ -147,7 +163,7 @@ onMounted(async () => {
       <div class="flex items-center justify-between gap-4 px-8 mt-6 mb-2">
         <span class="w-full md:w-1/4">
           <FloatLabel variant="on" class="w-full">
-            <DatePicker v-model="extraction.startDate" class="w-full" showIcon fluid :disabled="!editDonation" />
+            <DatePicker v-model="extraction.startDate" class="w-full" showIcon fluid showButtonBar :disabled="!editDonation" />
             <label for="startDate">Fecha de Inicio</label>
           </FloatLabel>
           <Message v-if="v$.extraction.startDate?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.extraction.startDate.$errors[0].$message }}</Message>
@@ -286,9 +302,15 @@ onMounted(async () => {
     </Fieldset>
 
     <div class="flex justify-end px-8 my-8 gap-4">
-      <Button class="h-10 w-full md:max-w-[16rem] btn-clean" label="Cancelar" @click="router.back()" />
+      <Button class="h-10 w-full md:max-w-[16rem] btn-clean" label="Cancelar" @click="cancel" />
       <Button v-if="editDonation" class="h-10 w-full md:max-w-[16rem]" label="Guardar" severity="success" @click="handleSave" />
     </div>
     <DeferralModal v-model="showModalDeferralDonor" :options-reason="DeferralReasonsExtraction" @save="deferralDonor" />
+
+    <ConfirmModal id="confirmSaveExtraction" v-model="showConfirmModal" header="¿Estás seguro de guardar los datos de la extracción?" accept-text="Guardar" @accept="saveExtraction" />
+    <SuccessModal id="successSaveExtraction" v-model="showSuccessModal" message="Los datos de la extracción fueron guardados con éxito" @close="returnDonationView" />
+    <ErrorModal id="errorSaveExtraction" v-model="showErrorModal" />
+
+    <ConfirmModal id="cancelSaveExtraction" v-model="showCancelConfirmDialog" header="¿Estás seguro de que deseas cancelar la operación?" accept-text="Sí" accept-button-class="p-button-danger" @accept="returnDonationView" reject-text="No" />
   </div>
 </template>

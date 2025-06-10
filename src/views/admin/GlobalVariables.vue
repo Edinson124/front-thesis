@@ -1,12 +1,25 @@
 <script setup>
 import globalVariablesService from '@/services/admin/globalVariables';
+import { useConfirm } from 'primevue';
 import { computed, onMounted, ref } from 'vue';
+
+const confirm = useConfirm();
 
 const groupedVariables = ref({});
 const initialValues = ref(null);
 const showModal = ref(false);
 const variableSelected = ref(null);
 const variableInitialSelected = ref(null);
+
+const showConfirmDialog = () => {
+  confirm.require({
+    group: 'edit',
+    header: 'Confirmar edición',
+    message: '',
+    accept: confirmEdition,
+    reject: cancelEdition
+  });
+};
 
 // Llamamos a la API cuando el componente se monta
 const getVariables = async () => {
@@ -36,7 +49,7 @@ const edit = (item) => {
   if (item.value.toString() !== initialValues.value[item.id].toString()) {
     variableSelected.value = item;
     variableInitialSelected.value = initialValues.value[item.id];
-    showModal.value = true;
+    showConfirmDialog();
   }
 };
 
@@ -91,7 +104,7 @@ const cancelEdition = () => {
     </Tabs>
 
     <!-- MODAL DE CONFIRMACIÓN -->
-    <Dialog v-model:visible="showModal" :modal="true" :closable="false" header="Confirmar edición">
+    <!-- <Dialog v-model:visible="showModal" :modal="true" :closable="false" header="Confirmar edición">
       <p>
         ¿Está seguro que desea modificar el valor de <b>{{ variableSelected?.name }}</b
         >?
@@ -106,6 +119,30 @@ const cancelEdition = () => {
         <Button label="Cancelar" class="btn-clean" @click="cancelEdition" />
         <Button label="Confirmar" severity="success" @click="confirmEdition" />
       </div>
-    </Dialog>
+    </Dialog> -->
+    <ConfirmDialog group="edit">
+      <template #container="{ message, acceptCallback, rejectCallback }">
+        <div class="flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded">
+          <div class="rounded-full bg-primary text-white inline-flex justify-center items-center h-24 w-24 -mt-20">
+            <i class="pi pi-question !text-4xl"></i>
+          </div>
+          <span class="font-bold text-2xl block mb-2 mt-6">Confirmar edición</span>
+          <p>
+            ¿Está seguro que desea modificar el valor de <b>{{ variableSelected?.name + message }}</b
+            >?
+          </p>
+          <p>
+            Valor actual: <b>{{ variableInitialSelected }} días</b>
+          </p>
+          <p>
+            Nuevo valor: <b>{{ variableSelected?.value }} días</b>
+          </p>
+          <div class="flex justify-center mt-6 gap-2">
+            <Button label="Cancelar" class="btn-clean" @click="rejectCallback" />
+            <Button label="Confirmar" severity="success" @click="acceptCallback" />
+          </div>
+        </div>
+      </template>
+    </ConfirmDialog>
   </div>
 </template>

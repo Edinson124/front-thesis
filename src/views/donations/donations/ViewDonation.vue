@@ -47,22 +47,30 @@ const redirectSamples = () => {
 };
 
 const deferralDonor = async (deferral) => {
+  isLoading.value = true;
   const response = await donationStore.deferralDonor(donationId.value, deferral);
   console.log(response);
   if (response) {
-    router.push({ path: 'view', query: { donationId: donationId.value } });
+    loadDonation();
+    return;
   }
+  isLoading.value = false;
 };
 
 const openDeferralDonorModal = () => {
   showModalDeferralDonor.value = true;
 };
 
-onMounted(async () => {
+const loadDonation = async () => {
+  isLoading.value = true;
   const donationResponse = await donationStore.getDonation(donationId.value);
   donation.value = donationResponse;
   editDonation.value = donationResponse.donation.status === 'En proceso';
   isLoading.value = false;
+};
+
+onMounted(() => {
+  loadDonation();
 });
 </script>
 
@@ -116,7 +124,7 @@ onMounted(async () => {
 
           <div class="flex justify-center mt-3">
             <Button v-if="donation.donation.physicalAssessmentId" class="h-8 btn-view" label="Visualizar" @click="redirectExam" />
-            <Button v-else label="Registrar examen físico" class="p-button-success p-button-sm" @click="redirectExam" />
+            <Button v-else-if="donation.donation.status === 'En proceso'" label="Registrar examen físico" class="p-button-success p-button-sm" @click="redirectExam" />
           </div>
         </Fieldset>
 
@@ -131,7 +139,7 @@ onMounted(async () => {
           <div class="mb-1"><span class="font-medium">Registrado por : </span>{{ donation.donation.createdByNameInterviewAnswer ?? '-' }}</div>
           <div class="flex justify-center mt-3">
             <Button v-if="donation.donation.interviewAnswerId" class="h-8 btn-view" label="Visualizar" @click="redirectInterview" />
-            <Button v-else label="Registrar entrevista" class="p-button-success p-button-sm" @click="redirectInterview" />
+            <Button v-else-if="donation.donation.status === 'En proceso'" label="Registrar entrevista" class="p-button-success p-button-sm" @click="redirectInterview" />
           </div>
         </Fieldset>
 
@@ -149,22 +157,24 @@ onMounted(async () => {
 
           <div class="flex justify-center mt-3">
             <Button v-if="donation.donation.bloodExtractionId" class="h-8 btn-view" label="Visualizar" @click="redirectExtraction" />
-            <Button v-else label="Registrar extracción" class="p-button-success p-button-sm" @click="redirectExtraction" />
+            <Button v-else-if="donation.donation.status === 'En proceso'" label="Registrar extracción" class="p-button-success p-button-sm" @click="redirectExtraction" />
           </div>
         </Fieldset>
 
         <!-- Muestras y unidades -->
         <Fieldset legend="Muestras y unidades" class="!mb-4">
           <div class="flex justify-center items-center mb-3">
-            <i v-if="id" class="mdi mdi-check-circle text-3xl text-green-500"></i>
+            <i v-if="donation.donation.hasUnits" class="mdi mdi-check-circle text-3xl text-green-500"></i>
             <i v-else class="mdi mdi-minus-circle text-3xl text-gray-300"></i>
           </div>
 
-          <div class="mb-1"><span class="font-medium">Registrado el : </span>{{ donation.createdAtInterviewAnswer ? donation.createdAtInterviewAnswer : '-' }}</div>
-          <div class="mb-1"><span class="font-medium">Registrado por : </span>{{ donation.createdByNameInterviewAnswer ?? '-' }}</div>
+          <div class="text-center mb-3">
+            <span v-if="donation.donation.hasUnits" class="text-green-700 font-semibold"> Se han registrado unidades. </span>
+            <span v-else class="text-yellow-700 font-medium"> Faltan registrar unidades. </span>
+          </div>
           <div class="flex justify-center mt-3">
-            <Button v-if="id" class="h-8 btn-view" label="Visualizar" />
-            <Button v-else label="Registrar muestras y unidades" class="p-button-success p-button-sm" @click="redirectSamples" />
+            <Button v-if="donation.donation.hasUnits" class="h-8 btn-view" label="Visualizar" @click="redirectSamples" />
+            <Button v-else-if="donation.donation.status === 'En proceso'" label="Registrar muestras y unidades" class="p-button-success p-button-sm" @click="redirectSamples" />
           </div>
         </Fieldset>
       </div>

@@ -2,6 +2,9 @@
 // import DonationStatusCard from '@/components/donation/DonationStatusCard.vue';
 import InfoDonation from '@/components/donation/InfoDonation.vue';
 import InfoDonor from '@/components/donation/InfoDonor.vue';
+import ConfirmModal from '@/components/utils/ConfirmModal.vue';
+import ErrorModal from '@/components/utils/ErrorModal.vue';
+import SuccessModal from '@/components/utils/SuccessModal.vue';
 import { bloodGroupOptions, rhFactorOptions } from '@/enums/BloodType';
 import { useDonationStore } from '@/stores/donation/donations';
 import { useHematologicalTestStore } from '@/stores/laboratory/hematologicalTest';
@@ -18,6 +21,12 @@ const donation = ref(null);
 const donationId = computed(() => route.query.donationId);
 const newHematologicalTest = ref(true);
 const idHematologicalTest = ref(null);
+
+const showConfirmModal = ref(false);
+const showSuccessModal = ref(false);
+const showErrorModal = ref(false);
+
+const showCancelConfirmDialog = ref(false);
 
 const isLoading = ref(true);
 const hematologicalResult = reactive({
@@ -51,16 +60,29 @@ const rules = computed(() => ({
 
 const v$ = useVuelidate(rules, hematologicalResult);
 
+const saveHematologicTest = async () => {
+  let hematologicalResultNormalized = normalizeEmptyStringsToNull(hematologicalResult);
+  const donationRoute = route.query.donationId;
+  hematologicalResultNormalized.donationId = donationRoute;
+  const response = await hematologicalStore.createhematologicalTest(hematologicalResultNormalized);
+  if (response) {
+    showSuccessModal.value = true;
+  } else {
+    showErrorModal.value = true;
+  }
+};
+
 const handleSave = async () => {
   const isValid = await v$.value.$validate();
-  if (isValid) {
-    let hematologicalResultNormalized = normalizeEmptyStringsToNull(hematologicalResult);
-    const donationRoute = route.query.donationId;
-    hematologicalResultNormalized.donationId = donationRoute;
-    await hematologicalStore.createhematologicalTest(hematologicalResultNormalized);
-  } else {
-    console.log('Errores en el formulario', v$.value);
+  if (!isValid) return;
+  showConfirmModal.value = true;
+};
+
+const cancel = () => {
+  if (newHematologicalTest.value) {
+    showCancelConfirmDialog.value = true;
   }
+  router.back();
 };
 
 function normalizeEmptyStringsToNull(obj) {
@@ -136,7 +158,7 @@ onMounted(async () => {
           <div class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-center">
             <div class="md:col-span-3 font-medium">Fecha de prueba:</div>
             <div class="md:col-span-9">
-              <DatePicker v-model="hematologicalResult.testDate" dateFormat="dd/mm/yy" showIcon fluid class="w-full md:w-72" :invalid="v$.testDate?.$error" />
+              <DatePicker v-model="hematologicalResult.testDate" dateFormat="dd/mm/yy" showIcon fluid showButtonBar class="w-full md:w-72" :invalid="v$.testDate?.$error" :disabled="!newHematologicalTest" />
               <Message v-if="v$.testDate?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.testDate.$errors[0].$message }}</Message>
             </div>
           </div>
@@ -146,7 +168,7 @@ onMounted(async () => {
             <div class="col-span-6 grid grid-cols-4">
               <div class="col-span-3">
                 <FloatLabel variant="on">
-                  <Select v-model="hematologicalResult.bloodType" id="bloodType" class="w-full" :options="bloodGroupOptions" optionLabel="label" optionValue="value" :invalid="v$.bloodType?.$error" />
+                  <Select v-model="hematologicalResult.bloodType" id="bloodType" class="w-full" :options="bloodGroupOptions" optionLabel="label" optionValue="value" :invalid="v$.bloodType?.$error" :disabled="!newHematologicalTest" />
                   <label for="bloodType">Grupo Sanguineo</label>
                 </FloatLabel>
                 <Message v-if="v$.bloodType?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.bloodType.$errors[0].$message }}</Message>
@@ -159,7 +181,7 @@ onMounted(async () => {
             <div class="col-span-6 grid grid-cols-4">
               <div class="col-span-3">
                 <FloatLabel variant="on">
-                  <Select v-model="hematologicalResult.rhFactor" id="rhFactor" class="w-full" :options="rhFactorOptions" optionLabel="label" optionValue="value" :invalid="v$.rhFactor?.$error" />
+                  <Select v-model="hematologicalResult.rhFactor" id="rhFactor" class="w-full" :options="rhFactorOptions" optionLabel="label" optionValue="value" :invalid="v$.rhFactor?.$error" :disabled="!newHematologicalTest" />
                   <label for="rhFactor">Rh Factor</label>
                 </FloatLabel>
                 <Message v-if="v$.rhFactor?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.rhFactor.$errors[0].$message }}</Message>
@@ -172,7 +194,7 @@ onMounted(async () => {
             <div class="col-span-6 grid grid-cols-4">
               <div class="col-span-3">
                 <FloatLabel variant="on">
-                  <InputText v-model="hematologicalResult.phenotype" id="phenotype" class="w-full" :invalid="v$.phenotype?.$error" />
+                  <InputText v-model="hematologicalResult.phenotype" id="phenotype" class="w-full" :invalid="v$.phenotype?.$error" :disabled="!newHematologicalTest" />
                   <label for="phenotype">Fenotipo</label>
                 </FloatLabel>
                 <Message v-if="v$.phenotype?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.phenotype.$errors[0].$message }}</Message>
@@ -187,7 +209,7 @@ onMounted(async () => {
             <div class="col-span-6 grid grid-cols-4">
               <div class="col-span-3">
                 <FloatLabel variant="on">
-                  <InputText v-model="hematologicalResult.genotype" id="genotype" class="w-full" :invalid="v$.genotype?.$error" />
+                  <InputText v-model="hematologicalResult.genotype" id="genotype" class="w-full" :invalid="v$.genotype?.$error" :disabled="!newHematologicalTest" />
                   <label for="genotype">Genotipo</label>
                 </FloatLabel>
                 <Message v-if="v$.genotype?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.genotype.$errors[0].$message }}</Message>
@@ -202,7 +224,7 @@ onMounted(async () => {
             <div class="col-span-6 grid grid-cols-4">
               <div class="col-span-3">
                 <FloatLabel variant="on">
-                  <InputText v-model="hematologicalResult.irregularAntibodies" id="irregularAntibodies" class="w-full" :invalid="v$.irregularAntibodies?.$error" />
+                  <InputText v-model="hematologicalResult.irregularAntibodies" id="irregularAntibodies" class="w-full" :invalid="v$.irregularAntibodies?.$error" :disabled="!newHematologicalTest" />
                   <label for="irregularAntibodies">Anticuerpos Irregulares</label>
                 </FloatLabel>
                 <Message v-if="v$.irregularAntibodies?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.irregularAntibodies.$errors[0].$message }}</Message>
@@ -217,7 +239,7 @@ onMounted(async () => {
             <div class="col-span-6 grid grid-cols-4">
               <div class="col-span-3">
                 <FloatLabel variant="on">
-                  <InputText v-model="hematologicalResult.hemoglobin" id="hemoglobin" class="w-full" :invalid="v$.hemoglobin?.$error" />
+                  <InputText v-model="hematologicalResult.hemoglobin" id="hemoglobin" class="w-full" :invalid="v$.hemoglobin?.$error" :disabled="!newHematologicalTest" />
                   <label for="hemoglobin">Hemoglobina</label>
                 </FloatLabel>
                 <Message v-if="v$.hemoglobin?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.hemoglobin.$errors[0].$message }}</Message>
@@ -232,7 +254,7 @@ onMounted(async () => {
             <div class="col-span-6 grid grid-cols-4">
               <div class="col-span-3">
                 <FloatLabel variant="on">
-                  <InputText v-model="hematologicalResult.hematocrit" id="hematocrit" class="w-full" :invalid="v$.hematocrit?.$error" />
+                  <InputText v-model="hematologicalResult.hematocrit" id="hematocrit" class="w-full" :invalid="v$.hematocrit?.$error" :disabled="!newHematologicalTest" />
                   <label for="hematocrit">Hematocrito</label>
                 </FloatLabel>
                 <Message v-if="v$.hematocrit?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.hematocrit.$errors[0].$message }}</Message>
@@ -247,7 +269,7 @@ onMounted(async () => {
             <div class="col-span-6 grid grid-cols-4">
               <div class="col-span-3">
                 <FloatLabel variant="on">
-                  <InputText v-model="hematologicalResult.platelets" id="platelets" class="w-full" :invalid="v$.platelets?.$error" />
+                  <InputText v-model="hematologicalResult.platelets" id="platelets" class="w-full" :invalid="v$.platelets?.$error" :disabled="!newHematologicalTest" />
                   <label for="platelets">Plaquetas</label>
                 </FloatLabel>
                 <Message v-if="v$.platelets?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.platelets.$errors[0].$message }}</Message>
@@ -262,7 +284,7 @@ onMounted(async () => {
             <div class="col-span-6 grid grid-cols-4">
               <div class="col-span-3">
                 <FloatLabel variant="on">
-                  <InputText v-model="hematologicalResult.leukocytes" id="leukocytes" class="w-full" :invalid="v$.leukocytes?.$error" />
+                  <InputText v-model="hematologicalResult.leukocytes" id="leukocytes" class="w-full" :invalid="v$.leukocytes?.$error" :disabled="!newHematologicalTest" />
                   <label for="leukocytes">Leucocitos</label>
                 </FloatLabel>
                 <Message v-if="v$.leukocytes?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.leukocytes.$errors[0].$message }}</Message>
@@ -277,7 +299,7 @@ onMounted(async () => {
             <div class="col-span-6 grid grid-cols-4">
               <div class="col-span-3">
                 <FloatLabel variant="on">
-                  <InputText v-model="hematologicalResult.monocytes" id="monocytes" class="w-full" :invalid="v$.monocytes?.$error" />
+                  <InputText v-model="hematologicalResult.monocytes" id="monocytes" class="w-full" :invalid="v$.monocytes?.$error" :disabled="!newHematologicalTest" />
                   <label for="monocytes">Monocitos</label>
                 </FloatLabel>
                 <Message v-if="v$.monocytes?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.monocytes.$errors[0].$message }}</Message>
@@ -291,7 +313,7 @@ onMounted(async () => {
           <div class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4">
             <div class="md:col-span-9">
               <FloatLabel variant="on">
-                <Textarea id="observations" v-model="hematologicalResult.observations" rows="5" class="w-full resize-none" />
+                <Textarea id="observations" v-model="hematologicalResult.observations" rows="5" class="w-full resize-none" :disabled="!newHematologicalTest" />
                 <label for="observations">Observaciones</label>
               </FloatLabel>
             </div>
@@ -299,9 +321,14 @@ onMounted(async () => {
         </div>
       </Fieldset>
       <div class="flex justify-end px-8 my-8 gap-4">
-        <Button class="h-10 w-full md:max-w-[16rem] btn-clean" label="Cancelar" @click="router.back()" />
-        <Button class="h-10 w-full md:max-w-[16rem]" label="Guardar" severity="success" @click="handleSave" />
+        <Button class="h-10 w-full md:max-w-[16rem] btn-clean" label="Cancelar" @click="cancel" />
+        <Button v-if="newHematologicalTest" class="h-10 w-full md:max-w-[16rem]" label="Guardar" severity="success" @click="handleSave" />
       </div>
     </div>
+    <ConfirmModal id="confirmSaveHematologicTest" v-model="showConfirmModal" header="¿Estás seguro de guardar el resultado del test hematológico?" accept-text="Guardar" @accept="saveHematologicTest" />
+    <SuccessModal id="successSaveHematologicTest" v-model="showSuccessModal" message="El resultado de test hematológico fue guardado con éxito" @close="router.back()" />
+    <ErrorModal id="errorSaveHematologicTest" v-model="showErrorModal" />
+
+    <ConfirmModal id="cancelSaveHematologicTest" v-model="showCancelConfirmDialog" header="¿Estás seguro de que deseas cancelar la operación?" accept-text="Sí" accept-button-class="p-button-danger" @accept="router.back()" reject-text="No" />
   </div>
 </template>

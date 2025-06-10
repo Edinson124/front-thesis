@@ -85,6 +85,15 @@ export const useDonationStore = defineStore('donation', () => {
       return null;
     }
   };
+  const getDonationStatus = async (idDonation) => {
+    try {
+      const response = await donationService.getDonationStatus(idDonation);
+      return response;
+    } catch (error) {
+      console.error('Error al obtener una donación: ', error);
+      return null;
+    }
+  };
 
   return {
     donationsByDonor,
@@ -97,6 +106,7 @@ export const useDonationStore = defineStore('donation', () => {
     getLastDateDonation,
     verifyDonationByCode,
     verifyDonationByDonor,
-    getDonation
+    getDonation,
+    getDonationStatus
   };
 });

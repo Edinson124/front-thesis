@@ -30,7 +30,7 @@ const saveSample = async (donationId, test) => {
 
 const getSamples = async (donationId) => {
   try {
-    const response = await get(`/units/get/${donationId}`);
+    const response = await get(`/sample/get/${donationId}`);
     return response;
   } catch (error) {
     console.error('Error al registrar una muestra: ', error);

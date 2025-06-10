@@ -108,47 +108,6 @@ function stringToDate(fechaString) {
   return new Date(anio, mes, dia);
 }
 
-onMounted(async () => {
-  loadingDonor.value = true;
-  loadingDeparments.value = true;
-
-  const departmentsResponse = await ubicationService.getDepartments();
-  departments.splice(0, departments.length, ...departmentsResponse);
-  loadingDeparments.value = false;
-
-  const documentNumber = route.params.doc;
-  const documentType = route.params.type;
-  if (documentNumber) {
-    isNewDonor.value = false;
-    const donorResponse = await donorStore.getDonor(documentNumber, documentType);
-    for (const key in donor) {
-      if (Object.prototype.hasOwnProperty.call(donorResponse, key)) {
-        donor[key] = donorResponse[key];
-      }
-    }
-
-    if (donor.birthDate) {
-      donor.birthDate = stringToDate(donor.birthDate);
-    }
-  }
-
-  if (donor.region) {
-    loadingProvinces.value = true;
-    const provincesResponse = await ubicationService.getProvinces(donor.region);
-    provinces.splice(0, provinces.length, ...provincesResponse);
-    loadingProvinces.value = false;
-  }
-
-  if (donor.province) {
-    loadingDistritos.value = true;
-    const distritosResponse = await ubicationService.getDistritos(donor.region, donor.province);
-    distritos.splice(0, distritos.length, ...distritosResponse);
-    loadingDistritos.value = false;
-  }
-
-  loadingDonor.value = false;
-});
-
 const onSelectDepartment = async (event) => {
   loadingProvinces.value = true;
   let provincesResponse = [];
@@ -188,6 +147,7 @@ const v$ = useVuelidate(rules, donor);
 const documentNumberVerified = ref(null);
 
 const verifyDocumentNumber = async () => {
+  if (!donor.documentNumber) return;
   const response = await donorStore.verifyDonor(donor.id, donor.documentNumber, donor.documentType);
   documentNumberVerified.value = response;
 };
@@ -211,7 +171,7 @@ const resetDonorForm = () => {
   donor.maritalStatus = '';
   donor.trips = '';
 
-  documentNumberVerified.value = false;
+  documentNumberVerified.value = null;
   v$.value.$reset();
 };
 
@@ -225,7 +185,6 @@ const saveDonor = async () => {
   const success = await saveMethod(donorNormalized);
   if (success) {
     showSuccessModal.value = true;
-    resetDonorForm();
   } else {
     showErrorModal.value = true;
   }
@@ -234,6 +193,15 @@ const saveDonor = async () => {
 const confirmResetForm = () => {
   resetDonorForm();
   showCancelConfirmDialog.value = false;
+};
+
+const confirmSuccessOperation = () => {
+  if (isNewDonor.value) {
+    resetDonorForm();
+    showSuccessModal.value = false;
+  } else {
+    router.back();
+  }
 };
 
 const cancel = () => {
@@ -255,6 +223,46 @@ const handleSaveDonor = async () => {
 
   showConfirmModal.value = true;
 };
+
+onMounted(async () => {
+  loadingDonor.value = true;
+  loadingDeparments.value = true;
+  const departmentsResponse = await ubicationService.getDepartments();
+  departments.splice(0, departments.length, ...departmentsResponse);
+  loadingDeparments.value = false;
+
+  const documentNumber = route.params.doc;
+  const documentType = route.params.type;
+  if (documentNumber) {
+    isNewDonor.value = false;
+    const donorResponse = await donorStore.getDonor(documentNumber, documentType);
+    for (const key in donor) {
+      if (Object.prototype.hasOwnProperty.call(donorResponse, key)) {
+        donor[key] = donorResponse[key];
+      }
+    }
+
+    if (donor.birthDate) {
+      donor.birthDate = stringToDate(donor.birthDate);
+    }
+  }
+
+  if (donor.region) {
+    loadingProvinces.value = true;
+    const provincesResponse = await ubicationService.getProvinces(donor.region);
+    provinces.splice(0, provinces.length, ...provincesResponse);
+    loadingProvinces.value = false;
+  }
+
+  if (donor.province) {
+    loadingDistritos.value = true;
+    const distritosResponse = await ubicationService.getDistritos(donor.region, donor.province);
+    distritos.splice(0, distritos.length, ...distritosResponse);
+    loadingDistritos.value = false;
+  }
+
+  loadingDonor.value = false;
+});
 </script>
 
 <template>
@@ -444,7 +452,7 @@ const handleSaveDonor = async () => {
   </form>
 
   <ConfirmModal v-model="showConfirmModal" header="¿Estás seguro de guardar este donante?" accept-text="Guardar" @accept="saveDonor" />
-  <SuccessModal v-model="showSuccessModal" message="El donante fue guardado con éxito" @close="() => router.back()" />
+  <SuccessModal v-model="showSuccessModal" message="El donante fue guardado con éxito" @close="confirmSuccessOperation" />
   <ErrorModal v-model="showErrorModal" />
 
   <!-- <Dialog header="Donante guardado" v-model:visible="showSuccessDialog" modal dismissableMask>

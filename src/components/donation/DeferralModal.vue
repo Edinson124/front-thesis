@@ -2,7 +2,10 @@
 import { deferralOptions } from '@/enums/DeferralType';
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@/validation/validators';
-import { reactive, computed } from 'vue';
+import { reactive, computed, ref } from 'vue';
+import ConfirmModal from '@/components/utils/ConfirmModal.vue';
+
+const showDeferralConfirmModal = ref(false);
 
 const props = defineProps({
   optionsReason: {
@@ -34,10 +37,14 @@ const close = () => {
 };
 
 const save = async () => {
-  const isValid = await v1$.value.$validate();
-  if (!isValid) return;
   emit('save', deferral);
   close();
+};
+
+const openModalConfirm = async () => {
+  const isValid = await v1$.value.$validate();
+  if (!isValid) return;
+  showDeferralConfirmModal.value = true;
 };
 
 const cancel = async () => {
@@ -83,7 +90,8 @@ const cancel = async () => {
     </div>
     <template #footer>
       <Button label="Cancelar" class="min-w-40 btn-clean" @click="cancel" />
-      <Button label="Aceptar" class="min-w-40 p-button-success" @click="save" />
+      <Button label="Aceptar" class="min-w-40 p-button-success" @click="openModalConfirm" />
     </template>
   </Dialog>
+  <ConfirmModal id="deferralDonor" v-model="showDeferralConfirmModal" header="¿Estás seguro de diferir al donante?" moreMessage="Al diferir al donante se concluirá el proceso de donación." accept-text="Guardar" @accept="save" />
 </template>

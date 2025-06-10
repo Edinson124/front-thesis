@@ -1,6 +1,9 @@
 <script setup>
 import DonorStatusCard from '@/components/donation/DonorStatusCard.vue';
 import InfoDonor from '@/components/donation/InfoDonor.vue';
+import ConfirmModal from '@/components/utils/ConfirmModal.vue';
+import ErrorModal from '@/components/utils/ErrorModal.vue';
+import SuccessModal from '@/components/utils/SuccessModal.vue';
 import { documentTypesPatientOptions } from '@/enums/DocumentTypes';
 import { componentDonationOptions } from '@/enums/Donation';
 import { DonorType, donorTypesOptions } from '@/enums/Donor';
@@ -22,13 +25,15 @@ const showModalDocument = ref(false);
 const pacienteEncontrado = ref(false);
 const tipoDocumentoPacienteBuscado = ref('');
 const numeroDocumentoPacienteBuscado = ref('');
-const showSuccessModal = ref(false);
 const createdDonationId = ref(null);
 
 const actuadlDonationId = ref(null);
 const lastDonationDateDetail = ref(null);
 const canDonateDateLastDonation = ref(true);
 const isLoading = ref(true);
+const showConfirmModal = ref(false);
+const showSuccessModal = ref(false);
+const showErrorModal = ref(false);
 
 const nombrePaciente = ref('');
 const pacienteBuscado = ref(false);
@@ -138,6 +143,16 @@ const closeModal = () => {
 };
 
 const saveDonation = async () => {
+  const id = await donationStore.newDonation(donation);
+  if (id) {
+    createdDonationId.value = id;
+    showSuccessModal.value = true;
+  } else {
+    showErrorModal.value = true;
+  }
+};
+
+const handleSaveDonation = async () => {
   const isValid = await v$.value.$validate();
   if (!isValid) return;
   if (requiresPaciente.value && !pacienteEncontrado.value) {
@@ -148,11 +163,7 @@ const saveDonation = async () => {
     donation.documentNumberPatient = null;
     donation.documentTypePatient = null;
   }
-  const id = await donationStore.newDonation(donation);
-  if (id) {
-    createdDonationId.value = id;
-    showSuccessModal.value = true;
-  }
+  showConfirmModal.value = true;
 };
 
 const confirmSuccess = () => {
@@ -234,7 +245,7 @@ onMounted(async () => {
         </div>
 
         <div class="border border-gray-300 rounded-md p-5 bg-white mb-6">
-          <form @submit.prevent="saveDonation">
+          <form @submit.prevent="handleSaveDonation">
             <div class="mb-6">
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
@@ -333,7 +344,7 @@ onMounted(async () => {
         <Button label="Aceptar" severity="danger" @click="closeModal" />
       </template>
     </Dialog>
-    <Dialog v-model:visible="showSuccessModal" header="Donación creada" modal class="w-[30rem]">
+    <!-- <Dialog v-model:visible="showSuccessModal" header="Donación creada" modal class="w-[30rem]">
       <p>
         Se ha creado la donación exitosamente.<br />
         El código de la donación es: <strong>{{ createdDonationId }}</strong>
@@ -341,6 +352,9 @@ onMounted(async () => {
       <template #footer>
         <Button label="Aceptar" class="min-w-40 p-button-success" @click="confirmSuccess" autofocus />
       </template>
-    </Dialog>
+    </Dialog> -->
+    <ConfirmModal v-model="showConfirmModal" header="¿Estás seguro de guardar este donación?" accept-text="Guardar" @accept="saveDonation" />
+    <SuccessModal v-model="showSuccessModal" message="Se ha creado la donación con éxito" :more-message="`El código de la donación es: ${createdDonationId}`" @close="confirmSuccess" />
+    <ErrorModal v-model="showErrorModal" />
   </div>
 </template>

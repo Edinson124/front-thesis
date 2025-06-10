@@ -1,5 +1,9 @@
 <script setup>
 import { ref } from 'vue';
+import ConfirmModal from '@/components/utils/ConfirmModal.vue';
+
+const showConfirmLink = ref(false);
+const bloodBankSelected = ref(null);
 
 const showModal = defineModel({ type: Boolean, required: true });
 defineProps({
@@ -18,8 +22,13 @@ const close = () => {
   showModal.value = false;
 };
 
-const seleccionarBanco = (banco) => {
-  emit('selected', banco);
+const openModalConfirm = (bloodbank) => {
+  bloodBankSelected.value = bloodbank;
+  showConfirmLink.value = true;
+};
+const saveLink = () => {
+  emit('selected', bloodBankSelected.value);
+  bloodBankSelected.value = null;
   close();
 };
 
@@ -52,10 +61,11 @@ const onPage = (event) => {
         </Column>
         <Column header="Acciones" style="width: 10%">
           <template #body="{ data }">
-            <Button v-if="!idsInNetwork.includes(data.id)" label="Seleccionar" class="h-8 btn-view" @click="() => seleccionarBanco(data)" />
+            <Button v-if="!idsInNetwork.includes(data.id)" label="Seleccionar" class="h-8 btn-view" @click="openModalConfirm(data)" />
           </template>
         </Column>
       </DataTable>
     </div>
   </Dialog>
+  <ConfirmModal id="linkBloodBankDialog" v-model="showConfirmLink" header="¿Estás seguro de vincular este banco de sangre a la red?" accept-text="Guardar" @accept="saveLink" />
 </template>

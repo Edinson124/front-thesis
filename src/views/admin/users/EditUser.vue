@@ -174,7 +174,7 @@ const rules = computed(() => ({
   documentNumber: { required: required('Número de documento') },
   firstName: { required: required('Nombres'), minLength: minLength('Nombres', 2) },
   lastName: { required: required('Apellido paterno'), minLength: minLength('Apellido paterno', 2) },
-  secondLastName: { minLength: minLength('Apellido materno', 2) },
+  secondLastName: { required: required('Apellido paterno'), minLength: minLength('Apellido materno', 2) },
   birthDate: { required: required('Fecha de nacimiento') },
   email: { required: required('Correo electrónico'), email: email('Correo electrónico') },
   gender: { required: required('Sexo') },
@@ -396,7 +396,7 @@ const handleSaveUser = async () => {
             <div class="grid grid-cols-12 gap-2">
               <label for="name3" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Banco de sangre donde trabaja</label>
               <div class="col-span-12 md:col-span-4">
-                <Select class="" v-model="user.bloodBankId" :options="bloodBanksStore.bloodBanksOptions" optionLabel="name" optionValue="id" showClear />
+                <Select class="" v-model="user.bloodBankId" :options="bloodBanksStore.bloodBanksOptions" optionLabel="name" optionValue="id" filter showClear />
               </div>
             </div>
             <div class="grid grid-cols-12 gap-2">

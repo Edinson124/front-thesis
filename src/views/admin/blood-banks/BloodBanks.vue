@@ -10,7 +10,7 @@ const bloodBankStore = useBloodBanksStore();
 
 const loading = ref(false);
 const filters = reactive({
-  search: '',
+  name: '',
   region: null,
   province: null,
   district: null,
@@ -25,7 +25,7 @@ const filter = async (event) => {
 };
 
 const resetFilters = () => {
-  filters.search = '';
+  filters.name = '';
   filters.region = null;
   filters.province = null;
   filters.district = null;
@@ -136,8 +136,8 @@ const reactivate = async () => {
       <div class="bloodbank-filters | flex flex-wrap gap-2 w-full lg:w-[70%] mb-2 lg:mb-0">
         <div class="bloodbank-filter | w-full md:w-[35%]">
           <FloatLabel variant="on" class="w-full">
-            <InputText class="w-full" id="search" v-model="filters.search" aria-describedby="search-help" />
-            <label for="search">Nombre</label>
+            <InputText class="w-full" id="name" v-model="filters.name" aria-describedby="name-help" />
+            <label for="name">Nombre</label>
           </FloatLabel>
         </div>
         <div class="bloodbank-filter | w-full md:w-[20%]">

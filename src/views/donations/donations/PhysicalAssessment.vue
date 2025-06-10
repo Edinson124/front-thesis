@@ -4,6 +4,9 @@ import { bloodGroupOptions, rhFactorOptions } from '@/enums/BloodType';
 import { deferralOptionsExamPhysical } from '@/enums/DeferralType';
 import router from '@/router';
 // import { normalizeEmptyStringsToNull } from '@/utils/normalizeEmptyStringsToNull';
+import ConfirmModal from '@/components/utils/ConfirmModal.vue';
+import ErrorModal from '@/components/utils/ErrorModal.vue';
+import SuccessModal from '@/components/utils/SuccessModal.vue';
 import { useDonationStore } from '@/stores/donation/donations';
 import { usePhysicalStore } from '@/stores/donation/physicalAssessment';
 import { required } from '@/validation/validators';
@@ -20,6 +23,11 @@ const donationId = ref(null);
 const showModalDeferralDonor = ref(false);
 // const openModalRegister = ref(false);
 const editDonation = ref(null);
+const showConfirmModal = ref(false);
+const showSuccessModal = ref(false);
+const showErrorModal = ref(false);
+
+const showCancelConfirmDialog = ref(false);
 
 const donationStore = useDonationStore();
 const physicalStore = usePhysicalStore();
@@ -58,7 +66,6 @@ const v$ = useVuelidate(rules, physicalExam);
 
 const deferralDonor = async (deferral) => {
   const response = await donationStore.deferralDonor(donationId.value, deferral);
-  console.log(response);
   if (response) {
     router.push({ path: 'view', query: { donationId: donationId } });
   }
@@ -70,6 +77,14 @@ const openDeferralDonorModal = () => {
   //   return;
   // }
   showModalDeferralDonor.value = true;
+};
+
+const cancel = () => {
+  showCancelConfirmDialog.value = true;
+};
+
+const returnDonationView = () => {
+  router.push({ path: 'view', query: { donationId: donationId.value } });
 };
 
 function normalizeEmptyStringsToNull(obj) {
@@ -85,25 +100,25 @@ function normalizeEmptyStringsToNull(obj) {
 }
 const handleSave = async () => {
   const isValid = await v$.value.$validate();
-  if (!isValid) {
-    console.log('Errores en el formulario', v$.value);
-    return;
-  }
+  if (!isValid) return;
+  // console.log('Errores en el formulario', v$.value);
+
+  showConfirmModal.value = true;
+};
+
+const savePhysicalAssessment = async () => {
   let physicalExamNormalized = normalizeEmptyStringsToNull(physicalExam);
   physicalExamNormalized.donationId = donationId.value;
-  if (newPhysical.value) {
-    await physicalStore.createPhysical(physicalExamNormalized);
-    newPhysical.value = true;
-  } else {
-    await physicalStore.updatePhysicalAssessment(idPhysical.value, physicalExamNormalized);
-  }
+  const result = newPhysical.value ? await physicalStore.createPhysical(physicalExamNormalized) : await physicalStore.updatePhysicalAssessment(idPhysical.value, physicalExamNormalized);
+  showSuccessModal.value = result !== null;
+  showErrorModal.value = result === null;
 };
 onMounted(async () => {
   isLoading.value = true;
   const donationRoute = route.query.donationId;
   donationId.value = donationRoute;
-  const donationResponse = await donationStore.getDonation(donationId.value);
-  editDonation.value = donationResponse.donation.status === 'En proceso';
+  const donationStatusResponse = await donationStore.getDonationStatus(donationId.value);
+  editDonation.value = donationStatusResponse.status === 'En proceso';
 
   if (donationId.value) {
     const physicalResponse = await physicalStore.getPhysicalAssessment(donationId.value);
@@ -318,7 +333,7 @@ onMounted(async () => {
     </Fieldset>
 
     <div class="flex justify-end px-8 my-8 gap-4">
-      <Button class="h-10 w-full md:max-w-[16rem] btn-clean" label="Cancelar" @click="router.back()" />
+      <Button class="h-10 w-full md:max-w-[16rem] btn-clean" label="Cancelar" @click="cancel" />
       <Button v-if="editDonation" class="h-10 w-full md:max-w-[16rem]" label="Guardar" severity="success" @click="handleSave" />
     </div>
     <DeferralModal v-model="showModalDeferralDonor" :options-reason="deferralOptionsExamPhysical" @save="deferralDonor" />
@@ -328,5 +343,10 @@ onMounted(async () => {
         <Button label="Aceptar" class="min-w-40 p-button-success" @click="() => (openModalRegister = false)" />
       </template>
     </Dialog> -->
+    <ConfirmModal id="confirmSavePhysicalAssessment" v-model="showConfirmModal" header="¿Estás seguro de guardar los datos físico y clínicos?" accept-text="Guardar" @accept="savePhysicalAssessment" />
+    <SuccessModal id="successSavePhysicalAssessment" v-model="showSuccessModal" message="Los datos físico y clínicos fueron guardados con éxito" @close="returnDonationView" />
+    <ErrorModal id="errorSavePhysicalAssessment" v-model="showErrorModal" />
+
+    <ConfirmModal id="cancelSavePhysicalAssessment" v-model="showCancelConfirmDialog" header="¿Estás seguro de que deseas cancelar la operación?" accept-text="Sí" accept-button-class="p-button-danger" @accept="returnDonationView" reject-text="No" />
   </div>
 </template>

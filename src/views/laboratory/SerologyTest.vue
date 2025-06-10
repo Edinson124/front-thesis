@@ -2,6 +2,9 @@
 // import DonationStatusCard from '@/components/donation/DonationStatusCard.vue';
 import InfoDonation from '@/components/donation/InfoDonation.vue';
 import InfoDonor from '@/components/donation/InfoDonor.vue';
+import ConfirmModal from '@/components/utils/ConfirmModal.vue';
+import ErrorModal from '@/components/utils/ErrorModal.vue';
+import SuccessModal from '@/components/utils/SuccessModal.vue';
 import { resultSerologyOptions } from '@/enums/SerologyResult';
 import { useDonationStore } from '@/stores/donation/donations';
 import { useSerologyTestStore } from '@/stores/laboratory/serologyTest';
@@ -20,6 +23,12 @@ const showReactiveWarning = ref(false);
 const fieldPendingReset = ref(null);
 const newSerologyTest = ref(true);
 const idSerologyTest = ref(null);
+
+const showConfirmModal = ref(false);
+const showSuccessModal = ref(false);
+const showErrorModal = ref(false);
+
+const showCancelConfirmDialog = ref(false);
 
 const isLoading = ref(true);
 const serologyResult = reactive({
@@ -47,16 +56,29 @@ const rules = computed(() => ({
 
 const v$ = useVuelidate(rules, serologyResult);
 
+const cancel = () => {
+  if (newSerologyTest.value) {
+    showCancelConfirmDialog.value = true;
+  }
+  router.back();
+};
+
+const saveSerologyTest = async () => {
+  let serologyResultNormalized = normalizeEmptyStringsToNull(serologyResult);
+  const donationRoute = route.query.donationId;
+  serologyResultNormalized.donationId = donationRoute;
+  const response = await serologyStore.createSerologyTest(serologyResultNormalized);
+  if (response) {
+    showSuccessModal.value = true;
+  } else {
+    showErrorModal.value = true;
+  }
+};
+
 const handleSave = async () => {
   const isValid = await v$.value.$validate();
-  if (isValid) {
-    let serologyResultNormalized = normalizeEmptyStringsToNull(serologyResult);
-    const donationRoute = route.query.donationId;
-    serologyResultNormalized.donationId = donationRoute;
-    await serologyStore.createSerologyTest(serologyResultNormalized);
-  } else {
-    console.log('Errores en el formulario', v$.value);
-  }
+  if (!isValid) return;
+  showConfirmModal.value = true;
 };
 
 function normalizeEmptyStringsToNull(obj) {
@@ -111,7 +133,6 @@ onMounted(async () => {
         }
       }
     }
-    console.log(serologyResult);
   }
 
   isLoading.value = false;
@@ -158,7 +179,7 @@ onMounted(async () => {
           <div class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-center">
             <div class="md:col-span-3 font-medium">Fecha serología:</div>
             <div class="md:col-span-9">
-              <DatePicker v-model="serologyResult.testDate" dateFormat="dd/mm/yy" showIcon fluid class="w-full md:w-64" :invalid="v$.testDate?.$error" />
+              <DatePicker v-model="serologyResult.testDate" dateFormat="dd/mm/yy" showIcon fluid showButtonBar class="w-full md:w-64" :invalid="v$.testDate?.$error" :disabled="!newSerologyTest" />
               <Message v-if="v$.testDate?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.testDate.$errors[0].$message }}</Message>
             </div>
           </div>
@@ -167,7 +188,7 @@ onMounted(async () => {
           <div class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-center">
             <div class="md:col-span-3 font-medium">VIH</div>
             <div class="md:col-span-9">
-              <Select v-model="serologyResult.hiv" :options="resultSerologyOptions" optionLabel="label" optionValue="value" placeholder="Seleccione resultado" class="w-full md:w-64" :invalid="v$.hiv?.$error">
+              <Select v-model="serologyResult.hiv" :options="resultSerologyOptions" optionLabel="label" optionValue="value" placeholder="Seleccione resultado" class="w-full md:w-64" :invalid="v$.hiv?.$error" :disabled="!newSerologyTest">
                 <template #value="slotProps">
                   <div :class="slotProps.value === true ? 'text-red-600 font-semibold' : ''">
                     {{ resultSerologyOptions.find((opt) => opt.value === slotProps.value)?.label || slotProps.placeholder }}
@@ -182,7 +203,7 @@ onMounted(async () => {
           <div class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-center">
             <div class="md:col-span-3 font-medium">HBsAg</div>
             <div class="md:col-span-9">
-              <Select v-model="serologyResult.hbsAg" :options="resultSerologyOptions" optionLabel="label" optionValue="value" placeholder="Seleccione resultado" class="w-full md:w-64" :invalid="v$.hbsAg?.$error">
+              <Select v-model="serologyResult.hbsAg" :options="resultSerologyOptions" optionLabel="label" optionValue="value" placeholder="Seleccione resultado" class="w-full md:w-64" :invalid="v$.hbsAg?.$error" :disabled="!newSerologyTest">
                 <template #value="slotProps">
                   <div :class="slotProps.value === true ? 'text-red-600 font-semibold' : ''">
                     {{ resultSerologyOptions.find((opt) => opt.value === slotProps.value)?.label || slotProps.placeholder }}
@@ -197,7 +218,7 @@ onMounted(async () => {
           <div class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-center">
             <div class="md:col-span-3 font-medium">HBcAb</div>
             <div class="md:col-span-9">
-              <Select v-model="serologyResult.hbcAb" :options="resultSerologyOptions" optionLabel="label" optionValue="value" placeholder="Seleccione resultado" class="w-full md:w-64" :invalid="v$.hbcAb?.$error">
+              <Select v-model="serologyResult.hbcAb" :options="resultSerologyOptions" optionLabel="label" optionValue="value" placeholder="Seleccione resultado" class="w-full md:w-64" :invalid="v$.hbcAb?.$error" :disabled="!newSerologyTest">
                 <template #value="slotProps">
                   <div :class="slotProps.value === true ? 'text-red-600 font-semibold' : ''">
                     {{ resultSerologyOptions.find((opt) => opt.value === slotProps.value)?.label || slotProps.placeholder }}
@@ -212,7 +233,7 @@ onMounted(async () => {
           <div class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-center">
             <div class="md:col-span-3 font-medium">VHC</div>
             <div class="md:col-span-9">
-              <Select v-model="serologyResult.hcv" :options="resultSerologyOptions" optionLabel="label" optionValue="value" placeholder="Seleccione resultado" class="w-full md:w-64" :invalid="v$.hcv?.$error">
+              <Select v-model="serologyResult.hcv" :options="resultSerologyOptions" optionLabel="label" optionValue="value" placeholder="Seleccione resultado" class="w-full md:w-64" :invalid="v$.hcv?.$error" :disabled="!newSerologyTest">
                 <template #value="slotProps">
                   <div :class="slotProps.value === true ? 'text-red-600 font-semibold' : ''">
                     {{ resultSerologyOptions.find((opt) => opt.value === slotProps.value)?.label || slotProps.placeholder }}
@@ -227,7 +248,7 @@ onMounted(async () => {
           <div class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-center">
             <div class="md:col-span-3 font-medium">Sífilis</div>
             <div class="md:col-span-9">
-              <Select v-model="serologyResult.syphilis" :options="resultSerologyOptions" optionLabel="label" optionValue="value" placeholder="Seleccione resultado" class="w-full md:w-64" :invalid="v$.syphilis?.$error">
+              <Select v-model="serologyResult.syphilis" :options="resultSerologyOptions" optionLabel="label" optionValue="value" placeholder="Seleccione resultado" class="w-full md:w-64" :invalid="v$.syphilis?.$error" :disabled="!newSerologyTest">
                 <template #value="slotProps">
                   <div :class="slotProps.value === true ? 'text-red-600 font-semibold' : ''">
                     {{ resultSerologyOptions.find((opt) => opt.value === slotProps.value)?.label || slotProps.placeholder }}
@@ -242,7 +263,7 @@ onMounted(async () => {
           <div class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-center">
             <div class="md:col-span-3 font-medium">Chagas</div>
             <div class="md:col-span-9">
-              <Select v-model="serologyResult.chagas" :options="resultSerologyOptions" optionLabel="label" optionValue="value" placeholder="Seleccione resultado" class="w-full md:w-64" :invalid="v$.chagas?.$error">
+              <Select v-model="serologyResult.chagas" :options="resultSerologyOptions" optionLabel="label" optionValue="value" placeholder="Seleccione resultado" class="w-full md:w-64" :invalid="v$.chagas?.$error" :disabled="!newSerologyTest">
                 <template #value="slotProps">
                   <div :class="slotProps.value === true ? 'text-red-600 font-semibold' : ''">
                     {{ resultSerologyOptions.find((opt) => opt.value === slotProps.value)?.label || slotProps.placeholder }}
@@ -257,7 +278,7 @@ onMounted(async () => {
           <div class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-center">
             <div class="md:col-span-3 font-medium">HTLV-I/II</div>
             <div class="md:col-span-9">
-              <Select v-model="serologyResult.htlvI_II" :options="resultSerologyOptions" optionLabel="label" optionValue="value" placeholder="Seleccione resultado" class="w-full md:w-64" :invalid="v$.htlvI_II?.$error">
+              <Select v-model="serologyResult.htlvI_II" :options="resultSerologyOptions" optionLabel="label" optionValue="value" placeholder="Seleccione resultado" class="w-full md:w-64" :invalid="v$.htlvI_II?.$error" :disabled="!newSerologyTest">
                 <template #value="slotProps">
                   <div :class="slotProps.value === true ? 'text-red-600 font-semibold' : ''">
                     {{ resultSerologyOptions.find((opt) => opt.value === slotProps.value)?.label || slotProps.placeholder }}
@@ -272,14 +293,14 @@ onMounted(async () => {
           <div class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4">
             <div class="md:col-span-3 font-medium">Observaciones:</div>
             <div class="md:col-span-9">
-              <Textarea v-model="serologyResult.observations" rows="5" class="w-full resize-none" />
+              <Textarea v-model="serologyResult.observations" rows="5" class="w-full resize-none" :disabled="!newSerologyTest" />
             </div>
           </div>
         </div>
       </Fieldset>
       <div class="flex justify-end px-8 my-8 gap-4">
-        <Button class="h-10 w-full md:max-w-[16rem] btn-clean" label="Cancelar" @click="router.back()" />
-        <Button v-if="newSerologyTest.value" class="h-10 w-full md:max-w-[16rem]" label="Guardar" severity="success" @click="handleSave" />
+        <Button class="h-10 w-full md:max-w-[16rem] btn-clean" label="Cancelar" @click="cancel" />
+        <Button v-if="newSerologyTest" class="h-10 w-full md:max-w-[16rem]" label="Guardar" severity="success" @click="handleSave" />
       </div>
       <Dialog v-model:visible="showReactiveWarning" modal header="Resultado Reactivo" :closable="false" class="w-[90%] md:w-[40rem]">
         <div class="text-gray-700">
@@ -291,6 +312,11 @@ onMounted(async () => {
           <Button label="Sí" class="ml-2 p-button-danger" @click="confirmReactive" />
         </template>
       </Dialog>
+      <ConfirmModal id="confirmSaveSerologyTest" v-model="showConfirmModal" header="¿Estás seguro de guardar el resultado del test serológico?" accept-text="Guardar" @accept="saveSerologyTest" />
+      <SuccessModal id="successSaveSerologyTest" v-model="showSuccessModal" message="El resultado de test serológico fue guardado con éxito" @close="router.back()" />
+      <ErrorModal id="errorSaveSerologyTest" v-model="showErrorModal" />
+
+      <ConfirmModal id="cancelSaveSerologyTest" v-model="showCancelConfirmDialog" header="¿Estás seguro de que deseas cancelar la operación?" accept-text="Sí" accept-button-class="p-button-danger" @accept="router.back()" reject-text="No" />
     </div>
   </div>
 </template>

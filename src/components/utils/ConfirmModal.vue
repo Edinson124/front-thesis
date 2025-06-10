@@ -48,6 +48,7 @@ const openModal = () => {
     group: props.id,
     header: props.header,
     message: props.message,
+    moreMessage: props.moreMessage,
     accept: () => {
       showModal.value = false;
       emit('accept');

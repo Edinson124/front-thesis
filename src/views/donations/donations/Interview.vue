@@ -1,6 +1,9 @@
 <script setup>
 // import { DonorInterviewQuestions } from '@/enums/DonorInterviewQuestions';
 import DeferralModal from '@/components/donation/DeferralModal.vue';
+import ConfirmModal from '@/components/utils/ConfirmModal.vue';
+import ErrorModal from '@/components/utils/ErrorModal.vue';
+import SuccessModal from '@/components/utils/SuccessModal.vue';
 import { deferralOptionsInterview } from '@/enums/DeferralType';
 import router from '@/router';
 import { useDonationStore } from '@/stores/donation/donations';
@@ -26,6 +29,13 @@ const newInterview = ref(true);
 const showModalDeferralDonor = ref(false);
 const openModalRegister = ref(false);
 const editDonation = ref(null);
+const savedAnswersInterview = ref(null);
+
+const showConfirmModal = ref(false);
+const showSuccessModal = ref(false);
+const showErrorModal = ref(false);
+
+const showCancelConfirmDialog = ref(false);
 
 const rules = computed(() => {
   const rulesObject = {};
@@ -63,7 +73,7 @@ const v$ = useVuelidate(rules, { answers });
 const deferralDonor = async (deferral) => {
   const response = await donationStore.deferralDonor(donationId.value, deferral);
   if (response) {
-    router.push({ path: 'view', query: { donationId: donationId } });
+    returnDonationView();
   }
 };
 
@@ -73,6 +83,27 @@ const openDeferralDonorModal = () => {
     return;
   }
   showModalDeferralDonor.value = true;
+};
+
+const cancel = () => {
+  if (newInterview.value) {
+    showCancelConfirmDialog.value = true;
+  } else {
+    returnDonationView();
+  }
+};
+
+const returnDonationView = () => {
+  router.push({ path: 'view', query: { donationId: donationId.value } });
+};
+
+const saveInterview = async () => {
+  const response = await interviewStore.createInterviewAnswer(savedAnswersInterview.value, donationId.value);
+  if (response) {
+    showSuccessModal.value = true;
+  } else {
+    showErrorModal.value = true;
+  }
 };
 
 const handleSave = async () => {
@@ -94,15 +125,8 @@ const handleSave = async () => {
         }
       }
     }
-
-    await interviewStore.createInterviewAnswer(savedAnswers, donationId.value);
-
-    toast.add({
-      severity: 'success',
-      summary: 'Formulario completado',
-      detail: 'Se guardaron las respuestas con éxito.',
-      life: 4000
-    });
+    savedAnswersInterview.value = savedAnswers;
+    showConfirmModal.value = true;
   } else {
     console.log('Hay errores en el formulario.');
 
@@ -149,30 +173,29 @@ onMounted(async () => {
     const answersResponse = await interviewStore.getInterviewAnswers(donationId.value);
     if (answersResponse) {
       newInterview.value = false;
-      Object.assign(answers.value, answersResponse.answer);
-    }
-  }
-
-  for (const section of DonorInterviewQuestions.value.sections || []) {
-    for (const question of section.questions || []) {
-      if (!answers.value[question.id]) {
-        answers.value[question.id] = {
-          name: question.name,
-          answer: question.type === 'datepicker' ? null : ''
-        };
+      for (const [key, value] of Object.entries(answersResponse.answer)) {
+        answers.value[key] = typeof value === 'object' && 'answer' in value ? value.answer : '';
       }
 
-      // Siempre intenta convertir a Date si es datepicker y la respuesta es string
-      if (question.type === 'datepicker' && answers.value[question.id].answer && typeof answers.value[question.id].answer === 'string') {
-        const parsedDate = new Date(answers.value[question.id].answer);
-        if (!isNaN(parsedDate)) {
-          answers.value[question.id].answer = parsedDate;
-        } else {
-          answers.value[question.id].answer = null;
+      for (const section of DonorInterviewQuestions.value.sections || []) {
+        for (const question of section.questions || []) {
+          const qid = question.id;
+
+          // Si no hay respuesta, inicializa con el valor adecuado
+          if (!(qid in answers.value)) {
+            answers.value[qid] = question.type === 'datepicker' ? null : '';
+          }
+
+          // Si es datepicker y la respuesta es string, intenta convertirla a Date
+          if (question.type === 'datepicker' && typeof answers.value[qid] === 'string') {
+            const parsedDate = new Date(answers.value[qid]);
+            answers.value[qid] = isNaN(parsedDate) ? null : parsedDate;
+          }
         }
       }
     }
   }
+
   activeTab.value = DonorInterviewQuestions.value.sections?.[0]?.id ?? null;
   isLoading.value = false;
 });
@@ -202,14 +225,14 @@ onMounted(async () => {
 
               <div class="flex items-center justify-between gap-4 px-8 mt-6 mb-2" v-else-if="question.type === 'text'">
                 <span class="w-full md:max-w-[50%]">{{ question.name }}</span>
-                <InputText class="h-8 w-full md:grow" v-model="answers[question.id].answer" :disabled="!newInterview" />
+                <InputText class="h-8 w-full md:grow" v-model="answers[question.id]" :disabled="!newInterview" />
               </div>
 
               <div class="flex items-center justify-between gap-4 px-8 mt-6 mb-2" v-else-if="question.type === 'radio'">
                 <span>{{ question.name }}</span>
                 <div class="flex items-center gap-8">
                   <div class="flex items-center gap-2" v-for="(option, index) in question.options" :key="index">
-                    <RadioButton :inputId="`${question.id}-${index}`" :name="`option-${index}`" :value="option" v-model="answers[question.id].answer" :disabled="!newInterview" />
+                    <RadioButton :inputId="`${question.id}-${index}`" :name="`option-${index}`" :value="option" v-model="answers[question.id]" :disabled="!newInterview" />
                     <label :for="`${question.id}-${index}`">{{ option }}</label>
                   </div>
                 </div>
@@ -217,17 +240,17 @@ onMounted(async () => {
 
               <div class="flex items-center justify-between gap-4 px-8 mt-6 mb-2" v-else-if="question.type === 'select'">
                 <span class="w-full md:max-w-[50%]">{{ question.name }}</span>
-                <Select class="w-full md:w-[16rem]" v-model="answers[question.id].answer" :options="question.options" placeholder="Seleccionar" :disabled="!newInterview" />
+                <Select class="w-full md:w-[16rem]" v-model="answers[question.id]" :options="question.options" placeholder="Seleccionar" :disabled="!newInterview" />
               </div>
 
               <div class="flex items-center justify-between gap-4 px-8 mt-6 mb-2" v-else-if="question.type === 'datepicker'">
                 <span class="w-full md:max-w-[50%]">{{ question.name }}</span>
-                <DatePicker class="w-full md:w-[16rem]" showIcon fluid v-model="answers[question.id].answer" placeholder="Seleccionar" :disabled="!newInterview" />
+                <DatePicker class="w-full md:w-[16rem]" showIcon fluid v-model="answers[question.id]" placeholder="Seleccionar" :disabled="!newInterview" />
               </div>
 
               <div class="flex flex-col items-start gap-4 px-8 mt-10 mb-6" v-else-if="question.type === 'textarea'">
                 <span class="w-full md:max-w-[50%]">{{ question.name }}</span>
-                <Textarea class="w-full md:grow resize-none" rows="5" v-model="answers[question.id].answer" :disabled="!newInterview" />
+                <Textarea class="w-full md:grow resize-none" rows="5" v-model="answers[question.id]" :disabled="!newInterview" />
               </div>
 
               <Message v-if="v$.answers[question.id]?.$error" severity="error" size="small" variant="simple" class="px-8 mb-6">{{ v$.answers[question.id].$errors[0].$message }}</Message>
@@ -238,15 +261,7 @@ onMounted(async () => {
     </Tabs>
 
     <div class="flex justify-end px-8 my-8 gap-4">
-      <Button
-        class="h-10 w-full md:max-w-[16rem] btn-clean"
-        label="Cancelar"
-        @click="
-          () => {
-            router.push({ path: 'view', query: { donationId: donationId } });
-          }
-        "
-      />
+      <Button class="h-10 w-full md:max-w-[16rem] btn-clean" label="Cancelar" @click="cancel" />
       <Button v-if="newInterview" class="h-10 w-full md:max-w-[16rem]" label="Guardar" severity="success" @click="handleSave" />
     </div>
     <DeferralModal v-model="showModalDeferralDonor" :options-reason="deferralOptionsInterview" @save="deferralDonor" />
@@ -257,5 +272,10 @@ onMounted(async () => {
         <Button label="Aceptar" class="min-w-40 p-button-success" @click="() => (openModalRegister = false)" />
       </template>
     </Dialog>
+    <ConfirmModal id="confirmSaveInterview" v-model="showConfirmModal" header="¿Estás seguro de guardar las respuestas a la entrevista?" accept-text="Guardar" @accept="saveInterview" />
+    <SuccessModal v-model="showSuccessModal" message="Las repuestas a la entrevista fueron guardados con éxito" @close="returnDonationView" />
+    <ErrorModal v-model="showErrorModal" />
+
+    <ConfirmModal id="cancelSaveInterview" v-model="showCancelConfirmDialog" header="¿Estás seguro de que deseas cancelar la operación?" accept-text="Sí" accept-button-class="p-button-danger" @accept="returnDonationView" reject-text="No" />
   </div>
 </template>
