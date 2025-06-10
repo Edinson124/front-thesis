@@ -4,17 +4,20 @@ import UnitCardStatus from '@/components/unit/UnitCardStatus.vue';
 import UnitDiscardModal from '@/components/unit/UnitDiscardModal.vue';
 import UnitInfoCard from '@/components/unit/UnitInfoCard.vue';
 import UnitSerologyTest from '@/components/unit/UnitSerologyTest.vue';
+import ErrorModal from '@/components/utils/ErrorModal.vue';
+import SuccessModal from '@/components/utils/SuccessModal.vue';
 import { discardReasonOptions } from '@/enums/Units';
 import { useDonationStore } from '@/stores/donation/donations';
 import { useSerologyTestStore } from '@/stores/laboratory/serologyTest';
 import { useUnitStore } from '@/stores/storage/units';
 import { computed, onMounted, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const donationStore = useDonationStore();
 const serologyStore = useSerologyTestStore();
 const unitStore = useUnitStore();
 const route = useRoute();
+const router = useRouter();
 
 const donation = ref(null);
 const serologyTest = ref(null);
@@ -25,7 +28,10 @@ const donationId = computed(() => route.query.donationId);
 const unitId = computed(() => route.query.unitId);
 const showReactiveWarning = ref(false);
 const fieldPendingReset = ref(null);
+
 const showDiscardModal = ref(false);
+const showSuccessDiscardModal = ref(false);
+const showErrorDiscardModal = ref(false);
 
 const isLoading = ref(true);
 const serologyResult = ref({
@@ -56,7 +62,13 @@ const openModalDiscard = () => {
 };
 const handleDiscardSave = async (reason) => {
   const response = await unitStore.discardUnit(unitId.value, reason);
-  console.log('resp', response);
+  if (response) {
+    showDiscardModal.value = false;
+    showSuccessDiscardModal.value = true;
+    return;
+  } else {
+    showErrorDiscardModal.value = true;
+  }
 };
 
 onMounted(async () => {
@@ -97,5 +109,7 @@ onMounted(async () => {
       </div>
     </div>
     <UnitDiscardModal v-model="showDiscardModal" :reasons="discardReasonOptions" @save="handleDiscardSave" />
+    <SuccessModal id="succesDiscardUnit" v-model="showSuccessDiscardModal" message="La unidad ha sido descartada" @close="() => router.back()" />
+    <ErrorModal id="errorDiscardUnit" v-model="showErrorDiscardModal" />
   </div>
 </template>

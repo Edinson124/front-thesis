@@ -5,6 +5,9 @@ import InfoDonor from '@/components/donation/InfoDonor.vue';
 import UnitCardStatus from '@/components/unit/UnitCardStatus.vue';
 import UnitDiscardModal from '@/components/unit/UnitDiscardModal.vue';
 import UnitSerologyTest from '@/components/unit/UnitSerologyTest.vue';
+import UnitStampModal from '@/components/unit/UnitStampModal.vue';
+import ErrorModal from '@/components/utils/ErrorModal.vue';
+import SuccessModal from '@/components/utils/SuccessModal.vue';
 import { RhFactor } from '@/enums/BloodType';
 import { discardReasonQuarantinedOptions } from '@/enums/Units';
 import { useDonationStore } from '@/stores/donation/donations';
@@ -32,6 +35,13 @@ const fieldPendingReset = ref(null);
 
 const isLoading = ref(true);
 const showDiscardModal = ref(false);
+const showSuccessDiscardModal = ref(false);
+const showErrorDiscardModal = ref(false);
+
+const showSuitableModal = ref(false);
+const showSuccessModal = ref(false);
+const showErrorModal = ref(false);
+const verifyStampModal = ref(false);
 
 const openModalDiscard = () => {
   showDiscardModal.value = true;
@@ -60,14 +70,36 @@ Object.keys(serologyResult.value).forEach((key) => {
   );
 });
 
-const unitSuitable = async () => {
-  await unitsQuarantinedStore.unitSuitable(unitId.value);
+const returnUnitsQuarantined = () => {
   router.push('/laboratory/units/quarantined');
 };
 
+const unitSuitable = async (stamp) => {
+  const success = await unitsQuarantinedStore.unitSuitable(unitId.value, stamp);
+  if (success == 0) {
+    verifyStampModal.value = true;
+    return;
+  } else if (success > 0) {
+    showSuitableModal.value = false;
+    showSuccessModal.value = true;
+  } else {
+    showErrorModal.value = true;
+  }
+};
+
+const openModalUnitSuitable = () => {
+  showSuitableModal.value = true;
+};
+
 const handleDiscardSave = async (reason) => {
-  await unitsQuarantinedStore.discardUnit(unitId.value, reason);
-  router.push('/laboratory/units/quarantined');
+  const response = await unitsQuarantinedStore.discardUnit(unitId.value, reason);
+  if (response) {
+    showDiscardModal.value = false;
+    showSuccessDiscardModal.value = true;
+    return;
+  } else {
+    showErrorDiscardModal.value = true;
+  }
 };
 
 onMounted(async () => {
@@ -124,10 +156,18 @@ onMounted(async () => {
       <UnitSerologyTest :serologyTest="serologyTest" :bloodType="bloodType" :showBloodType="true" />
 
       <div v-if="serologyTest" class="flex justify-center px-8 my-8 gap-4">
-        <Button v-if="serologyTest.status != 'REACTIVO'" class="h-10 w-full md:max-w-[16rem]" label="Unidad Apta" severity="success" @click="unitSuitable" />
+        <Button v-if="serologyTest.status != 'REACTIVO'" class="h-10 w-full md:max-w-[16rem]" label="Unidad Apta" severity="success" @click="openModalUnitSuitable" />
         <Button class="h-10 w-full md:max-w-[16rem]" label="Descartar Unidad" severity="danger" @click="openModalDiscard" />
       </div>
     </div>
     <UnitDiscardModal v-model="showDiscardModal" :reasons="discardReasonQuarantinedOptions" @save="handleDiscardSave" />
+    <SuccessModal id="succesDiscardUnit" v-model="showSuccessDiscardModal" message="La unidad ha sido descartada" @close="returnUnitsQuarantined" />
+    <ErrorModal id="errorDiscardUnit" v-model="showErrorDiscardModal" />
+
+    <UnitStampModal v-model="showSuitableModal" @save="unitSuitable" />
+    <SuccessModal id="succesSuitableUnit" v-model="showSuccessModal" message="La unidad esta disponible en stock" @close="returnUnitsQuarantined" />
+    <ErrorModal id="errorSuitableUnit" v-model="showErrorModal" />
+
+    <ErrorModal id="errorVerifyUnit" v-model="verifyStampModal" header="Verificación sello pronahebas" message="El código del sello de Pronahebas no está disponible, esta asignado a otra unidad" more-message="" />
   </div>
 </template>

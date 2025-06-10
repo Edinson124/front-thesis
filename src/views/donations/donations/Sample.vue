@@ -41,7 +41,6 @@ const saveSample = async (number) => {
     const isValid = await v1$.value.$validate();
     if (!isValid) return;
     const response = await sampleUnitsStore.saveSample(donationId.value, selectedSample1.value);
-    console.log(response);
     codeSample1.value = response;
   } else {
     const isValid = await v2$.value.$validate();

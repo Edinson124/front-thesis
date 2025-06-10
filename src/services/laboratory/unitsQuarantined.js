@@ -19,9 +19,9 @@ const getUnits = async (filters = {}, page = 0) => {
   }
 };
 
-const unitSuitable = async (unitId) => {
+const unitSuitable = async (unitId, stamp) => {
   try {
-    const response = await put(`/units/quarantined/unitSuitable/${unitId}`);
+    const response = await put(`/units/quarantined/unitSuitable/${unitId}/${stamp}`);
     return response;
   } catch (error) {
     console.error('Error al cambiar de estado a la unidad: ', error);
@@ -39,8 +39,19 @@ const discardUnit = async (unitId, reason) => {
   }
 };
 
+const verifyStamp = async (stampNumber) => {
+  try {
+    const response = await get(`/units/verify/stamp//${stampNumber}`);
+    return response;
+  } catch (error) {
+    console.error('Error al descartar la unidad: ', error);
+    return null;
+  }
+};
+
 export default {
   getUnits,
   unitSuitable,
-  discardUnit
+  discardUnit,
+  verifyStamp
 };

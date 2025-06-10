@@ -59,10 +59,21 @@ const editTableUnit = async (unitId, unit) => {
   }
 };
 
+const saveStampUnit = async (unitId, stamp) => {
+  try {
+    const response = await put(`/units/transformation/stamp/${unitId}/${stamp}`);
+    return response;
+  } catch (error) {
+    console.error('Error al registrar sello a unidad: ', error);
+    return null;
+  }
+};
+
 export default {
   getUnits,
   getUnitById,
   getUnitsFromUnit,
   saveUnit,
+  saveStampUnit,
   editTableUnit
 };

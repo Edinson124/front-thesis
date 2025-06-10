@@ -46,8 +46,11 @@ export const UnitTypesCreate = {
 export const UnitTypesTransformation = {
   'Concentrado de eritrocitos': 'Concentrado de eritrocitos',
   'Plasma fresco congelado': 'Plasma Fresco Congelado',
-  Crioprecipitados: 'Crioprecipitados',
   Plaquetas: 'Plaquetas'
+};
+
+export const UnitTypesTransformationPFC = {
+  Crioprecipitados: 'Crioprecipitados'
 };
 
 export const unitTypesOptions = Object.entries(UnitTypes).map(([value, label]) => ({
@@ -61,6 +64,11 @@ export const unitTypesCreateOptions = Object.entries(UnitTypesCreate).map(([valu
 }));
 
 export const unitTypesTransformationOptions = Object.entries(UnitTypesTransformation).map(([value, label]) => ({
+  value,
+  label
+}));
+
+export const unitTypesTransformationOptionsPFC = Object.entries(UnitTypesTransformationPFC).map(([value, label]) => ({
   value,
   label
 }));

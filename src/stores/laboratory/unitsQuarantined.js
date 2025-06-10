@@ -20,9 +20,9 @@ export const useUnitsQuarantinedStore = defineStore('unitQuarantined', () => {
     }
   };
 
-  const unitSuitable = async (unitId) => {
+  const unitSuitable = async (unitId, stamp) => {
     try {
-      const response = await unitsQuarantinedService.unitSuitable(unitId);
+      const response = await unitsQuarantinedService.unitSuitable(unitId, stamp);
       return response?.payload?.id ?? null;
     } catch (error) {
       console.error('Error al editar unidad: ', error);
@@ -40,10 +40,21 @@ export const useUnitsQuarantinedStore = defineStore('unitQuarantined', () => {
     }
   };
 
+  const verifyStamp = async (stampNumber) => {
+    try {
+      const response = await unitsQuarantinedService.verifyStamp(stampNumber);
+      return response;
+    } catch (error) {
+      console.error('Error al descartar unidad: ', error);
+      return null;
+    }
+  };
+
   return {
     getUnits,
     unitSuitable,
     discardUnit,
+    verifyStamp,
     units,
     totalRecords,
     currentPage

@@ -54,6 +54,16 @@ export const useUnitsTranformationStore = defineStore('unitTransformation', () =
     }
   };
 
+  const saveStampUnit = async (unitId, stamp) => {
+    try {
+      const response = await unitsTranformationService.saveStampUnit(unitId, stamp);
+      return response;
+    } catch (error) {
+      console.error('Error al registrar sello a unidad: ', error);
+      return null;
+    }
+  };
+
   const editTableUnit = async (unitId, unit) => {
     try {
       const response = await unitsTranformationService.editTableUnit(unitId, unit);
@@ -85,6 +95,7 @@ export const useUnitsTranformationStore = defineStore('unitTransformation', () =
     removeUnitFromUnit,
     saveUnit,
     editTableUnit,
+    saveStampUnit,
     units,
     totalRecords,
     currentPage,

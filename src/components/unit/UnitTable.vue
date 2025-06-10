@@ -12,7 +12,7 @@ const props = defineProps({
   },
   type: {
     type: String,
-    default: 'allData' // 'allData', 'singleData', 'resultData'
+    default: 'allData' // 'allData', 'singleData', 'resultData', 'allDataTransformation'
   },
   typeModal: {
     type: String,
@@ -41,6 +41,10 @@ const props = defineProps({
   audit: {
     type: Boolean,
     default: false
+  },
+  typeUnit: {
+    type: String,
+    default: null
   }
 });
 
@@ -83,8 +87,11 @@ const openEditUnitModal = (unit, index) => {
   showUnitModal.value = true;
 };
 
-const emit = defineEmits(['edit', 'add', 'remove', 'result']);
+const emit = defineEmits(['edit', 'add', 'remove', 'result', 'stamp']);
 
+const emitRegisterStampModal = (unit) => {
+  emit('stamp', unit);
+};
 const removeItem = (index, assign) => {
   emit('remove', index, assign);
 };
@@ -107,6 +114,15 @@ const columns = [
         { field: 'id', header: 'Código', width: '12%' },
         { field: 'type', header: 'Unidad', width: '30%' },
         { field: 'volume', header: 'Volumen', width: '20%' },
+        { field: 'bag', header: 'Tipo de bolsa', width: '12%' }
+      ]
+    : []),
+  ...(props.type === 'allDataTransformation'
+    ? [
+        { field: 'id', header: 'Código', width: '11%' },
+        { field: 'stampPronahebas', header: 'Sello Pronahebas', width: '11%' },
+        { field: 'type', header: 'Unidad', width: '30%' },
+        { field: 'volume', header: 'Volumen', width: '9%' },
         { field: 'bag', header: 'Tipo de bolsa', width: '12%' }
       ]
     : []),
@@ -172,6 +188,7 @@ const columns = [
                 <Button v-if="typeModal !== 'result'" class="h-8 w-[6rem] mr-1 my-1 btn-edit" label="Editar" @click="() => openEditUnitModal(slotProps.data, slotProps.index)" />
                 <Button v-if="typeModal === 'result' && !returnAction" class="h-8 w-[12rem] mr-1 my-1 btn-edit" label="Registrar resultado" @click="() => openRegisterResultModal(slotProps.data, slotProps.index)" />
                 <Button v-if="typeModal === 'result' && returnAction" class="h-8 w-[12rem] mr-1 my-1 btn-edit" label="Devolución" @click="() => openRegisterResultModal(slotProps.data, slotProps.index)" />
+                <Button v-if="typeModal === 'transformation' && slotProps.data.stampPronahebas === null" class="h-8 w-[6rem] mr-1 my-1 btn-edit" label="Sellar" @click="() => emitRegisterStampModal(slotProps.data)" />
                 <Button v-if="!returnAction" class="h-8 w-[6rem] mr-1 my-1" label="Eliminar" severity="danger" @click="removeItem(slotProps.index, slotProps.data)" />
               </div>
             </template>
@@ -180,7 +197,7 @@ const columns = [
       </DataTable>
     </div>
 
-    <UnitModal v-if="typeModal !== 'result'" v-model="showUnitModal" :unit="unitCurrent" :type="typeModal" @save="saveUnit" />
+    <UnitModal v-if="typeModal !== 'result'" v-model="showUnitModal" :unit="unitCurrent" :type="typeModal" :typeUnit="typeUnit" @save="saveUnit" />
     <StockUnitsModal v-else v-model="showModalStockUnits" :unit="unitCurrent" @select="saveUnit" />
 
     <RegisterCrossTestResultModal v-if="typeModal === 'result'" v-model="showModalRegisterResult" @save="saveResult" />

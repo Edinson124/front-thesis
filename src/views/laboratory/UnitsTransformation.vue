@@ -20,6 +20,7 @@ const loading = ref(false);
 // Columnas de la tabla
 const columns = [
   { field: 'id', header: 'Código' },
+  { field: 'stampPronahebas', header: 'Sello Pronahebas' },
   { field: 'unitType', header: 'Tipo de Unidad' },
   { field: 'bloodGroup', header: 'Grupo Sanguíneo' },
   { field: 'rhFactor', header: 'Factor Rh' },

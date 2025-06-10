@@ -1,8 +1,8 @@
 <script setup>
 import ConfirmModal from '@/components/utils/ConfirmModal.vue';
-import { anticoagulantOptions, bagTypesOptions, unitTypesCreateOptions, unitTypesOptions, unitTypesTransformationOptions } from '@/enums/Units';
+import { anticoagulantOptions, bagTypesOptions, unitTypesCreateOptions, unitTypesOptions, unitTypesTransformationOptions, unitTypesTransformationOptionsPFC } from '@/enums/Units';
 import { rhFactorOptions, bloodGroupOptions } from '@/enums/BloodType';
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { required } from '@/validation/validators';
 import useVuelidate from '@vuelidate/core';
 
@@ -20,10 +20,20 @@ const props = defineProps({
   unit: {
     type: Object,
     required: true
+  },
+  typeUnit: {
+    type: String,
+    default: null
   }
 });
 
-import { computed } from 'vue';
+const OPTIONS = computed(() => {
+  if (props.typeUnit === 'Sangre Completa') {
+    return unitTypesTransformationOptions;
+  } else {
+    return unitTypesTransformationOptionsPFC;
+  }
+});
 
 const rulesUnitModal = computed(() => {
   if (props.type === 'request') {
@@ -87,7 +97,7 @@ const save = async () => {
   <Dialog v-model:visible="showModal" header="Unidad hematológica" modal class="w-[30rem]">
     <div class="w-full flex flex-col gap-4 p-2" v-if="type !== 'request'">
       <FloatLabel variant="on" class="w-full">
-        <Select class="w-full" id="type" :options="type === 'creation' ? unitTypesCreateOptions : unitTypesTransformationOptions" optionLabel="label" optionValue="value" showClear v-model="localUnit.type" :invalid="vUnitModal$.type?.$error" />
+        <Select class="w-full" id="type" :options="type === 'creation' ? unitTypesCreateOptions : OPTIONS" optionLabel="label" optionValue="value" showClear v-model="localUnit.type" :invalid="vUnitModal$.type?.$error" />
         <label for="type">Tipo de unidad</label>
       </FloatLabel>
       <Message v-if="vUnitModal$.type?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ vUnitModal$.type.$errors[0].$message }}</Message>

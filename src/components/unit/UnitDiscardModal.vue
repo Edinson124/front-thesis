@@ -1,7 +1,10 @@
 <script setup>
+import ConfirmModal from '@/components/utils/ConfirmModal.vue';
 import { required } from '@/validation/validators';
 import useVuelidate from '@vuelidate/core';
 import { computed, ref, watch } from 'vue';
+
+const showConfirmDiscarUnit = ref(false);
 
 const props = defineProps({
   modelValue: {
@@ -42,11 +45,14 @@ function close() {
   selectedReason.value = null;
 }
 
-const emitSave = async () => {
+const openModalConfirm = async () => {
   const isValid = await v$.value.$validate();
   if (!isValid) return;
+  showConfirmDiscarUnit.value = true;
+};
+
+const emitSave = async () => {
   emit('save', selectedReason.value);
-  close();
 };
 </script>
 
@@ -63,8 +69,9 @@ const emitSave = async () => {
 
       <div class="flex justify-end gap-2 mt-4">
         <Button class="h-10 btn-clean" label="Cancelar" @click="close" />
-        <Button class="h-10" label="Descartar" severity="danger" @click="emitSave" />
+        <Button class="h-10" label="Descartar" severity="danger" @click="openModalConfirm" />
       </div>
     </div>
   </Dialog>
+  <ConfirmModal id="discardUnitConfirmModal" v-model="showConfirmDiscarUnit" severity="warn" header="Descartar unidad" message="¿Estás seguro de descartar la unidad?" accept-text="Descartar" accept-button-class="p-button-danger" @accept="emitSave" />
 </template>
