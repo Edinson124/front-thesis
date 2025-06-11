@@ -1,6 +1,9 @@
 <script setup>
 import BloodBankInfo from '@/components/network/BloodBankInfo.vue';
 import UnitTableAssignShipment from '@/components/unit/UnitTableAssignShipment.vue';
+import ConfirmModal from '@/components/utils/ConfirmModal.vue';
+import ErrorModal from '@/components/utils/ErrorModal.vue';
+import SuccessModal from '@/components/utils/SuccessModal.vue';
 import { reasonOptions } from '@/enums/ShipmentRequest';
 import { useShipmentStore } from '@/stores/networks/shipments';
 import { required } from '@/validation/validators';
@@ -17,6 +20,15 @@ const networkSelected = ref(null);
 const bloodBankSelected = ref(null);
 const bloodBanksOption = ref([]);
 const loadingNetwork = ref(false);
+
+const showConfirmShipmentModal = ref(false);
+const showSuccessShipmentModal = ref(false);
+const showErrorShipmentModal = ref(false);
+
+const showCancelConfirmDialog = ref(false);
+
+const deleteUnitRequestModal = ref(false);
+const unitRequestDelete = ref(null);
 
 const shipmentRequest = reactive({
   idBloodBank: null,
@@ -52,8 +64,14 @@ const editRequestedUnit = async (index, updatedUnit) => {
     rhFactor: updatedUnit.rhFactor
   };
 };
-const removeRequestedUnit = async (index) => {
-  shipmentRequest.units.splice(index, 1);
+const removeRequestedUnit = async () => {
+  shipmentRequest.units.splice(unitRequestDelete.value, 1);
+  unitRequestDelete.value = null;
+};
+
+const openRemoveModal = async (index) => {
+  unitRequestDelete.value = index;
+  deleteUnitRequestModal.value = true;
 };
 
 // Métodos
@@ -67,19 +85,29 @@ const onNetworkChange = () => {
   }
 };
 
-const cancelar = () => {
+const returnMyShipments = () => {
   router.push({
     path: '/networks/myShipments'
   });
 };
 
-const save = async () => {
+const cancel = () => {
+  showCancelConfirmDialog.value = true;
+};
+
+const saveShipment = async () => {
+  const response = await shipmentStore.createShipment(shipmentRequest);
+  if (response) {
+    showSuccessShipmentModal.value = true;
+  } else {
+    showErrorShipmentModal.value = true;
+  }
+};
+
+const handleSave = async () => {
   const isValid = await vRequest$.value.$validate();
   if (!isValid) return;
-  await shipmentStore.createShipment(shipmentRequest);
-  router.push({
-    path: '/networks/myShipments'
-  });
+  showConfirmShipmentModal.value = true;
 };
 
 watch(bloodBankSelected, (newVal) => {
@@ -126,7 +154,7 @@ onMounted(async () => {
       v-model="shipmentRequest.units"
       @edit="(index, unit) => editRequestedUnit(index, unit)"
       @add="(unit) => addRequestedUnit(unit)"
-      @remove="(unit) => removeRequestedUnit(unit)"
+      @remove="(unit) => openRemoveModal(unit)"
     />
 
     <!-- Motivo -->
@@ -155,9 +183,24 @@ onMounted(async () => {
     <!-- <div class="flex flex-col sm:flex-row justify-end gap-2"> -->
     <!-- <Button label="Confirmar recepción" class="p-button-success" @click="confirmarRecepcion" /> -->
     <div class="flex justify-end mt-4 gap-2">
-      <Button class="min-w-40 btn-clean" label="Cancelar" @click="cancelar" />
-      <Button class="min-w-40 p-button-success" label="Guardar" @click="save" />
+      <Button class="min-w-40 btn-clean" label="Cancelar" @click="cancel" />
+      <Button class="min-w-40 p-button-success" label="Guardar" @click="handleSave" />
     </div>
     <!-- </div> -->
   </div>
+  <ConfirmModal
+    id="deleteUnitRequestModal"
+    v-model="deleteUnitRequestModal"
+    severity="warn"
+    header="Eliminar unidad asignada a la solicitud de transferencia"
+    :message="`¿Estás seguro de eliminar la soliciud de esa unidad?`"
+    accept-text="Eliminar"
+    accept-button-class="p-button-danger"
+    @accept="removeRequestedUnit"
+  />
+  <ConfirmModal v-model="showConfirmShipmentModal" header="¿Estás seguro de guardar la solicitud de transeferencia?" accept-text="Guardar" @accept="saveShipment" />
+  <SuccessModal v-model="showSuccessShipmentModal" message="La solicitud fue guardado con éxito. Hacer click en 'Edita' y luego 'Solicitar' para enviarlo al banco de sangre" @close="returnMyShipments" />
+  <ErrorModal v-model="showErrorShipmentModal" />
+
+  <ConfirmModal id="cancelConfirmDialog" v-model="showCancelConfirmDialog" header="¿Estás seguro de que deseas cancelar la operación?" accept-text="Sí" accept-button-class="p-button-danger" @accept="returnMyShipments" reject-text="No" />
 </template>

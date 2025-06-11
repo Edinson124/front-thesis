@@ -48,8 +48,30 @@ const getOptionsBB = async (networkId) => {
   }
 };
 
+const getUnitStock = async (unitId, networkId) => {
+  try {
+    const response = await get(`/collaboration/view/unit/${unitId}/${networkId}`);
+    return response;
+  } catch (error) {
+    console.error('Error al obtener información de unidad: ', error);
+    return null;
+  }
+};
+
+const getUnitShipment = async (unitId, shipmentId) => {
+  try {
+    const response = await get(`/collaboration/view/unit/shipment/${unitId}/${shipmentId}`);
+    return response;
+  } catch (error) {
+    console.error('Error al obtener información de unidad: ', error);
+    return null;
+  }
+};
+
 export default {
   getNetworks,
   getUnitsStock,
-  getOptionsBB
+  getOptionsBB,
+  getUnitStock,
+  getUnitShipment
 };

@@ -73,10 +73,14 @@ const openEditUnitModal = (unit, index) => {
   showUnitModal.value = true;
 };
 
-const emit = defineEmits(['edit', 'add', 'remove']);
+const emit = defineEmits(['edit', 'add', 'remove', 'view']);
 
 const removeItem = (index, assign) => {
   emit('remove', index, assign);
+};
+
+const viewUnit = (unidad) => {
+  emit('view', unidad);
 };
 
 const saveUnit = (unit) => {
@@ -100,6 +104,8 @@ const columns = [
   ...(props.type === 'shipmentDataAssign'
     ? [
         { field: 'index', header: 'N°', width: '5%' },
+        { field: 'id', header: 'Código', width: '11%' },
+        { field: 'stampPronahebas', header: 'Sello Pronahebas', width: '11%' },
         { field: 'unitType', header: 'Unidad', width: '25%' },
         { field: 'bloodGroup', header: 'Grupo Sanguíneo', width: '15%' },
         { field: 'rhFactor', header: 'Rh', width: '15%' },
@@ -132,6 +138,12 @@ const columns = [
               <template v-if="col.field === 'index'">
                 {{ slotProps.index + 1 }}
               </template>
+              <template v-else-if="col.field === 'bloodGroup'">
+                {{ slotProps.data.bloodType?.charAt(0) }}
+              </template>
+              <template v-else-if="col.field === 'rhFactor'">
+                {{ slotProps.data.bloodType?.includes('+') ? 'POSITIVO' : 'NEGATIVO' }}
+              </template>
               <template v-else>
                 {{ slotProps.data[col.field] }}
               </template>
@@ -148,10 +160,26 @@ const columns = [
             </template>
           </Column>
         </template>
+        <template v-else-if="readOnly && type == 'shipmentDataAssign'">
+          <Column header="Acciones">
+            <template #body="slotProps">
+              <div class="flex flex-wrap w-full">
+                <Button class="h-8 btn-view" label="Visualizar" @click="viewUnit(slotProps.data)" />
+              </div>
+            </template>
+          </Column>
+        </template>
       </DataTable>
     </div>
 
     <UnitModal v-if="typeModal !== 'assign'" v-model="showUnitModal" :unit="unitCurrent" :type="typeModal" :subtype="subtype" @save="saveUnit" />
-    <StockUnitsModal v-else v-model="showModalStockUnits" :only-suitable="true" :unit="unitCurrent" @select="saveUnit" />
+    <StockUnitsModal
+      v-else
+      v-model="showModalStockUnits"
+      :header="'¿Estás seguro de asignar esta unidad a la solicitud de transferencia?'"
+      :message="'Si la asignas será reservada, y al liberarla se trasladrá al banco de sangre de la solicitud'"
+      :only-suitable="true"
+      @select="saveUnit"
+    />
   </div>
 </template>

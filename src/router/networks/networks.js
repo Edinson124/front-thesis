@@ -6,6 +6,7 @@ import ShipmentRequestNew from '@/views/networks/ShipmentRequestNew.vue';
 import ShipmentRequestView from '@/views/networks/ShipmentRequestView.vue';
 import ShipmentRequestViewResponse from '@/views/networks/ShipmentRequestViewResponse.vue';
 import StockNetworkAssociated from '@/views/networks/StockNetworkAssociated.vue';
+import ViewUnitNetwork from '@/views/networks/ViewUnitNetwork.vue';
 
 export default [
   {
@@ -17,6 +18,11 @@ export default [
     path: '/networks/stock',
     name: 'networks-associated-stock',
     component: StockNetworkAssociated
+  },
+  {
+    path: '/networks/stock/unit',
+    name: 'networks-associated-unit',
+    component: ViewUnitNetwork
   },
   {
     path: '/networks/shipments',

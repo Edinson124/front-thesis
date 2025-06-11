@@ -1,6 +1,9 @@
 <script setup>
 import BloodBankInfo from '@/components/network/BloodBankInfo.vue';
 import UnitTableAssignShipment from '@/components/unit/UnitTableAssignShipment.vue';
+import ConfirmModal from '@/components/utils/ConfirmModal.vue';
+import ErrorModal from '@/components/utils/ErrorModal.vue';
+import SuccessModal from '@/components/utils/SuccessModal.vue';
 import { useShipmentStore } from '@/stores/networks/shipments';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -11,9 +14,13 @@ const shipmentStore = useShipmentStore();
 
 const shipmentId = computed(() => route.params.id);
 const bloodBank = ref(null);
-const isLoading = ref(false);
+const isLoading = ref(true);
 const canViewRequest = ref(null);
 const shipment = ref(null);
+
+const showReceptionUnitModal = ref(false);
+const showSuccessReceptionUnitModal = ref(false);
+const showErrorReceptionUnitModal = ref(false);
 
 const shipmentRequest = reactive({
   reason: null,
@@ -29,9 +36,21 @@ const returnBack = () => {
 };
 
 const confirmReception = async () => {
-  await shipmentStore.confirmReception(shipmentId.value);
+  const response = await shipmentStore.confirmReception(shipmentId.value);
+  if (response) {
+    showSuccessReceptionUnitModal.value = true;
+  } else {
+    showErrorReceptionUnitModal.value = true;
+  }
+};
+const openConfirmModal = async () => {
+  showReceptionUnitModal.value = true;
+};
+
+const viewUnit = (unit) => {
   router.push({
-    path: '/networks/myShipments'
+    path: '/networks/stock/unit',
+    query: { unitId: unit.idUnit, shipment: shipmentId.value }
   });
 };
 
@@ -90,11 +109,11 @@ onMounted(async () => {
       </div>
 
       <!-- Unidades asignada -->
-      <UnitTableAssignShipment class="my-4" title="Unidades asignadas" type="shipmentDataAssign" type-modal="assign" subtype="shipment" :read-only="true" :loading="isLoading" v-model="shipmentRequest.assignment" />
+      <UnitTableAssignShipment class="my-4" title="Unidades asignadas" type="shipmentDataAssign" type-modal="assign" subtype="shipment" :read-only="true" :loading="isLoading" v-model="shipmentRequest.assignment" @view="(unit) => viewUnit(unit)" />
 
       <!-- Botones de acción -->
       <div :class="['flex flex-col sm:flex-row gap-2', shipment.status === 'Liberado' ? 'justify-between' : 'justify-end']">
-        <Button v-if="shipment.status === 'Liberado'" class="min-w-40 p-button-success mt-4" label="Confirmar recepción" @click="confirmReception" />
+        <Button v-if="shipment.status === 'Liberado'" class="min-w-40 p-button-success mt-4" label="Confirmar recepción" @click="openConfirmModal" />
         <div class="flex justify-end mt-4 gap-2">
           <Button class="min-w-40 btn-clean" label="Regresar" @click="returnBack" />
           <!-- <Button class="min-w-40 p-button-success" label="Guardar" @click="save" /> -->
@@ -102,4 +121,7 @@ onMounted(async () => {
       </div>
     </div>
   </div>
+  <ConfirmModal id="showReceptionUnitModal" v-model="showReceptionUnitModal" header="¿Estás seguro de confirmar la recepción de las unidades a tu banco de sangre?" accept-text="Guardar" @accept="confirmReception" />
+  <SuccessModal id="showSuccessReceptionUnitModal" v-model="showSuccessReceptionUnitModal" message="La recepcción se ha guardado con éxito" @close="returnBack" />
+  <ErrorModal id="showErrorReceptionUnitModal" v-model="showErrorReceptionUnitModal" />
 </template>

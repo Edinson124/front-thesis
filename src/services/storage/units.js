@@ -39,8 +39,19 @@ const discardUnit = async (idUnit, reason) => {
   }
 };
 
+const canViewUnit = async (idUnit) => {
+  try {
+    const response = await get(`/units/view/${idUnit}`);
+    return response;
+  } catch (error) {
+    console.error('Error al verificar unidad: ', error);
+    return [];
+  }
+};
+
 export default {
   getUnits,
   getUnitById,
-  discardUnit
+  discardUnit,
+  canViewUnit
 };

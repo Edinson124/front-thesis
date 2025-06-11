@@ -60,6 +60,7 @@ export const extraRoutes = [
   { id: 'transfusion-new', label: 'Nueva Solicitud', to: '/transfusion/new', parentId: 'transfusion' },
   { id: 'transfusion-edit', label: 'Editar Solicitud', to: '/transfusion/:id', parentId: 'transfusion' },
   { id: 'networks-associated-stock', label: ' Visualizar stock', to: '/networks', parentId: 'networks-associated' },
+  { id: 'networks-associated-unit', label: 'Visualizar Unidad en red', to: '/networks/stock/unit', parentId: 'networks-associated-stock' },
   { id: 'networks-shipment-new', label: 'Nueva solicitud de transferencia', to: '/networks/my/shipment/new', parentId: 'networks-my-shipments' },
   { id: 'networks-my-shipment-edit', label: 'Editar solicitud de transferencia', to: '/networks/my/shipment/edit/:id', parentId: 'networks-my-shipments' },
   { id: 'networks-my-shipment-view', label: 'Visualizar solicitud de transferencia', to: '/networks/my/shipment/view/:id', parentId: 'networks-my-shipments' },

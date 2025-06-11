@@ -1,6 +1,9 @@
 <script setup>
 import BloodBankInfo from '@/components/network/BloodBankInfo.vue';
 import UnitTableAssignShipment from '@/components/unit/UnitTableAssignShipment.vue';
+import ConfirmModal from '@/components/utils/ConfirmModal.vue';
+import ErrorModal from '@/components/utils/ErrorModal.vue';
+import SuccessModal from '@/components/utils/SuccessModal.vue';
 import { shipmentStatusAssignPermit } from '@/enums/Status';
 import { useShipmentAssignmentStore } from '@/stores/networks/shipmentAssignment';
 import { useShipmentStore } from '@/stores/networks/shipments';
@@ -20,6 +23,17 @@ const shipment = ref(null);
 const assignPermit = ref(null);
 const readOnly = ref(false);
 
+const unitAssignIndex = ref(false);
+const unitAssign = ref(false);
+
+const deleteUnitAssignModal = ref(false);
+const showSucessDeleteUnitAssignModal = ref(false);
+const showErrorDeleteUnitAssignModal = ref(false);
+
+const showFreeUnitModal = ref(false);
+const showSuccessFreeUnitModal = ref(false);
+const showErrorFreeUnitModal = ref(false);
+
 const shipmentRequest = reactive({
   reason: null,
   details: null,
@@ -29,7 +43,7 @@ const shipmentRequest = reactive({
 
 const returnBack = () => {
   router.push({
-    path: '/networks/myShipments'
+    path: '/networks/Shipments'
   });
 };
 
@@ -38,16 +52,35 @@ const assignShipmentUnit = async (unit) => {
   shipmentRequest.assignment.push(shipmentAssignmentResponse);
 };
 
-const removeShipmentUnit = async (index, assign) => {
-  await shipmentAssignStore.deleteShipmentAssignment(assign.id);
-  shipmentRequest.assignment.splice(index, 1);
+const removeShipmentUnit = async () => {
+  const response = await shipmentAssignStore.deleteShipmentAssignment(unitAssign.value.id);
+  if (response) {
+    shipmentRequest.assignment.splice(unitAssignIndex.value, 1);
+    unitAssignIndex.value = null;
+    unitAssign.value = null;
+    showSucessDeleteUnitAssignModal.value = true;
+  } else {
+    showErrorDeleteUnitAssignModal.value = true;
+  }
+};
+
+const openRemoveModal = async (index, assign) => {
+  unitAssignIndex.value = index;
+  unitAssign.value = assign;
+  deleteUnitAssignModal.value = true;
 };
 
 const freeUnit = async () => {
-  await shipmentStore.freeUnit(shipmentId.value);
-  router.push({
-    path: '/networks/shipments'
-  });
+  const response = await shipmentStore.freeUnit(shipmentId.value);
+  if (response) {
+    showSuccessFreeUnitModal.value = true;
+  } else {
+    showErrorFreeUnitModal.value = true;
+  }
+};
+
+const openModalFree = async () => {
+  showFreeUnitModal.value = true;
 };
 
 onMounted(async () => {
@@ -118,12 +151,12 @@ onMounted(async () => {
         :readOnly="readOnly"
         v-model="shipmentRequest.assignment"
         @add="(unit) => assignShipmentUnit(unit)"
-        @remove="(index, assign) => removeShipmentUnit(index, assign)"
+        @remove="(index, assign) => openRemoveModal(index, assign)"
       />
 
       <!-- Botones de acción -->
       <div :class="['flex flex-col sm:flex-row gap-2', shipment.status === 'Solicitado' ? 'justify-between' : 'justify-end']">
-        <Button v-if="shipment.status === 'Solicitado'" class="min-w-40 p-button-success mt-4" label="Liberar unidades" @click="freeUnit" />
+        <Button v-if="shipment.status === 'Solicitado'" class="min-w-40 p-button-success mt-4" label="Liberar unidades" @click="openModalFree" />
         <div class="flex justify-end mt-4 gap-2">
           <Button class="min-w-40 btn-clean" label="Regresar" @click="returnBack" />
           <!-- <Button class="min-w-40 p-button-success" label="Guardar" @click="save" /> -->
@@ -131,4 +164,21 @@ onMounted(async () => {
       </div>
     </div>
   </div>
+
+  <ConfirmModal
+    id="deleteUnitAssign"
+    v-model="deleteUnitAssignModal"
+    severity="warn"
+    header="Eliminar unidad asignada a la solicitud de transferencia"
+    :message="`¿Estás seguro de eliminar la soliciud de esa unidad?`"
+    accept-text="Eliminar"
+    accept-button-class="p-button-danger"
+    @accept="removeShipmentUnit"
+  />
+  <SuccessModal v-model="showSucessDeleteUnitAssignModal" message="La unidad fue desasignada de la solicitud, paso a estar disponible en el stock" @close="returnBack" />
+  <ErrorModal v-model="showErrorDeleteUnitAssignModal" />
+
+  <ConfirmModal id="showFreeUnitModal" v-model="showFreeUnitModal" header="¿Estás seguro de confirmar el envió de las unidades hacia el banco de sangre destino?" accept-text="Guardar" @accept="freeUnit" />
+  <SuccessModal id="showSuccessFreeUnitModal" v-model="showSuccessFreeUnitModal" message="El envío se ha guardado con éxito" @close="returnBack" />
+  <ErrorModal id="showErrorFreeUnitModal" v-model="showErrorFreeUnitModal" />
 </template>

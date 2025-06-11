@@ -51,6 +51,26 @@ export const useNetworCollaborationStore = defineStore('collaboration', () => {
     }
   };
 
+  const getUnitStock = async (unitId, networkId) => {
+    try {
+      const response = await networkCollaborationService.getUnitStock(unitId, networkId);
+      return response;
+    } catch (error) {
+      console.error('Error al obtener información de unidad: ', error);
+      return false;
+    }
+  };
+
+  const getUnitShipment = async (unitId, shipmentId) => {
+    try {
+      const response = await networkCollaborationService.getUnitShipment(unitId, shipmentId);
+      return response;
+    } catch (error) {
+      console.error('Error al obtener información de unidad: ', error);
+      return false;
+    }
+  };
+
   return {
     networks,
     totalRecords,
@@ -61,6 +81,8 @@ export const useNetworCollaborationStore = defineStore('collaboration', () => {
     currentPageUnits,
     getNetworks,
     getUnitsStock,
-    getOptionsBB
+    getOptionsBB,
+    getUnitStock,
+    getUnitShipment
   };
 });

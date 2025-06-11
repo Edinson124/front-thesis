@@ -91,6 +91,15 @@ export const useUnitStore = defineStore('unit', () => {
       return null;
     }
   };
+  const canViewUnit = async (idUnit) => {
+    try {
+      const response = await unitsService.canViewUnit(idUnit);
+      return response?.canView ?? null;
+    } catch (error) {
+      console.error('Error al verificar unidad: ', error);
+      return null;
+    }
+  };
 
   return {
     getUnits,
@@ -101,6 +110,7 @@ export const useUnitStore = defineStore('unit', () => {
     setStatusAptoUnits,
     setNullIdTranfusion,
     discardUnit,
+    canViewUnit,
     units,
     totalRecords,
     currentPage,

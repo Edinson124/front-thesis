@@ -33,6 +33,7 @@ const v$ = useVuelidate(rules, filters);
 // Columnas de la tabla
 const columns = [
   { field: 'id', header: 'Código' },
+  { field: 'stampPronahebas', header: 'Sello Pronahebas' },
   { field: 'unitType', header: 'Tipo de Unidad' },
   { field: 'bloodType', header: 'Grupo Sanguíneo' },
   { field: 'entryDate', header: 'Fecha Ingreso' },
@@ -103,8 +104,8 @@ function onPage(event) {
 
 function visualizarUnidad(unidad) {
   router.push({
-    path: '/unit/view',
-    query: { donationId: unidad.donationId, unitId: unidad.id }
+    path: '/networks/stock/unit',
+    query: { unitId: unidad.id, networkId: networkId }
   });
 }
 

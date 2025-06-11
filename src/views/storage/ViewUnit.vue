@@ -7,19 +7,16 @@ import UnitSerologyTest from '@/components/unit/UnitSerologyTest.vue';
 import ErrorModal from '@/components/utils/ErrorModal.vue';
 import SuccessModal from '@/components/utils/SuccessModal.vue';
 import { discardReasonOptions } from '@/enums/Units';
-import { useDonationStore } from '@/stores/donation/donations';
 import { useSerologyTestStore } from '@/stores/laboratory/serologyTest';
 import { useUnitStore } from '@/stores/storage/units';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-const donationStore = useDonationStore();
 const serologyStore = useSerologyTestStore();
 const unitStore = useUnitStore();
 const route = useRoute();
 const router = useRouter();
 
-const donation = ref(null);
 const serologyTest = ref(null);
 const bloodType = ref(null);
 const unit = ref(null);
@@ -28,6 +25,7 @@ const donationId = computed(() => route.query.donationId);
 const unitId = computed(() => route.query.unitId);
 const showReactiveWarning = ref(false);
 const fieldPendingReset = ref(null);
+const canViewUnit = ref(false);
 
 const showDiscardModal = ref(false);
 const showSuccessDiscardModal = ref(false);
@@ -72,11 +70,11 @@ const handleDiscardSave = async (reason) => {
 };
 
 onMounted(async () => {
-  const donationResponse = await donationStore.getDonation(donationId.value);
+  const canViewResponse = await unitStore.canViewUnit(unitId.value);
   const serologyTestResponse = await serologyStore.getSerologyTestByDonationId(donationId.value);
   const unitReponse = await unitStore.getUnitById(unitId.value);
+  canViewUnit.value = canViewResponse;
   unit.value = unitReponse;
-  donation.value = donationResponse;
   serologyTest.value = serologyTestResponse;
   bloodType.value = unit.value.bloodType;
   isLoading.value = false;
@@ -88,9 +86,9 @@ onMounted(async () => {
     <ProgressSpinner style="width: 50px; height: 50px" />
   </div>
   <div v-else class="card">
-    <div v-if="!donation.canViewDonation">
+    <div v-if="!canViewUnit">
       <div class="card felx justify-center items-center">
-        <p class="text-red-500">Usted no tiene permisos para visualizar esta donación</p>
+        <p class="text-red-500">Usted no tiene permisos para visualizar esta unidad</p>
       </div>
     </div>
     <div v-else>
