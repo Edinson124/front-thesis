@@ -132,7 +132,7 @@ const rules = computed(() => ({
   documentNumber: { required: required('Número de documento') },
   firstName: { required: required('Nombres'), minLength: minLength('Nombres', 2) },
   lastName: { required: required('Apellido paterno'), minLength: minLength('Apellido paterno', 2) },
-  secondLastName: { minLength: minLength('Apellido materno', 2) },
+  secondLastName: { required: required('Apellido materno'), minLength: minLength('Apellido materno', 2) },
   birthDate: { required: required('Fecha de nacimiento') },
   email: { email: email('Correo electrónico') },
   gender: { required: required('Sexo') },

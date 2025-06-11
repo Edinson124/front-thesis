@@ -1,5 +1,8 @@
 <script setup>
 import UnitTable from '@/components/unit/UnitTable.vue';
+import ConfirmModal from '@/components/utils/ConfirmModal.vue';
+import ErrorModal from '@/components/utils/ErrorModal.vue';
+import SuccessModal from '@/components/utils/SuccessModal.vue';
 import { bloodGroupOptions, rhFactorOptions } from '@/enums/BloodType';
 import { documentTypesPatientOptions } from '@/enums/DocumentTypes';
 import userService from '@/services/admin/users';
@@ -16,6 +19,13 @@ const isNewTransfusion = ref(true);
 const patientStore = usePatientStore();
 const transfusionStore = useTransfusionStore();
 const router = useRouter();
+const indexDelete = ref(null);
+
+const showConfirmModal = ref(false);
+const showSuccessModal = ref(false);
+const showErrorModal = ref(false);
+const deleteUnitRequestDialog = ref(false);
+const showCancelConfirmDialog = ref(false);
 
 // const priorityOptions = [];
 
@@ -76,8 +86,14 @@ const editRequestedUnit = async (index, updatedUnit) => {
     requestedQuantity: updatedUnit.requestedQuantity
   };
 };
+
 const removeRequestedUnit = async (index) => {
   transfusion.request.splice(index, 1);
+};
+
+const openConfirmDelete = async (index) => {
+  indexDelete.value = index;
+  deleteUnitRequestDialog.value = true;
 };
 
 const rules = computed(() => ({
@@ -108,7 +124,12 @@ onMounted(async () => {
     isNewTransfusion.value = false;
     const response = await transfusionStore.getTranfusionAllInfo(transfusionId);
 
-    Object.assign(transfusion, response.transfusion);
+    for (const key in transfusion) {
+      if (Object.prototype.hasOwnProperty.call(response.transfusion, key)) {
+        transfusion[key] = response.transfusion[key];
+      }
+    }
+    transfusion.id = response.transfusion.id;
     transfusion.request = response.request || [];
     patientFound.value = true;
     if (medicUsersRequest.value.length === 0) {
@@ -123,24 +144,30 @@ onMounted(async () => {
 });
 
 const saveTransfusion = async () => {
-  const isValid = await v$.value.$validate();
-  if (!isValid) return;
-
-  const success = await transfusionStore.registerTransfusionRequest(transfusion);
+  const saveMethod = isNewTransfusion.value ? transfusionStore.registerTransfusionRequest : transfusionStore.editTransfusionRequest;
+  const success = await saveMethod(transfusion);
   if (success) {
-    router.back();
+    showSuccessModal.value = true;
+  } else {
+    showErrorModal.value = true;
   }
 };
 
+const handlesaveTransfusion = async () => {
+  const isValid = await v$.value.$validate();
+  if (!isValid) return;
+  showConfirmModal.value = true;
+};
+
 const cancel = () => {
-  router.back();
+  showCancelConfirmDialog.value = true;
 };
 </script>
 <template>
   <div v-if="isLoading" class="card absolute inset-0 bg-white/50 flex items-center justify-center z-10">
     <ProgressSpinner style="width: 50px; height: 50px" />
   </div>
-  <form v-else class="card" @submit.prevent="saveTransfusion">
+  <form v-else class="card" @submit.prevent="handlesaveTransfusion">
     <h3>Solicitud de transfusión</h3>
     <Fieldset legend="Datos generales">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -297,7 +324,7 @@ const cancel = () => {
       v-model="transfusion.request"
       @edit="(index, unit) => editRequestedUnit(index, unit)"
       @add="(unit) => addRequestedUnit(unit)"
-      @remove="(unit) => removeRequestedUnit(unit)"
+      @remove="(index, unit) => openConfirmDelete(index)"
     />
     <Message v-if="v$.request?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.request.$errors[0].$message }}</Message>
 
@@ -306,4 +333,19 @@ const cancel = () => {
       <Button class="min-w-40 p-button-success" label="Guardar" type="submit" />
     </div>
   </form>
+  <ConfirmModal
+    id="deleteUnitRequestDialog"
+    v-model="deleteUnitRequestDialog"
+    severity="warn"
+    header="Eliminar solicitud de unidad"
+    :message="`¿Estás seguro de eliminar esta solicitud de unidad?`"
+    accept-text="Eliminar"
+    accept-button-class="p-button-danger"
+    @accept="removeRequestedUnit"
+  />
+  <ConfirmModal id="showConfirmSaveModal" v-model="showConfirmModal" header="¿Estás seguro de guardar la solicitud de transfusión?" accept-text="Guardar" @accept="saveTransfusion" />
+  <SuccessModal id="showSuccessSaveModal" v-model="showSuccessModal" message="La solicitud fue guardada con éxito" @close="() => router.back()" />
+  <ErrorModal id="showErrorSaveModal" v-model="showErrorModal" />
+
+  <ConfirmModal id="cancelConfirmDialog" v-model="showCancelConfirmDialog" header="¿Estás seguro de que desea cancelar la operación?" accept-text="Sí" accept-button-class="p-button-danger" @accept="() => router.back()" reject-text="No" />
 </template>

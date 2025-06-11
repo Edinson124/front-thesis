@@ -59,7 +59,6 @@ export const useShipmentStore = defineStore('shipments', () => {
 
   const editShipment = async (idShipment, shipmentRequest) => {
     try {
-      console.log('store', shipmentRequest);
       const response = await shipmentService.editShipment(idShipment, shipmentRequest);
       return response;
     } catch (error) {

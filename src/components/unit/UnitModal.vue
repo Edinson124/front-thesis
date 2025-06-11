@@ -26,6 +26,13 @@ const props = defineProps({
     default: null
   }
 });
+const messageConfirm = computed(() => {
+  if (props.type === 'request') {
+    return '¿Estás seguro de agregar esta solicitud de unidades?';
+  } else {
+    return '¿Estás seguro de guardar la unidad?';
+  }
+});
 
 const OPTIONS = computed(() => {
   if (props.typeUnit === 'Sangre Completa') {
@@ -153,5 +160,5 @@ const save = async () => {
       <Button label="Aceptar" class="min-w-40 p-button-success" @click="save" />
     </template>
   </Dialog>
-  <ConfirmModal id="confirmSaveUnitModal" v-model="showConfirmUnitModal" header="¿Estás seguro de guardar la unidad?" accept-text="Guardar" @accept="emitSave" />
+  <ConfirmModal id="confirmSaveUnitModal" v-model="showConfirmUnitModal" :header="messageConfirm" accept-text="Guardar" @accept="emitSave" />
 </template>

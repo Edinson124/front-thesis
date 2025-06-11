@@ -68,7 +68,7 @@ function onPage(event) {
   console.log('Cambio de página:', event);
 }
 
-function visualizarUnidad(transfusion) {
+function visualizarTranfusion(transfusion) {
   router.push({
     path: '/transfusion/view',
     query: { transfusionId: transfusion.id }
@@ -145,7 +145,7 @@ onMounted(async () => {
         <Column header="Acciones" :exportable="false" style="min-width: 8rem">
           <template #body="slotProps">
             <div class="flex justify-center">
-              <Button class="h-8 btn-view" label="Visualizar" @click="visualizarUnidad(slotProps.data)" />
+              <Button class="h-8 btn-view" label="Visualizar" @click="visualizarTranfusion(slotProps.data)" />
             </div>
           </template>
         </Column>

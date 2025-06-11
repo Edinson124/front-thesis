@@ -84,7 +84,6 @@ onMounted(async () => {
   await donationStore.getDonationsByDocumentDonor(documentNumber, documentType);
   const donorResponse = await donorStore.getDonor(documentNumber, documentType);
   Object.assign(donor, { ...donor, ...donorResponse });
-  console.log(donor);
 
   const actualDonationResponse = await donationStore.getActualDonation(documentNumber, documentType);
   //Id actual donación en proceso

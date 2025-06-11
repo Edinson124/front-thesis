@@ -77,6 +77,16 @@ export const useTransfusionStore = defineStore('tranfusion', () => {
     }
   };
 
+  const editTransfusionRequest = async (transfusion) => {
+    try {
+      const response = await transfusionService.editTransfusionRequest(transfusion);
+      return response;
+    } catch (error) {
+      console.error('Error al editar nueva transfusión: ', error);
+      return null;
+    }
+  };
+
   return {
     tranfusionByPatient,
     totalRecordsTranfusionByPatient,
@@ -89,6 +99,7 @@ export const useTransfusionStore = defineStore('tranfusion', () => {
     verifyTransfusionByCode,
     getTranfusionDetail,
     getTranfusionAllInfo,
-    registerTransfusionRequest
+    registerTransfusionRequest,
+    editTransfusionRequest
   };
 });

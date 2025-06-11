@@ -2,7 +2,10 @@
 import { resultTestOptions } from '@/enums/ResultTransfusion';
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@/validation/validators';
-import { reactive, computed } from 'vue';
+import { reactive, computed, ref } from 'vue';
+import ConfirmModal from '@/components/utils/ConfirmModal.vue';
+
+const openConfirm = ref(false);
 
 const result = reactive({ type: '', observation: '' });
 
@@ -19,11 +22,16 @@ const close = () => {
   showModal.value = false;
 };
 
+const confirmResult = () => {
+  emit('save', result);
+  openConfirm.value = false;
+  close();
+};
+
 const save = async () => {
   const isValid = await v$.value.$validate();
   if (!isValid) return;
-  emit('save', result);
-  close();
+  openConfirm.value = true;
 };
 
 const cancel = async () => {
@@ -52,4 +60,5 @@ const cancel = async () => {
       <Button label="Aceptar" class="min-w-40 p-button-success" @click="save" />
     </template>
   </Dialog>
+  <ConfirmModal id="registerResultModal" v-model="openConfirm" :header="`¿Está seguro de guardar el resultado ${result.type ? 'COMPATIBLE' : 'INCOMPATIBLE'}?`" accept-text="Guardar" @accept="confirmResult" />
 </template>

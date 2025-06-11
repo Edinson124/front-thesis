@@ -33,7 +33,6 @@ const rulesRequest = computed(() => ({
 const vRequest$ = useVuelidate(rulesRequest, shipmentRequest, { $scope: false });
 
 const addRequestedUnit = async (unit) => {
-  console.log(unit);
   const newUnit = {
     id: shipmentRequest.units.length + 1,
     unitType: unit.unitType,

@@ -97,7 +97,6 @@ const openDeferralDonorModal = () => {
 };
 const deferralDonor = async (deferral) => {
   const response = await donationStore.deferralDonor(donationId.value, deferral);
-  console.log(response);
   if (response) {
     router.push({ path: 'view', query: { donationId: donationId } });
   }
@@ -135,7 +134,6 @@ onMounted(async () => {
   if (donationId.value) {
     const extractionResponse = await extractionStore.getExtraction(donationId.value);
     if (extractionResponse) {
-      console.log('hola', extractionResponse);
       idExtraction.value = extractionResponse.id;
       newExtraction.value = false;
       for (const key in extraction) {

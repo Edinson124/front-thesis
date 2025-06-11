@@ -1,4 +1,4 @@
-import { get, post } from '@/api';
+import { get, post, put } from '@/api';
 
 const getTransfusionsByDocumentPatient = async (documentNumber, documentType, page = 0) => {
   try {
@@ -75,6 +75,16 @@ const registerTransfusionRequest = async (transfusion) => {
   }
 };
 
+const editTransfusionRequest = async (transfusion) => {
+  try {
+    const response = await put(`/transfusion`, transfusion);
+    return response;
+  } catch (error) {
+    console.error('Error al editar nueva transfusión: ', error);
+    return null;
+  }
+};
+
 const registerTransfusionResult = async (transfusionId, unitId, result, observations) => {
   try {
     const response = await post(`/transfusion/${transfusionId}/result/unit/${unitId}`, { result, observations });
@@ -122,6 +132,7 @@ export default {
   getTranfusionDetail,
   getTranfusionAllInfo,
   registerTransfusionRequest,
+  editTransfusionRequest,
   registerTransfusionResult,
   addTransfusionUnit,
   removeTransfusionUnit,

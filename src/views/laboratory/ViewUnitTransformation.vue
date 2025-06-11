@@ -40,7 +40,6 @@ const closeSuccesStampModal = () => {
 
 const openModalStamp = (unit) => {
   unitStamp.value = unit;
-  console.log(unitStamp);
   showStampModal.value = true;
 };
 

@@ -3,10 +3,12 @@ import DonationForm from '@/components/donation/DonationForm.vue';
 import InfoPatient from '@/components/transfusion/InfoPatient.vue';
 import { usePatientStore } from '@/stores/transfusion/patient';
 import { useTransfusionStore } from '@/stores/transfusion/transfusions';
-
 import { onMounted, reactive, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
+const router = useRouter();
+
+const isOpenDialogDonation = ref(false);
 const patientStore = usePatientStore();
 const transfusionStore = useTransfusionStore();
 const loading = ref(false);
@@ -37,26 +39,32 @@ const columns = [
   { field: 'status', header: 'Estado', width: '12%' }
 ];
 
+function visualizarTranfusion(transfusion) {
+  console.log(transfusion);
+  router.push({
+    path: '/transfusion/view',
+    query: { transfusionId: transfusion.id }
+  });
+}
+
 onMounted(async () => {
   const documentNumber = route.params.doc;
   const documentType = route.params.type;
   // await transfusionStore.getTransfusionsByDocumentPatient(documentNumber, documentType);
   // const patientReponse = await patientStore.getPatient(documentNumber, documentType);
 
-  const [transfusionReponse, patientReponse] = await Promise.all([transfusionStore.getTransfusionsByDocumentPatient(documentNumber, documentType), patientStore.getPatient(documentNumber, documentType)]);
+  const [, patientReponse] = await Promise.all([transfusionStore.getTransfusionsByDocumentPatient(documentNumber, documentType), patientStore.getPatient(documentNumber, documentType)]);
 
   Object.assign(patient, { ...patient, ...patientReponse });
 });
-
-const isOpenDialogDonation = ref(false);
 </script>
 <template>
   <div class="card">
     <div class="mb-4">
       <h3>Visualizar Pacientes</h3>
     </div>
-    <!-- Datos generales del donante -->
-    <Fieldset legend="Datos generales del donante" class="!mb-4">
+    <!-- Datos generales del paciente -->
+    <Fieldset legend="Datos generales del paciente" class="!mb-4">
       <div class="rounded-md px-5 pt-5 pb-2 bg-white">
         <InfoPatient :patient="patient" :isEditable="true" />
       </div>
@@ -87,9 +95,9 @@ const isOpenDialogDonation = ref(false);
 
           <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" :style="`width: ${col.width}`"> </Column>
           <Column header="Acciones">
-            <template #body>
+            <template #body="slotProps">
               <div class="flex flex-wrap w-full">
-                <Button class="h-8 w-[6rem] mr-1 my-1 btn-view" label="Visualizar" />
+                <Button class="h-8 w-[6rem] mr-1 my-1 btn-view" label="Visualizar" @click="visualizarTranfusion(slotProps.data)" />
               </div>
             </template>
           </Column>

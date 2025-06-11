@@ -68,7 +68,6 @@ const openAssignUnitModal = () => {
 };
 
 const openEditUnitModal = (unit, index) => {
-  console.log(unit, index);
   editingIndex.value = index;
   Object.assign(unitCurrent, unit);
   showUnitModal.value = true;

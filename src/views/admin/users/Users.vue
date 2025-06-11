@@ -203,7 +203,7 @@ const reactivateUser = async () => {
         </template>
       </Dialog> -->
 
-      <SuccessModal v-model="showSuccessModal" />
+      <SuccessModal v-model="showSuccessModal" message="El usuario fue guardado con éxito" />
       <ErrorModal v-model="showErrorModal" />
     </div>
   </div>

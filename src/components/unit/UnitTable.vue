@@ -81,7 +81,6 @@ const openRegisterResultModal = (unit, index) => {
 };
 
 const openEditUnitModal = (unit, index) => {
-  console.log(unit, index);
   editingIndex.value = index;
   Object.assign(unitCurrent, unit);
   showUnitModal.value = true;
@@ -128,19 +127,22 @@ const columns = [
     : []),
   ...(props.type === 'singleData'
     ? [
-        { field: 'index', header: 'Indice', width: '10%' },
+        { field: 'index', header: 'N°', width: '10%' },
         { field: 'unitType', header: 'Unidad', width: '25%' },
         { field: 'requestedQuantity', header: 'Cantidad', width: '15%' }
       ]
     : []),
   ...(props.type === 'resultData'
     ? [
-        { field: 'index', header: 'Indice', width: '5%' },
+        { field: 'index', header: 'N°', width: '2%' },
         { field: 'idUnit', header: 'Código', width: '5%' },
-        { field: 'unitType', header: 'Unidad', width: '22%' },
-        { field: 'bloodType', header: 'Grupo sanguíneo', width: '18%' },
-        { field: 'validateResult', header: 'Resultado', width: '15%' },
-        { field: 'performedTestByName', header: 'Resultado registrado por', width: '18%' }
+        { field: 'stampPronahebas', header: 'Sello Pronahebas', width: '8%' },
+        { field: 'unitType', header: 'Unidad', width: '14%' },
+        { field: 'bloodGroup', header: 'Grupo sanguíneo', width: '8%' },
+        { field: 'rhFactor', header: 'Rh Factor', width: '8%' },
+        { field: 'validateResult', header: 'Resultado', width: '10%' },
+        { field: 'performedTestByName', header: 'Resultado registrado por', width: '15%' },
+        { field: 'status', header: 'Estado', width: '10%' }
       ]
     : []),
   ...(props.audit ? [{ field: 'updatedBy', header: 'Actualizado por', width: '12%' }] : [])
@@ -175,6 +177,12 @@ const columns = [
               <template v-else-if="col.field === 'bag'">
                 {{ bagTypes[slotProps.data.bag] }}
               </template>
+              <template v-else-if="col.field === 'bloodGroup'">
+                {{ slotProps.data.bloodType?.charAt(0) }}
+              </template>
+              <template v-else-if="col.field === 'rhFactor'">
+                {{ slotProps.data.bloodType?.includes('+') ? 'POSITIVO' : 'NEGATIVO' }}
+              </template>
               <template v-else>
                 {{ slotProps.data[col.field] }}
               </template>
@@ -187,7 +195,7 @@ const columns = [
               <div class="flex flex-wrap w-full">
                 <Button v-if="typeModal !== 'result'" class="h-8 w-[6rem] mr-1 my-1 btn-edit" label="Editar" @click="() => openEditUnitModal(slotProps.data, slotProps.index)" />
                 <Button v-if="typeModal === 'result' && !returnAction" class="h-8 w-[12rem] mr-1 my-1 btn-edit" label="Registrar resultado" @click="() => openRegisterResultModal(slotProps.data, slotProps.index)" />
-                <Button v-if="typeModal === 'result' && returnAction" class="h-8 w-[12rem] mr-1 my-1 btn-edit" label="Devolución" @click="() => openRegisterResultModal(slotProps.data, slotProps.index)" />
+                <!-- <Button v-if="typeModal === 'result' && returnAction" class="h-8 w-[12rem] mr-1 my-1 btn-edit" label="Devolución" @click="() => openRegisterResultModal(slotProps.data, slotProps.index)" /> -->
                 <Button v-if="typeModal === 'transformation' && slotProps.data.stampPronahebas === null" class="h-8 w-[6rem] mr-1 my-1 btn-edit" label="Sellar" @click="() => emitRegisterStampModal(slotProps.data)" />
                 <Button v-if="!returnAction" class="h-8 w-[6rem] mr-1 my-1" label="Eliminar" severity="danger" @click="removeItem(slotProps.index, slotProps.data)" />
               </div>
@@ -198,7 +206,7 @@ const columns = [
     </div>
 
     <UnitModal v-if="typeModal !== 'result'" v-model="showUnitModal" :unit="unitCurrent" :type="typeModal" :typeUnit="typeUnit" @save="saveUnit" />
-    <StockUnitsModal v-else v-model="showModalStockUnits" :unit="unitCurrent" @select="saveUnit" />
+    <StockUnitsModal v-else v-model="showModalStockUnits" :only-suitable="true" @select="saveUnit" />
 
     <RegisterCrossTestResultModal v-if="typeModal === 'result'" v-model="showModalRegisterResult" @save="saveResult" />
   </div>

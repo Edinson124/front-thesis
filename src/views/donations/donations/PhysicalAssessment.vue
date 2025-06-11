@@ -101,7 +101,6 @@ function normalizeEmptyStringsToNull(obj) {
 const handleSave = async () => {
   const isValid = await v$.value.$validate();
   if (!isValid) return;
-  // console.log('Errores en el formulario', v$.value);
 
   showConfirmModal.value = true;
 };

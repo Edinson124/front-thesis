@@ -1,15 +1,24 @@
 <script setup>
+import ConfirmModal from '@/components/utils/ConfirmModal.vue';
+import ErrorModal from '@/components/utils/ErrorModal.vue';
+import SuccessModal from '@/components/utils/SuccessModal.vue';
 import { RhFactor } from '@/enums/BloodType';
 import { useTransfusionResultStore } from '@/stores/transfusion/transfusionResult';
 import { useTransfusionStore } from '@/stores/transfusion/transfusions';
 import { required, requiredIf } from '@/validation/validators';
 import useVuelidate from '@vuelidate/core';
-import { computed, onMounted, reactive, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
+const router = useRouter();
 const route = useRoute();
 const tranfusionStore = useTransfusionStore();
 const tranfusionResultStore = useTransfusionResultStore();
+
+const showConfirmModal = ref(false);
+const showSuccessModal = ref(false);
+const showErrorModal = ref(false);
+const showCancelConfirmDialog = ref(false);
 
 const transfusionId = computed(() => route.query.transfusionId);
 const transfusionResult = reactive({
@@ -39,10 +48,20 @@ const rules = computed(() => ({
 
 const v$ = useVuelidate(rules, transfusionPerformed);
 
+const saveResult = async () => {
+  const response = await tranfusionResultStore.newTransfusionResult(transfusionId.value, transfusionPerformed);
+  if (response) {
+    showConfirmModal.value = false;
+    showSuccessModal.value = true;
+  } else {
+    showErrorModal.value = true;
+  }
+};
+
 const handleSave = async () => {
   const isValid = await v$.value.$validate();
   if (!isValid) return;
-  await tranfusionResultStore.newTransfusionResult(transfusionId.value, transfusionPerformed);
+  showConfirmModal.value = true;
 };
 watch(transfusionId, (newVal) => {
   if (newVal) {
@@ -50,6 +69,10 @@ watch(transfusionId, (newVal) => {
     transfusionResult.codeTransfusion = newVal;
   }
 });
+const cancel = () => {
+  showCancelConfirmDialog.value = true;
+};
+
 onMounted(async () => {
   const id = route.query.transfusionId;
   if (id) {
@@ -66,6 +89,7 @@ onMounted(async () => {
 
 <template>
   <div class="card">
+    <h2>Resultado de la transfusión</h2>
     <Fieldset legend="Datos generales" class="mb-4">
       <div class="rounded-md px-5 pt-2 pb-2 bg-white">
         <div class="space-y-4">
@@ -178,8 +202,13 @@ onMounted(async () => {
     </Fieldset>
 
     <div class="flex justify-end px-8 my-8 gap-4">
-      <Button class="h-10 w-full md:max-w-[16rem] btn-clean" label="Cancelar" @click="router.back()" />
+      <Button class="h-10 w-full md:max-w-[16rem] btn-clean" label="Cancelar" @click="cancel" />
       <Button class="h-10 w-full md:max-w-[16rem]" label="Guardar" severity="success" @click="handleSave" />
     </div>
   </div>
+  <ConfirmModal id="showConfirmSaveModal" v-model="showConfirmModal" header="¿Estás seguro de guardar resultado de transfusión?" accept-text="Guardar" @accept="saveResult" />
+  <SuccessModal id="showSuccessSaveModal" v-model="showSuccessModal" message="El resultado de la transfusión fue guardada con éxito" @close="() => router.back()" />
+  <ErrorModal id="showErrorSaveModal" v-model="showErrorModal" />
+
+  <ConfirmModal id="cancelConfirmDialog" v-model="showCancelConfirmDialog" header="¿Estás seguro de que desea cancelar la operación?" accept-text="Sí" accept-button-class="p-button-danger" @accept="() => router.back()" reject-text="No" />
 </template>

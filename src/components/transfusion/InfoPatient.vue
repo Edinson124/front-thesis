@@ -30,10 +30,10 @@ const years = computed(() => {
         <div>
           <div class="mb-2"><span class="font-medium">Domicilio: </span> {{ patient.address }} - {{ patient.region }} - {{ patient.province }} - {{ patient.district }}</div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-11 md:gap-y-3 gap-x-6">
+        <!-- <div class="grid grid-cols-1 md:grid-cols-11 md:gap-y-3 gap-x-6">
           <div class="mb-2 md:col-span-7"><span class="font-medium">Ocupación: </span> {{ patient.occupation || '-' }}</div>
           <div class="mb-2 md:col-span-4"><span class="font-medium">Estado civil: </span> {{ patient.maritalStatus || '-' }}</div>
-        </div>
+        </div> -->
         <div class="grid grid-cols-1 md:grid-cols-11 md:gap-y-3 gap-x-6">
           <div class="mb-2 md:col-span-7"><span class="font-medium">Email: </span> {{ patient.email || '-' }}</div>
           <div class="mb-2 md:col-span-4"><span class="font-medium">Teléfono: </span> {{ patient.phone || '-' }}</div>

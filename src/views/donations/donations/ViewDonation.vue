@@ -49,7 +49,6 @@ const redirectSamples = () => {
 const deferralDonor = async (deferral) => {
   isLoading.value = true;
   const response = await donationStore.deferralDonor(donationId.value, deferral);
-  console.log(response);
   if (response) {
     loadDonation();
     return;
