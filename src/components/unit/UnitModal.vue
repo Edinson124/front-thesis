@@ -35,7 +35,7 @@ const messageConfirm = computed(() => {
 });
 
 const OPTIONS = computed(() => {
-  if (props.typeUnit === 'Sangre Completa') {
+  if (props.typeUnit === 'Sangre total') {
     return unitTypesTransformationOptions;
   } else {
     return unitTypesTransformationOptionsPFC;

@@ -21,7 +21,6 @@ const serologyTest = ref(null);
 const bloodType = ref(null);
 const unit = ref(null);
 
-const donationId = computed(() => route.query.donationId);
 const unitId = computed(() => route.query.unitId);
 const showReactiveWarning = ref(false);
 const fieldPendingReset = ref(null);
@@ -71,8 +70,8 @@ const handleDiscardSave = async (reason) => {
 
 onMounted(async () => {
   const canViewResponse = await unitStore.canViewUnit(unitId.value);
-  const serologyTestResponse = await serologyStore.getSerologyTestByDonationId(donationId.value);
   const unitReponse = await unitStore.getUnitById(unitId.value);
+  const serologyTestResponse = await serologyStore.getSerologyTestByDonationId(unitReponse.donationId);
   canViewUnit.value = canViewResponse;
   unit.value = unitReponse;
   serologyTest.value = serologyTestResponse;

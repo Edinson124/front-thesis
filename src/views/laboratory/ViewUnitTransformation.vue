@@ -112,7 +112,7 @@ onMounted(async () => {
     </div>
     <div v-else>
       <h2>Fraccionar Unidad</h2>
-      <Fieldset legend="Datos de la unidad" class="!mb-4">
+      <Fieldset legend="Datos de la donación" class="!mb-4">
         <div class="rounded-md px-5 pt-5 pb-2 bg-white">
           <InfoDonation :donation="donation?.donation" :isEditable="false" />
         </div>
@@ -127,6 +127,7 @@ onMounted(async () => {
         typeModal="transformation"
         :loading="isLoading"
         :totalUnits="unitsTransformationStore.totalUnitsFromUnit"
+        :typeUnit="unit.unitType"
         @edit="editUnit"
         @add="saveUnit"
         @stamp="openModalStamp"

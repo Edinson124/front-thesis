@@ -4,7 +4,7 @@ import UnitTable from '@/components/unit/UnitTable.vue';
 import ConfirmModal from '@/components/utils/ConfirmModal.vue';
 import ErrorModal from '@/components/utils/ErrorModal.vue';
 import SuccessModal from '@/components/utils/SuccessModal.vue';
-import { transfusionStatusAssignPermit, transfusionStatusReturnAction } from '@/enums/Status';
+import { transfusionStatusAssignPermit, transfusionStatusEdit, transfusionStatusReturnAction } from '@/enums/Status';
 import { useUnitStore } from '@/stores/storage/units';
 import { useTransfusionResultStore } from '@/stores/transfusion/transfusionAssignment';
 import { useTransfusionStore } from '@/stores/transfusion/transfusions';
@@ -22,6 +22,7 @@ const assignPermit = ref(null);
 const returnAction = ref(null);
 const isLoading = ref(true);
 const canViewTransfusion = ref(false);
+const canEditRequest = ref(false);
 
 const showAssignErrorModal = ref(null);
 
@@ -63,6 +64,7 @@ onMounted(async () => {
     transfusion.value = response;
     assignPermit.value = transfusionStatusAssignPermit.includes(response.transfusion.status);
     returnAction.value = transfusionStatusReturnAction.includes(response.transfusion.status);
+    canEditRequest.value = transfusionStatusEdit.includes(response.transfusion.status);
   }
   canViewTransfusion.value = response.canViewTransfusion;
   isLoading.value = false;
@@ -156,7 +158,7 @@ const freeUnits = async () => {
       </div>
 
       <!-- Datos generales de la transfusión -->
-      <InfoTransfusions :transfusion="transfusion.transfusion" />
+      <InfoTransfusions :transfusion="transfusion.transfusion" :is-editable="canEditRequest" />
 
       <!-- Unidades solicitadas -->
       <UnitTable class="my-4" title="Unidades solicitadas" :read-only="true" type="singleData" :loading="isLoading" v-model="transfusion.request" />
@@ -274,7 +276,7 @@ const freeUnits = async () => {
       accept-text="Aceptar"
       @accept="freeUnits"
     />
-    <SuccessModal id="freeUnitsTranfusionSucess" v-model="showfreeUnitsTransfusionSucessModal" message="Se ha registrado el resultado" @close="confirmDeleteAssignUnit" />
+    <SuccessModal id="freeUnitsTranfusionSucess" v-model="showfreeUnitsTransfusionSucessModal" message="Se ha registrado el resultado" @close="() => router.back()" />
     <ErrorModal id="freeUnitsTranfusionError" v-model="showfreeUnitsTransfusionErrorModal" />
   </div>
 </template>

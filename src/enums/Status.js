@@ -26,6 +26,7 @@ export const TranfusionStatus = {
 
 export const transfusionStatusAssignPermit = [TranfusionStatus.Pendiente.label, TranfusionStatus.Aceptada.label];
 export const transfusionStatusReturnAction = [TranfusionStatus.Liberada.label];
+export const transfusionStatusEdit = [TranfusionStatus.Pendiente.label, TranfusionStatus.Aceptada.label];
 
 export const ExtractionStatus = {
   Interrumpida: { label: 'Interrumpida' },

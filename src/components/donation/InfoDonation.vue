@@ -7,7 +7,7 @@ defineProps({
 
 <template>
   <div>
-    <!-- Información del Donante -->
+    <!-- Información de la donación -->
     <div>
       <div>
         <div class="mb-2">
