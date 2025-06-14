@@ -138,10 +138,10 @@ const columns = [
               <template v-if="col.field === 'index'">
                 {{ slotProps.index + 1 }}
               </template>
-              <template v-else-if="col.field === 'bloodGroup'">
+              <template v-else-if="type === 'shipmentDataAssign' && col.field === 'bloodGroup'">
                 {{ slotProps.data.bloodType?.charAt(0) }}
               </template>
-              <template v-else-if="col.field === 'rhFactor'">
+              <template v-else-if="type === 'shipmentDataAssign' && col.field === 'rhFactor'">
                 {{ slotProps.data.bloodType?.includes('+') ? 'POSITIVO' : 'NEGATIVO' }}
               </template>
               <template v-else>
