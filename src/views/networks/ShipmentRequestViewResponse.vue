@@ -41,6 +41,10 @@ const shipmentRequest = reactive({
   assignment: []
 });
 
+const closeSuccesDelete = () => {
+  showSucessDeleteUnitAssignModal.value = false;
+};
+
 const returnBack = () => {
   router.push({
     path: '/networks/Shipments'
@@ -175,7 +179,7 @@ onMounted(async () => {
     accept-button-class="p-button-danger"
     @accept="removeShipmentUnit"
   />
-  <SuccessModal v-model="showSucessDeleteUnitAssignModal" message="La unidad fue desasignada de la solicitud, paso a estar disponible en el stock" @close="returnBack" />
+  <SuccessModal v-model="showSucessDeleteUnitAssignModal" message="La unidad fue desasignada de la solicitud, paso a estar disponible en el stock" @close="closeSuccesDelete" />
   <ErrorModal v-model="showErrorDeleteUnitAssignModal" />
 
   <ConfirmModal id="showFreeUnitModal" v-model="showFreeUnitModal" header="¿Estás seguro de confirmar el envió de las unidades hacia el banco de sangre destino?" accept-text="Guardar" @accept="freeUnit" />
