@@ -2,7 +2,7 @@
 import { useAuthStore } from '@/stores/auth';
 import { required } from '@/validation/validators';
 import useVuelidate from '@vuelidate/core';
-import { computed, reactive } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -12,6 +12,8 @@ const userLogin = reactive({
   username: '',
   password: ''
 });
+
+const credentialsError = ref('');
 
 const rules = computed(() => {
   return {
@@ -27,6 +29,7 @@ const rules = computed(() => {
 const v$ = useVuelidate(rules, userLogin);
 
 const login = async () => {
+  credentialsError.value = '';
   const isValid = await v$.value.$validate();
   if (!isValid) {
     return;
@@ -35,6 +38,8 @@ const login = async () => {
   const success = await authStore.login(userLogin.username, userLogin.password);
   if (success) {
     router.push('/');
+  } else {
+    credentialsError.value = 'Credenciales no válidas. Por favor, inténtalo de nuevo.';
   }
 };
 </script>
@@ -57,6 +62,8 @@ const login = async () => {
             <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Contraseña</label>
             <Password id="password1" v-model="userLogin.password" placeholder="Contraseña" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
             <Message v-if="v$.password?.$error" severity="error" size="small" variant="simple" class="pt-0 mt-0 mb-4">{{ v$.password?.$errors[0].$message }}</Message>
+
+            <Message v-if="credentialsError" severity="error" size="small" variant="simple" class="pt-0 mt-0 mb-4">{{ credentialsError }}</Message>
 
             <div class="flex items-center justify-end mt-2 mb-8 gap-8">
               <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">¿Olvidaste tu contraseña?</span>
