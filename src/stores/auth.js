@@ -24,7 +24,7 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await authService.login(username.value, password.value);
 
       if (response && response.username) {
-        user.value = response.username;
+        user.value = response.fullName;
 
         localStorage.setItem('user', response.username);
         localStorage.setItem('fullName', response.fullName);

@@ -115,7 +115,10 @@ onMounted(async () => {
       </div>
     </div>
     <div v-else>
-      <h1 class="text-2xl font-bold mb-4">Visualizar solicitud de tranferencia</h1>
+      <div class="mb-4 flex flex-wrap justify-between items-center gap-2">
+        <h1 class="text-2xl font-bold mb-4">Visualizar solicitud de tranferencia</h1>
+        <Button v-if="!readOnly" class="h-8 w-full md:grow md:max-w-[16rem]" label="Rechazar solicitud" severity="danger" @click="openDeferralDonorModal()" />
+      </div>
 
       <!-- Campos de Red y Banco de sangre -->
       <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">

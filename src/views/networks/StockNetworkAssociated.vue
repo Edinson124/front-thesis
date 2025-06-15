@@ -35,7 +35,8 @@ const columns = [
   { field: 'id', header: 'Código' },
   { field: 'stampPronahebas', header: 'Sello Pronahebas' },
   { field: 'unitType', header: 'Tipo de Unidad' },
-  { field: 'bloodType', header: 'Grupo Sanguíneo' },
+  { field: 'bloodGroup', header: 'Grupo Sanguíneo' },
+  { field: 'rhFactor', header: 'Rh Factor' },
   { field: 'entryDate', header: 'Fecha Ingreso' },
   { field: 'expirationDate', header: 'Fecha Vencimiento' },
   { field: 'status', header: 'Estado' }
@@ -200,7 +201,19 @@ onMounted(async () => {
               <p class="text-gray-600 text-lg py-4">No se encontraron unidades disponibles o reservadas con los filtros seleccionados.</p>
             </template>
 
-            <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" :sortable="col.sortable"> </Column>
+            <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" :sortable="col.sortable">
+              <template #body="slotProps">
+                <template v-if="col.field === 'bloodGroup'">
+                  {{ slotProps.data.bloodType?.charAt(0) }}
+                </template>
+                <template v-else-if="col.field === 'rhFactor'">
+                  {{ slotProps.data.bloodType?.includes('+') ? 'POSITIVO' : 'NEGATIVO' }}
+                </template>
+                <template v-else>
+                  {{ slotProps.data[col.field] }}
+                </template>
+              </template>
+            </Column>
 
             <Column header="Acciones" :exportable="false" style="min-width: 8rem">
               <template #body="slotProps">
