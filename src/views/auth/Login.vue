@@ -1,8 +1,6 @@
 <script setup>
 import { useAuthStore } from '@/stores/auth';
-import { required } from '@/validation/validators';
-import useVuelidate from '@vuelidate/core';
-import { computed, reactive, ref } from 'vue';
+import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -15,25 +13,8 @@ const userLogin = reactive({
 
 const credentialsError = ref('');
 
-const rules = computed(() => {
-  return {
-    username: {
-      required: required('Usuario')
-    },
-    password: {
-      required: required('Contraseña')
-    }
-  };
-});
-
-const v$ = useVuelidate(rules, userLogin);
-
 const login = async () => {
   credentialsError.value = '';
-  const isValid = await v$.value.$validate();
-  if (!isValid) {
-    return;
-  }
 
   const success = await authStore.login(userLogin.username, userLogin.password);
   if (success) {
@@ -56,12 +37,10 @@ const login = async () => {
 
           <div>
             <label for="email1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Usuario</label>
-            <InputText id="email1" type="text" placeholder="Usuario" class="w-full md:w-[30rem] mb-4" v-model="userLogin.username" />
-            <Message v-if="v$.username?.$error" severity="error" size="small" variant="simple" class="pt-0 mt-0 mb-8">{{ v$.username?.$errors[0].$message }}</Message>
+            <InputText id="email1" type="text" placeholder="Usuario" class="w-full md:w-[30rem] mb-8" v-model="userLogin.username" />
 
             <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Contraseña</label>
             <Password id="password1" v-model="userLogin.password" placeholder="Contraseña" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
-            <Message v-if="v$.password?.$error" severity="error" size="small" variant="simple" class="pt-0 mt-0 mb-4">{{ v$.password?.$errors[0].$message }}</Message>
 
             <Message v-if="credentialsError" severity="error" size="small" variant="simple" class="pt-0 mt-0 mb-4">{{ credentialsError }}</Message>
 
