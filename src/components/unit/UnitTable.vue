@@ -50,63 +50,6 @@ const props = defineProps({
 
 const units = defineModel({ type: Array, default: () => [] });
 
-const unitCurrent = reactive({
-  type: '',
-  volume: '',
-  bag: '',
-  anticoagulant: ''
-});
-
-const showUnitModal = ref(false);
-const showModalStockUnits = ref(false);
-const showModalRegisterResult = ref(false);
-const editingIndex = ref(null);
-
-const openNewUnitModal = () => {
-  editingIndex.value = null;
-  Object.assign(unitCurrent, { type: '', volume: '', bag: '', anticoagulant: '' });
-  showUnitModal.value = true;
-};
-
-const openAssignUnitModal = () => {
-  editingIndex.value = null;
-  Object.assign(unitCurrent, {});
-  showModalStockUnits.value = true;
-};
-
-const openRegisterResultModal = (unit, index) => {
-  editingIndex.value = index;
-  Object.assign(unitCurrent, unit);
-  showModalRegisterResult.value = true;
-};
-
-const openEditUnitModal = (unit, index) => {
-  editingIndex.value = index;
-  Object.assign(unitCurrent, unit);
-  showUnitModal.value = true;
-};
-
-const emit = defineEmits(['edit', 'add', 'remove', 'result', 'stamp']);
-
-const emitRegisterStampModal = (unit) => {
-  emit('stamp', unit);
-};
-const removeItem = (index, assign) => {
-  emit('remove', index, assign);
-};
-
-const saveResult = (result) => {
-  emit('result', editingIndex.value, result);
-};
-
-const saveUnit = (unit) => {
-  if (editingIndex.value !== null) {
-    emit('edit', editingIndex.value, unit);
-  } else {
-    emit('add', unit);
-  }
-};
-
 const columns = [
   ...(props.type === 'allData'
     ? [
@@ -147,6 +90,65 @@ const columns = [
     : []),
   ...(props.audit ? [{ field: 'updatedBy', header: 'Actualizado por', width: '12%' }] : [])
 ];
+
+const fields = columns.length > 0 ? columns.map((column) => column.field) : [];
+
+const initialUnitCurrentState = {};
+fields.forEach((field) => {
+  initialUnitCurrentState[field] = '';
+});
+
+const unitCurrent = reactive(initialUnitCurrentState);
+
+const showUnitModal = ref(false);
+const showModalStockUnits = ref(false);
+const showModalRegisterResult = ref(false);
+const editingIndex = ref(null);
+
+const openNewUnitModal = () => {
+  editingIndex.value = null;
+  Object.assign(unitCurrent, initialUnitCurrentState);
+  showUnitModal.value = true;
+};
+
+const openAssignUnitModal = () => {
+  editingIndex.value = null;
+  Object.assign(unitCurrent, initialUnitCurrentState);
+  showModalStockUnits.value = true;
+};
+
+const openRegisterResultModal = (unit, index) => {
+  editingIndex.value = index;
+  Object.assign(unitCurrent, unit);
+  showModalRegisterResult.value = true;
+};
+
+const openEditUnitModal = (unit, index) => {
+  editingIndex.value = index;
+  Object.assign(unitCurrent, unit);
+  showUnitModal.value = true;
+};
+
+const emit = defineEmits(['edit', 'add', 'remove', 'result', 'stamp']);
+
+const emitRegisterStampModal = (unit) => {
+  emit('stamp', unit);
+};
+const removeItem = (index, assign) => {
+  emit('remove', index, assign);
+};
+
+const saveResult = (result) => {
+  emit('result', editingIndex.value, result);
+};
+
+const saveUnit = (unit) => {
+  if (editingIndex.value !== null) {
+    emit('edit', editingIndex.value, unit);
+  } else {
+    emit('add', unit);
+  }
+};
 </script>
 
 <template>

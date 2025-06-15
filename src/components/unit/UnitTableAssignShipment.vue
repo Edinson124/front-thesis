@@ -44,12 +44,38 @@ const props = defineProps({
 
 const units = defineModel({ type: Array, default: () => [] });
 
-const unitCurrent = reactive({
-  type: '',
-  volume: '',
-  bag: '',
-  anticoagulant: ''
+const columns = [
+  ...(props.type === 'shipmentData'
+    ? [
+        { field: 'index', header: 'N°', width: '5%' },
+        { field: 'unitType', header: 'Unidad', width: '25%' },
+        { field: 'bloodGroup', header: 'Grupo Sanguíneo', width: '15%' },
+        { field: 'rhFactor', header: 'Rh', width: '15%' },
+        { field: 'requestedQuantity', header: 'Cantidad', width: '15%' }
+      ]
+    : []),
+  ...(props.type === 'shipmentDataAssign'
+    ? [
+        { field: 'index', header: 'N°', width: '5%' },
+        { field: 'id', header: 'Código', width: '11%' },
+        { field: 'stampPronahebas', header: 'Sello Pronahebas', width: '11%' },
+        { field: 'unitType', header: 'Unidad', width: '25%' },
+        { field: 'bloodGroup', header: 'Grupo Sanguíneo', width: '15%' },
+        { field: 'rhFactor', header: 'Rh', width: '15%' },
+        { field: 'expirationDate', header: 'Fecha de vencimiento', width: '15%' }
+      ]
+    : []),
+  ...(props.audit ? [{ field: 'updatedBy', header: 'Actualizado por', width: '12%' }] : [])
+];
+
+const fields = columns.length > 0 ? columns.map((column) => column.field) : [];
+
+const initialUnitCurrentState = {};
+fields.forEach((field) => {
+  initialUnitCurrentState[field] = '';
 });
+
+const unitCurrent = reactive(initialUnitCurrentState);
 
 const showUnitModal = ref(false);
 const showModalStockUnits = ref(false);
@@ -57,13 +83,13 @@ const editingIndex = ref(null);
 
 const openNewUnitModal = () => {
   editingIndex.value = null;
-  Object.assign(unitCurrent, { type: '', volume: '', bag: '', anticoagulant: '' });
+  Object.assign(unitCurrent, initialUnitCurrentState);
   showUnitModal.value = true;
 };
 
 const openAssignUnitModal = () => {
   editingIndex.value = null;
-  Object.assign(unitCurrent, {});
+  Object.assign(unitCurrent, initialUnitCurrentState);
   showModalStockUnits.value = true;
 };
 
@@ -90,30 +116,6 @@ const saveUnit = (unit) => {
     emit('add', unit);
   }
 };
-
-const columns = [
-  ...(props.type === 'shipmentData'
-    ? [
-        { field: 'index', header: 'N°', width: '5%' },
-        { field: 'unitType', header: 'Unidad', width: '25%' },
-        { field: 'bloodGroup', header: 'Grupo Sanguíneo', width: '15%' },
-        { field: 'rhFactor', header: 'Rh', width: '15%' },
-        { field: 'requestedQuantity', header: 'Cantidad', width: '15%' }
-      ]
-    : []),
-  ...(props.type === 'shipmentDataAssign'
-    ? [
-        { field: 'index', header: 'N°', width: '5%' },
-        { field: 'id', header: 'Código', width: '11%' },
-        { field: 'stampPronahebas', header: 'Sello Pronahebas', width: '11%' },
-        { field: 'unitType', header: 'Unidad', width: '25%' },
-        { field: 'bloodGroup', header: 'Grupo Sanguíneo', width: '15%' },
-        { field: 'rhFactor', header: 'Rh', width: '15%' },
-        { field: 'expirationDate', header: 'Fecha de vencimiento', width: '15%' }
-      ]
-    : []),
-  ...(props.audit ? [{ field: 'updatedBy', header: 'Actualizado por', width: '12%' }] : [])
-];
 </script>
 
 <template>
