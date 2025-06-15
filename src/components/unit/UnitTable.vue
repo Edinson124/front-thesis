@@ -93,12 +93,15 @@ const columns = [
 
 const fields = columns.length > 0 ? columns.map((column) => column.field) : [];
 
-const initialUnitCurrentState = {};
-fields.forEach((field) => {
-  initialUnitCurrentState[field] = '';
-});
+const getEmptyUnitState = () => {
+  const emptyState = {};
+  fields.forEach((field) => {
+    emptyState[field] = '';
+  });
+  return emptyState;
+};
 
-const unitCurrent = reactive(initialUnitCurrentState);
+const unitCurrent = reactive({});
 
 const showUnitModal = ref(false);
 const showModalStockUnits = ref(false);
@@ -107,19 +110,19 @@ const editingIndex = ref(null);
 
 const openNewUnitModal = () => {
   editingIndex.value = null;
-  Object.assign(unitCurrent, initialUnitCurrentState);
+  Object.assign(unitCurrent, getEmptyUnitState());
   showUnitModal.value = true;
 };
 
 const openAssignUnitModal = () => {
   editingIndex.value = null;
-  Object.assign(unitCurrent, initialUnitCurrentState);
+  Object.assign(unitCurrent, getEmptyUnitState());
   showModalStockUnits.value = true;
 };
 
 const openRegisterResultModal = (unit, index) => {
   editingIndex.value = index;
-  Object.assign(unitCurrent, unit);
+  Object.assign(unitCurrent, getEmptyUnitState(), unit);
   showModalRegisterResult.value = true;
 };
 
