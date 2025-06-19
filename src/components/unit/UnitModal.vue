@@ -82,7 +82,7 @@ const resetLocalUnit = () => {
   vUnitModal$.value.$reset(); // Limpia los errores de validación
 };
 
-const vUnitModal$ = useVuelidate(rulesUnitModal, localUnit.value, { $scope: false });
+const vUnitModal$ = useVuelidate(rulesUnitModal, localUnit, { $scope: false });
 const close = () => {
   resetLocalUnit();
   showModal.value = false;
