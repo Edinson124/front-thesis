@@ -6,6 +6,7 @@ export const MenuRoutes = [
   { id: 'admin-roles', label: 'Roles', to: '/admin/roles', parentId: 'admin' },
   { id: 'admin-blood-banks', label: 'Bancos de sangre', to: '/admin/blood-banks', parentId: 'admin' },
   { id: 'admin-network', label: 'Redes', to: '/admin/network', parentId: 'admin' },
+  { id: 'admin-interoperability-auth', label: 'Interoperabilidad', to: '/admin/bbexternal', parentId: 'admin' },
   { id: 'dashboards', label: 'Estadísticas', icon: 'mdi mdi-monitor-dashboard', parentId: 'root' },
   { id: 'donation', label: 'Donaciones', icon: 'mdi mdi-account-multiple-outline', parentId: 'root' },
   { id: 'donor-new', label: 'Registrar donante', to: '/donation/donor/new', parentId: 'donation' },

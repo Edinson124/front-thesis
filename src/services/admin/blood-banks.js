@@ -22,6 +22,25 @@ const getBloodBanks = async (filters = {}, page = 0) => {
   }
 };
 
+const getBloodBanksExternal = async (filters = {}, page = 0) => {
+  try {
+    let queryString = new URLSearchParams();
+    queryString.append('page', page);
+
+    for (const key in filters) {
+      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+        queryString.append(key, filters[key]);
+      }
+    }
+
+    const response = await get(`/blood-bank/paginated/external?${queryString.toString()}`);
+    return response;
+  } catch (error) {
+    console.error('Error al obtener bancos de sangre: ', error);
+    return [];
+  }
+};
+
 const getBloodBanksOptions = async () => {
   try {
     const response = await get(`/blood-bank/select`);
@@ -109,6 +128,7 @@ const getBloodBanksOptionsAddNetwork = async (filters = {}, page = 0) => {
 
 export default {
   getBloodBanks,
+  getBloodBanksExternal,
   getBloodBanksOptions,
   getBloodBank,
   newBloodBank,

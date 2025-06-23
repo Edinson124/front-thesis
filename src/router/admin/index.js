@@ -1,4 +1,5 @@
 import bloodBanksRoutes from './blood-banks';
+import interoperabilitRoutes from './interoperability';
 import networkRoutes from './network';
 import rolesRoutes from './roles';
 import usersRoutes from './users';
@@ -17,5 +18,6 @@ export default [
   ...usersRoutes,
   ...rolesRoutes,
   ...bloodBanksRoutes,
-  ...networkRoutes
+  ...networkRoutes,
+  ...interoperabilitRoutes
 ];
