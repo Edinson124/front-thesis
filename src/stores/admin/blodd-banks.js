@@ -46,6 +46,17 @@ export const useBloodBanksStore = defineStore('blood-banks', () => {
     }
   };
 
+  const getBloodBanksOptionsInternal = async () => {
+    try {
+      const response = await bloodBanksService.getBloodBanksOptionsInternal();
+      bloodBanksOptions.splice(0, bloodBanksOptions.length, ...response);
+      return true;
+    } catch (error) {
+      console.error('Error al obtener bancos de sangre: ', error);
+      return false;
+    }
+  };
+
   const getBloodBank = async (bloodBankId) => {
     try {
       const response = await bloodBanksService.getBloodBank(bloodBankId);
@@ -99,5 +110,20 @@ export const useBloodBanksStore = defineStore('blood-banks', () => {
     }
   };
 
-  return { bloodBanks, bloodBanksTypes, totalRecords, currentPage, bloodBanksOptions, getBloodBanks, getBloodBanksExtenal, newBloodBank, editBloodBank, getBloodBanksOptions, getBloodBankTypes, getBloodBank, toogleStatus };
+  return {
+    bloodBanks,
+    bloodBanksTypes,
+    totalRecords,
+    currentPage,
+    bloodBanksOptions,
+    getBloodBanks,
+    getBloodBanksExtenal,
+    getBloodBanksOptionsInternal,
+    newBloodBank,
+    editBloodBank,
+    getBloodBanksOptions,
+    getBloodBankTypes,
+    getBloodBank,
+    toogleStatus
+  };
 });

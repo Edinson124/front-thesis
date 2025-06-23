@@ -138,7 +138,7 @@ onMounted(async () => {
   }
 
   await rolesStore.getRolesOptions();
-  await bloodBanksStore.getBloodBanksOptions();
+  await bloodBanksStore.getBloodBanksOptionsInternal();
 
   loadingUser.value = false;
 });
@@ -407,7 +407,7 @@ const handleSaveUser = async () => {
         </div>
       </div>
     </Fluid>
-    <div class="w-full flex items-denter justify-end mb-4 gap-4">
+    <div class="w-full flex items-denter justify-end mt-4 gap-4">
       <Button class="min-w-40 btn-clean" label="Cancelar" @click.prevent="cancel" />
       <Button class="min-w-40 p-button-success" label="Guardar" type="submit" />
     </div>

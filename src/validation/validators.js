@@ -15,3 +15,5 @@ export const maxLength = (fieldName, length) => v.helpers.withMessage(`"${fieldN
 export const requiredMessage = (message) => v.helpers.withMessage(message, v.required);
 
 export const requiredIfMessage = (message, condition) => v.helpers.withMessage(message, v.requiredIf(condition));
+
+export const sameAs = (fieldName, compareWith, message) => v.helpers.withMessage(message || `El campo "${fieldName}" no coincide`, v.sameAs(compareWith));

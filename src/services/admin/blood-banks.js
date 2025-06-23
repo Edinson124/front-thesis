@@ -51,6 +51,16 @@ const getBloodBanksOptions = async () => {
   }
 };
 
+const getBloodBanksOptionsInternal = async () => {
+  try {
+    const response = await get(`/blood-bank/select/internal`);
+    return response;
+  } catch (error) {
+    console.error('Error al obtener opciones de banco de sangre: ', error);
+    return null;
+  }
+};
+
 const getBloodBank = async (bloodBankId) => {
   try {
     const response = await get(`/blood-bank/${bloodBankId}`);
@@ -130,6 +140,7 @@ export default {
   getBloodBanks,
   getBloodBanksExternal,
   getBloodBanksOptions,
+  getBloodBanksOptionsInternal,
   getBloodBank,
   newBloodBank,
   editBloodBank,

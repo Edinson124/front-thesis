@@ -192,7 +192,7 @@ const reactivate = async () => {
         <Column header="Acciones">
           <template #body="slotProps">
             <div class="flex flex-wrap w-full justify-center">
-              <Button class="h-8 w-[6rem] mr-1 my-1 btn-edit" label="Editar" as="router-link" :to="`/admin/blood-banks/${slotProps.data.id}`" />
+              <Button class="h-8 w-[6rem] mr-1 my-1 btn-edit" label="Editar" as="router-link" :to="`/admin/bbexternal/auth/${slotProps.data.id}`" />
               <Button v-if="slotProps.data.status === 'ACTIVE'" class="h-8 w-[6rem] my-1" label="Desactivar" severity="danger" @click="confirmDesactivate(slotProps.data)" />
               <Button v-else class="h-8 w-[6rem] my-1" label="Activar" severity="success" @click="confirmReactivate(slotProps.data)" />
             </div>
