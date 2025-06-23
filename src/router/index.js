@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import adminRoutes from './admin';
 import authRoutes from './auth';
 import donationRoutes from './donations';
+import interoperabilityRoutes from './interoperability';
 import laboratoryRoutes from './laboratory';
 import netwroksRoutes from './networks';
 import storageRoutes from './storage';
@@ -48,6 +49,12 @@ const router = createRouter({
       path: '/',
       component: AppLayout,
       children: netwroksRoutes,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/',
+      component: AppLayout,
+      children: interoperabilityRoutes,
       meta: { requiresAuth: true }
     },
     /**

@@ -31,7 +31,7 @@ export const MenuRoutes = [
   { id: 'networks-shipments', label: 'Solicitudes de tranferencia', to: '/networks/shipments', parentId: 'networks' },
   { id: 'networks-my-shipments', label: 'Mis solicitudes de transferencia', to: '/networks/myShipments', parentId: 'networks' },
   { id: 'interoperability', label: 'Interoperabilidad', icon: 'mdi mdi-wan', parentId: 'root' },
-  { id: 'interoperability-query', label: 'Consultar stock externo', parentId: 'interoperability' }
+  { id: 'interoperability-stock', label: 'Consultar stock externo', to: '/interoperability/stock', parentId: 'interoperability' }
 ];
 
 export const extraRoutes = [
