@@ -25,6 +25,8 @@ const loading = ref(false);
 const loadingAll = ref(false);
 const canView = ref(false);
 
+const internalBloodBanks = computed(() => networkCollaborationStore.bloodBanksOptions.filter((b) => b.isInternal === true));
+
 const rules = computed(() => ({
   idBloodBank: { required: required('Banco de sangre') }
 }));
@@ -134,7 +136,7 @@ onMounted(async () => {
             <div>
               <label class="block mb-1">Seleccione un banco de sangre</label>
               <FloatLabel variant="on">
-                <Select id="idBloodBank" v-model="filters.idBloodBank" :options="networkCollaborationStore.bloodBanksOptions" optionLabel="name" optionValue="id" class="w-full" :invalid="v$.idBloodBank?.$error" />
+                <Select id="idBloodBank" v-model="filters.idBloodBank" :options="internalBloodBanks" optionLabel="name" optionValue="id" class="w-full" :invalid="v$.idBloodBank?.$error" />
                 <label for="idBloodBank">Banco de sangre</label>
               </FloatLabel>
               <Message v-if="v$.idBloodBank?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.idBloodBank.$errors[0].$message }}</Message>

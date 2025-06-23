@@ -82,7 +82,7 @@ const viewShipmentRquest = async (shipment) => {
 // Cargar unidades al montar el componente
 onMounted(async () => {
   loadingBlooBanks.value = true;
-  await Promise.all([bloodBanksStore.getBloodBanksOptions(), searchShipments()]);
+  await Promise.all([bloodBanksStore.getBloodBanksOptionsInternal(), searchShipments()]);
   loadingBlooBanks.value = false;
 });
 </script>

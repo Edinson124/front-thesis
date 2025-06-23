@@ -1,4 +1,5 @@
 <script setup>
+import { isInternalOptions } from '@/enums/BloodBank';
 import { useBloodBanksStore } from '@/stores/admin/blodd-banks';
 import { useNetworkStore } from '@/stores/admin/network';
 import { computed, onMounted, reactive, ref, watchEffect } from 'vue';
@@ -128,6 +129,9 @@ watchEffect(() => {
               v-if="network.bloodBankDetails.length > 0"
             >
               <Column field="id" header="ID" style="width: 10%"></Column>
+              <Column field="isInternal" header="Alcance" style="width: 10%">
+                <template #body="slotProps">{{ isInternalOptions.find((opt) => opt.value === slotProps.data.isInternal)?.label || '-' }} </template>
+              </Column>
               <Column field="name" header="Nombre" style="width: 70%"></Column>
             </DataTable>
             <div v-else class="text-center py-4 text-gray-500">No hay bancos de sangre en esta red</div>

@@ -77,7 +77,7 @@ const openRemoveModal = async (index) => {
 // Métodos
 const onNetworkChange = () => {
   if (networkSelected.value) {
-    bloodBanksOption.value = networkSelected.value.bloodBankDetails ?? [];
+    bloodBanksOption.value = (networkSelected.value.bloodBankDetails ?? []).filter((b) => b.isInternal === true);
     bloodBankSelected.value = null;
   } else {
     bloodBanksOption.value = [];

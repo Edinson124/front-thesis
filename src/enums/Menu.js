@@ -30,8 +30,8 @@ export const MenuRoutes = [
   { id: 'networks-associated', label: ' Visualizar redes asociadas', to: '/networks', parentId: 'networks' },
   { id: 'networks-shipments', label: 'Solicitudes de tranferencia', to: '/networks/shipments', parentId: 'networks' },
   { id: 'networks-my-shipments', label: 'Mis solicitudes de transferencia', to: '/networks/myShipments', parentId: 'networks' },
-  // { id: 'interoperability', label: 'Interoperabilidad', icon: 'mdi mdi-wan', parentId: 'root' },
-  { id: 'interoperability-query', label: 'Consulta información externa', parentId: 'interoperability' }
+  { id: 'interoperability', label: 'Interoperabilidad', icon: 'mdi mdi-wan', parentId: 'root' },
+  { id: 'interoperability-query', label: 'Consultar stock externo', parentId: 'interoperability' }
 ];
 
 export const extraRoutes = [

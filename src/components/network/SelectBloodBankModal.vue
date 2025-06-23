@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue';
+import { isInternalOptions } from '@/enums/BloodBank';
 import ConfirmModal from '@/components/utils/ConfirmModal.vue';
 
 const showConfirmLink = ref(false);
@@ -55,9 +56,12 @@ const onPage = (event) => {
       <!-- Tabla con paginador -->
       <DataTable :value="bloodBanks" :loading="loading" paginator :rows="6" :totalRecords="totalRecords" @page="onPage" lazy class="mb-2">
         <Column field="id" header="ID" style="width: 10%" />
-        <Column field="name" header="Banco de sangre" style="width: 45%" />
-        <Column header="Ubicación" style="width: 35%">
+        <Column field="name" header="Banco de sangre" style="width: 40%" />
+        <Column header="Ubicación" style="width: 30%">
           <template #body="slotProps"> {{ slotProps.data.region }} / {{ slotProps.data.province }} / {{ slotProps.data.district }} </template>
+        </Column>
+        <Column header="Alcance" style="width: 10%">
+          <template #body="slotProps"> {{ isInternalOptions.find((opt) => opt.value === slotProps.data.isInternal)?.label || '-' }} </template>
         </Column>
         <Column header="Acciones" style="width: 10%">
           <template #body="{ data }">

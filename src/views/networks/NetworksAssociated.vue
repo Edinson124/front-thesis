@@ -1,4 +1,5 @@
 <script setup>
+import { isInternalOptions } from '@/enums/BloodBank';
 import { useBloodBanksStore } from '@/stores/admin/blodd-banks';
 import { useNetworCollaborationStore } from '@/stores/networks/networks';
 import { computed, onMounted, reactive, ref, watchEffect } from 'vue';
@@ -40,6 +41,10 @@ const bloodBankDialog = ref({
 
 const viewStockNetwork = async (networkId) => {
   router.push({ path: '/networks/stock', query: { network: networkId } });
+};
+
+const rowClass = (data) => {
+  return data.isInternal === false ? 'row-external' : '';
 };
 
 const searchNetwork = async (event) => {
@@ -140,9 +145,13 @@ watchEffect(() => {
                   }"
                   responsiveLayout="scroll"
                   class="p-datatable-sm"
+                  :rowClass="rowClass"
                   v-if="network.bloodBankDetails.length > 0"
                 >
                   <Column field="id" header="ID" style="width: 10%"></Column>
+                  <Column field="isInternal" header="Alcance" style="width: 10%">
+                    <template #body="slotProps">{{ isInternalOptions.find((opt) => opt.value === slotProps.data.isInternal)?.label || '-' }} </template>
+                  </Column>
                   <Column field="name" header="Nombre" style="width: 70%"></Column>
                 </DataTable>
                 <div v-else class="text-center py-4 text-gray-500">No hay bancos de sangre en esta red</div>
@@ -189,6 +198,10 @@ watchEffect(() => {
 </template>
 
 <style>
+.row-external {
+  background-color: #fbd7d7 !important;
+  color: #d70229 !important;
+}
 /* Any custom styles beyond Tailwind can go here */
 .p-accordion .p-accordion-header .p-accordion-header-link {
   padding: 1rem;
