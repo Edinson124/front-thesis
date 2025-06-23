@@ -2,10 +2,11 @@
 import ConfirmModal from '@/components/utils/ConfirmModal.vue';
 import ErrorModal from '@/components/utils/ErrorModal.vue';
 import SuccessModal from '@/components/utils/SuccessModal.vue';
-import { Status } from '@/enums/Status';
+import { isInternalOptions } from '@/enums/BloodBank';
 import userService from '@/services/admin/users';
 import ubicationService from '@/services/ubication';
 import { useBloodBanksStore } from '@/stores/admin/blodd-banks';
+import { required, requiredIf } from '@/validation/validators';
 import useVuelidate from '@vuelidate/core';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -23,7 +24,8 @@ const bloodBank = reactive({
   region: null,
   province: null,
   district: null,
-  status: 'ACTIVE'
+  idType: null,
+  isInternal: true
 });
 
 const bloodBankImage = ref('/src/assets/images/blood-bank.png');
@@ -61,9 +63,9 @@ onMounted(async () => {
   const bloodBankId = route.params.id;
   if (bloodBankId) {
     isNewBloodBank.value = false;
-    const roleResponse = await bloodBankStore.getBloodBank(bloodBankId);
-    Object.assign(bloodBank, { ...bloodBank, ...roleResponse });
-    await getMedicOptionsCoordinator(bloodBankId);
+    const bloodBankResponse = await bloodBankStore.getBloodBank(bloodBankId);
+    Object.assign(bloodBank, { ...bloodBank, ...bloodBankResponse });
+    if (bloodBank.isInternal) await getMedicOptionsCoordinator(bloodBankId);
   }
 
   const departmentsResponse = await ubicationService.getDepartments();
@@ -107,13 +109,15 @@ const onSelectProvince = async (event) => {
   loadingDistritos.value = false;
 };
 
-const statuses = ['ACTIVE', 'INACTIVE'];
-const statusesOptions = statuses.map((status) => ({
-  value: status,
-  label: Status[status]
+const rules = computed(() => ({
+  name: { required: required('Nombre') },
+  address: { required: required('Dirección') },
+  region: { required: required('Región') },
+  province: { requiredIf: requiredIf('Provincia', () => bloodBank.region) },
+  district: { requiredIf: requiredIf('Distrito', () => bloodBank.province) },
+  idType: { required: required('Tipo de banco de sangre') },
+  isInternal: { required: required('Alcance') }
 }));
-
-const rules = computed(() => ({}));
 const v$ = useVuelidate(rules, bloodBank);
 
 const showConfirmModal = ref(false);
@@ -196,15 +200,15 @@ const handleSaveBloodBank = async () => {
             <div class="grid grid-cols-12 gap-4">
               <span class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
                 <FloatLabel variant="on" class="w-full">
-                  <Select id="id_region" v-model="bloodBank.region" :options="departments" showClear filter @change="onSelectDepartment" :loading="loadingDeparments" :invalid="v$.department?.$error" />
+                  <Select id="id_region" v-model="bloodBank.region" :options="departments" showClear filter @change="onSelectDepartment" :loading="loadingDeparments" :invalid="v$.region?.$error" />
                   <label for="id_region">Departamento</label>
                 </FloatLabel>
-                <Message v-if="v$.department?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.department.$errors[0].$message }}</Message>
+                <Message v-if="v$.region?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.region.$errors[0].$message }}</Message>
               </span>
 
               <span class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
                 <FloatLabel variant="on" class="w-full">
-                  <Select id="id_province" v-model="bloodBank.province" :options="provinces" showClear filter @change="onSelectProvince" :disabled="bloodBank.department === null" :loading="loadingProvinces" :invalid="v$.province?.$error" />
+                  <Select id="id_province" v-model="bloodBank.province" :options="provinces" showClear filter @change="onSelectProvince" :disabled="bloodBank.region === null" :loading="loadingProvinces" :invalid="v$.province?.$error" />
                   <label for="id_province">Provincia</label>
                 </FloatLabel>
                 <Message v-if="v$.province?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.province.$errors[0].$message }}</Message>
@@ -230,20 +234,33 @@ const handleSaveBloodBank = async () => {
             </div>
 
             <div class="grid grid-cols-12 gap-4">
-              <FloatLabel variant="on" class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
-                <Select id="status" v-model="bloodBank.idType" :options="bloodBankStore.bloodBanksTypes" optionLabel="name" optionValue="id" />
-                <label for="status">Tipo de banco de sangre</label>
-              </FloatLabel>
+              <span class="w-full col-span-12 mb-2 md:mb-0">
+                <FloatLabel variant="on" class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
+                  <Select id="status" v-model="bloodBank.idType" :options="bloodBankStore.bloodBanksTypes" optionLabel="name" optionValue="id" :invalid="v$.idType?.$error" />
+                  <label for="status">Tipo de banco de sangre</label>
+                </FloatLabel>
+                <Message v-if="v$.idType?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.idType.$errors[0].$message }}</Message>
+              </span>
             </div>
 
-            <div class="grid grid-cols-12 gap-4">
+            <!-- <div class="grid grid-cols-12 gap-4">
               <FloatLabel variant="on" class="w-full col-span-12 mb-2 md:col-span-4 md:mb-0">
                 <Select id="status" v-model="bloodBank.status" :options="statusesOptions" optionLabel="label" optionValue="value" disabled />
                 <label for="status">Estado</label>
               </FloatLabel>
-            </div>
+            </div> -->
           </div>
           <div class="flex flex-col gap-4 w-full">
+            <div class="font-semibold text-xl">Alcance del banco de sangre</div>
+            <div class="grid grid-cols-12 gap-2">
+              <label for="name3" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Alcance en el sistema: </label>
+              <div class="col-span-12 md:col-span-4">
+                <Select class="" v-model="bloodBank.isInternal" :options="isInternalOptions" optionLabel="label" optionValue="value" :invalid="v$.isInternal?.$error" />
+                <Message v-if="v$.isInternal?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.isInternal.$errors[0].$message }}</Message>
+              </div>
+            </div>
+          </div>
+          <div v-if="bloodBank.isInternal" class="flex flex-col gap-4 w-full mt-2">
             <div class="font-semibold text-xl">Coordinador</div>
             <div class="grid grid-cols-12 gap-2">
               <label for="name3" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Coordinador de banco de sangre</label>

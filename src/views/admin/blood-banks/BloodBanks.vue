@@ -2,6 +2,7 @@
 import ConfirmModal from '@/components/utils/ConfirmModal.vue';
 import ErrorModal from '@/components/utils/ErrorModal.vue';
 import SuccessModal from '@/components/utils/SuccessModal.vue';
+import { isInternalOptions } from '@/enums/BloodBank';
 import ubicationService from '@/services/ubication';
 import { useBloodBanksStore } from '@/stores/admin/blodd-banks';
 import { onMounted, reactive, ref } from 'vue';
@@ -14,6 +15,7 @@ const filters = reactive({
   region: null,
   province: null,
   district: null,
+  isInternal: null,
   status: ''
 });
 
@@ -29,6 +31,7 @@ const resetFilters = () => {
   filters.region = null;
   filters.province = null;
   filters.district = null;
+  filters.isInternal = null;
   filters.status = '';
   filter();
 };
@@ -132,38 +135,53 @@ const reactivate = async () => {
     <div class="bloodbanks-title | mb-4">
       <h3>Administración de Bancos de sangre</h3>
     </div>
-    <div class="bloodbank-filters-container | mb-4 w-full flex flex-col lg:flex-row">
-      <div class="bloodbank-filters | flex flex-wrap gap-2 w-full lg:w-[70%] mb-2 lg:mb-0">
-        <div class="bloodbank-filter | w-full md:w-[35%]">
-          <FloatLabel variant="on" class="w-full">
-            <InputText class="w-full" id="name" v-model="filters.name" aria-describedby="name-help" />
-            <label for="name">Nombre</label>
-          </FloatLabel>
+    <div class="grid grid-cols-12 gap-4">
+      <div class="col-span-12 md:col-span-8 space-y-4">
+        <!-- Primera fila: 2 elementos en md, 1 en móviles -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <FloatLabel variant="on" class="w-full">
+              <InputText class="w-full" id="name" v-model="filters.name" aria-describedby="name-help" />
+              <label for="name">Nombre</label>
+            </FloatLabel>
+          </div>
+          <div>
+            <FloatLabel variant="on" class="w-full">
+              <Select class="w-full" id="is_internal" v-model="filters.isInternal" :options="isInternalOptions" optionLabel="label" optionValue="value" showClear aria-describedby="name-help" />
+              <label for="is_internal">Alcance</label>
+            </FloatLabel>
+          </div>
         </div>
-        <div class="bloodbank-filter | w-full md:w-[20%]">
-          <FloatLabel variant="on" class="w-full">
-            <Select id="id_region" class="w-full" v-model="filters.region" :options="regions" showClear filter @change="onSelectRegion" :loading="loadingRegions" />
-            <label for="id_region">Departamento</label>
-          </FloatLabel>
-        </div>
-        <div class="bloodbank-filter | w-full md:w-[20%]">
-          <FloatLabel variant="on" class="w-full">
-            <Select id="id_province" class="w-full" v-model="filters.province" :options="provinces" showClear filter @change="onSelectProvince" :disabled="filters.region === null" :loading="loadingProvinces" />
-            <label for="id_province">Provincia</label>
-          </FloatLabel>
-        </div>
-        <div class="bloodbank-filter | w-full md:w-[20%]">
-          <FloatLabel variant="on" class="w-full">
-            <Select id="id_district" class="w-full" v-model="filters.district" :options="distritos" showClear filter :disabled="filters.province === null" :loading="loadingDistritos" />
-            <label for="id_district">Distrito</label>
-          </FloatLabel>
+
+        <!-- Segunda fila: 3 elementos en md, 1 en móviles -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <FloatLabel variant="on" class="w-full">
+              <Select id="id_region" class="w-full" v-model="filters.region" :options="regions" showClear filter @change="onSelectRegion" :loading="loadingRegions" />
+              <label for="id_region">Departamento</label>
+            </FloatLabel>
+          </div>
+          <div>
+            <FloatLabel variant="on" class="w-full">
+              <Select id="id_province" class="w-full" v-model="filters.province" :options="provinces" showClear filter @change="onSelectProvince" :disabled="filters.region === null" :loading="loadingProvinces" />
+              <label for="id_province">Provincia</label>
+            </FloatLabel>
+          </div>
+          <div>
+            <FloatLabel variant="on" class="w-full">
+              <Select id="id_district" class="w-full" v-model="filters.district" :options="distritos" showClear filter :disabled="filters.province === null" :loading="loadingDistritos" />
+              <label for="id_district">Distrito</label>
+            </FloatLabel>
+          </div>
         </div>
       </div>
-      <div class="bloodbank-filters-buttons | flex flex-col md:flex-row md:grow justify-end items-center">
+
+      <div class="col-span-12 md:col-span-4 flex flex-col md:flex-row md:grow justify-end items-center">
         <Button class="h-8 w-full md:mr-2 mb-2 md:mb-0" label="Filtrar" severity="info" @click="filter()" />
         <Button class="h-8 w-full md:grow btn-clean" label="Limpiar" @click="resetFilters()" />
       </div>
     </div>
+
     <div class="btn-new-bloodbank | w-full mb-4 flex justify-end">
       <Button class="h-8 w-full md:w-[62%] lg:w-[50%] md:max-w-[16rem]" label="Nuevo Banco de Sangre" icon="pi pi-plus" severity="success" as="router-link" to="/admin/blood-banks/new" />
     </div>
@@ -185,6 +203,10 @@ const reactivate = async () => {
                   <p><strong>Ubicación:</strong> {{ item.region }} / {{ item.province }} /{{ item.district }}</p>
                   <p><strong>Coordinador:</strong> {{ item.fullNameCoordinator }}</p>
                   <p><strong>Tipo:</strong> {{ item.type }}</p>
+                  <p>
+                    <strong>Alcance:</strong>
+                    {{ isInternalOptions.find((opt) => opt.value === item.isInternal)?.label || '-' }}
+                  </p>
                 </div>
                 <div class="flex gap-2 mt-2 justify-center">
                   <Button label="Editar" class="h-8 w-[6rem] btn-edit" as="router-link" :to="`/admin/blood-banks/${item.id}`" />
