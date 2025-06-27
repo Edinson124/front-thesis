@@ -55,7 +55,7 @@ function toggleUserMenu(event) {
           </g>
         </svg>
 
-        <span>Banco</span>
+        <span>YawarSoft</span>
       </router-link>
     </div>
 
