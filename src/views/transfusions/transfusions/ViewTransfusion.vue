@@ -56,7 +56,7 @@ const showModalFreeUnits = ref(false);
 const transfusion = ref(null);
 
 onMounted(async () => {
-  unitStore.idTranfusion = transfusionId;
+  unitStore.idTransfusion = transfusionId;
   await unitStore.getSelectBloodTypesByTransfusion(transfusionId.value);
   await unitStore.setStatusAptoUnits();
   const response = await transfusionStore.getTranfusionAllInfo(transfusionId.value);
@@ -71,7 +71,7 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
-  unitStore.setNullIdTranfusion();
+  unitStore.setNullIdTransfusion();
 });
 
 const assignTransfusionUnit = async (unit) => {

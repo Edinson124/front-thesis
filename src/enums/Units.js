@@ -88,10 +88,12 @@ export const unitStatusOptions = Object.entries(UnitStatus).map(([value, label])
   label
 }));
 
-export const unitStatusApto = Object.entries(UnitStatus.Apto).map(([value, label]) => ({
-  value,
-  label
-}));
+export const unitStatusApto = [
+  {
+    value: 'Apto',
+    label: UnitStatus.Apto
+  }
+];
 
 export const UnitTypesTransformationSearch = {
   'Sangre total': 'Sangre total',

@@ -80,8 +80,8 @@ const searchUnits = async (event) => {
       params.endExpirationDate = formatDate(end);
     }
   }
-  if (unitStore.idTranfusion) {
-    params.idTranfusion = unitStore.idTranfusion;
+  if (unitStore.idTransfusion) {
+    params.idTransfusion = unitStore.idTransfusion;
   }
   if (props.onlySuitable) {
     params.onlySuitable = props.onlySuitable;
@@ -182,7 +182,7 @@ onMounted(async () => {
 
     <!-- Sección de resultados -->
     <div>
-      <h2 class="text-xl font-semibold mb-4">Resultados de unidades para fraccionar</h2>
+      <h2 class="text-xl font-semibold mb-4">Resultados de unidades</h2>
 
       <DataTable
         :value="unitStore.units"

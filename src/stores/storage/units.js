@@ -10,7 +10,7 @@ export const useUnitStore = defineStore('unit', () => {
   const totalRecords = ref(0);
   const currentPage = ref(0);
 
-  const idTranfusion = ref(0);
+  const idTransfusion = ref(0);
   const bloodTypesSelect = reactive([...bloodTypesOptions]);
   const statusTypesSelect = reactive([...unitStatusOptions]);
 
@@ -37,9 +37,9 @@ export const useUnitStore = defineStore('unit', () => {
     }
   };
 
-  const getSelectBloodTypesByTransfusion = async (idTranfusion) => {
+  const getSelectBloodTypesByTransfusion = async (idTransfusion) => {
     try {
-      const response = await transfusionAssignmentService.getBloodOptions(idTranfusion);
+      const response = await transfusionAssignmentService.getBloodOptions(idTransfusion);
       bloodTypesSelect.splice(0, bloodTypesSelect.length, ...response);
       return true;
     } catch (error) {
@@ -60,7 +60,7 @@ export const useUnitStore = defineStore('unit', () => {
 
   const setStatusAptoUnits = async () => {
     try {
-      bloodTypesSelect.splice(0, bloodTypesSelect.length, ...unitStatusApto);
+      statusTypesSelect.splice(0, statusTypesSelect.length, ...unitStatusApto);
       return true;
     } catch (error) {
       console.error('Error al obtener losestado de sangre: ', error);
@@ -70,7 +70,7 @@ export const useUnitStore = defineStore('unit', () => {
 
   const setStatusUnits = async () => {
     try {
-      bloodTypesSelect.splice(0, bloodTypesSelect.length, ...unitStatusOptions);
+      statusTypesSelect.splice(0, statusTypesSelect.length, ...unitStatusOptions);
       return true;
     } catch (error) {
       console.error('Error al obtener losestado de sangre: ', error);
@@ -78,8 +78,8 @@ export const useUnitStore = defineStore('unit', () => {
     }
   };
 
-  const setNullIdTranfusion = () => {
-    idTranfusion.value = null;
+  const setNullIdTransfusion = () => {
+    idTransfusion.value = null;
   };
 
   const discardUnit = async (idUnit, reason) => {
@@ -108,7 +108,7 @@ export const useUnitStore = defineStore('unit', () => {
     getSelectBloodTypesAll,
     setStatusUnits,
     setStatusAptoUnits,
-    setNullIdTranfusion,
+    setNullIdTransfusion,
     discardUnit,
     canViewUnit,
     units,
@@ -116,6 +116,6 @@ export const useUnitStore = defineStore('unit', () => {
     currentPage,
     bloodTypesSelect,
     statusTypesSelect,
-    idTranfusion
+    idTransfusion
   };
 });
