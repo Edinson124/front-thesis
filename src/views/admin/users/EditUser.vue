@@ -10,7 +10,7 @@ import ubicationService from '@/services/ubication';
 import { useBloodBanksStore } from '@/stores/admin/blodd-banks';
 import { useRolesStore } from '@/stores/admin/roles';
 import { useUsersStore } from '@/stores/admin/users';
-import { email, minLength, required, requiredIf } from '@/validation/validators';
+import { email, isAdult, minLength, required, requiredIf } from '@/validation/validators';
 import { useVuelidate } from '@vuelidate/core';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -175,7 +175,10 @@ const rules = computed(() => ({
   firstName: { required: required('Nombres'), minLength: minLength('Nombres', 2) },
   lastName: { required: required('Apellido paterno'), minLength: minLength('Apellido paterno', 2) },
   secondLastName: { required: required('Apellido paterno'), minLength: minLength('Apellido materno', 2) },
-  birthDate: { required: required('Fecha de nacimiento') },
+  birthDate: {
+    required: required('Fecha de nacimiento'),
+    isAdult: isAdult('Fecha de nacimiento')
+  },
   email: { required: required('Correo electrónico'), email: email('Correo electrónico') },
   gender: { required: required('Sexo') },
   phone: { required: required('Teléfono') },

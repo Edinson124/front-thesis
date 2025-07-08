@@ -22,6 +22,11 @@ defineProps({
           </div>
 
           <div class="flex">
+            <div class="mr-2">Prioridad:</div>
+            <div>{{ transfusion.priority }}</div>
+          </div>
+
+          <div class="flex">
             <div class="mr-2">Documento paciente:</div>
             <div>{{ transfusion.patientDocumentType }} - {{ transfusion.patientDocumentNumber }}</div>
           </div>

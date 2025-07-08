@@ -206,7 +206,7 @@ const freeUnits = async () => {
               <div class="grid grid-cols-1 md:grid-cols-4 md:gap-y-3 gap-x-6">
                 <div class="mb-2 md:col-span-2">
                   <div class="mt-2"><span class="font-medium">Fecha de transfusión: </span> {{ transfusion.result.transfusionDate }}</div>
-                  <div class="mt-2"><span class="font-medium">N° Colegiatura médico que realizo la transfusion: </span> {{ transfusion.result.transfusionDoctorLicenseNumber }}</div>
+                  <div class="mt-2"><span class="font-medium">N° Documento de enfermero resposanble de transfusion: </span> {{ transfusion.result.transfusionDoctorLicenseNumber }}</div>
                 </div>
                 <div class="mb-2 md:col-span-2">
                   <div class="mt-2"><span class="font-medium">Registrado el: </span> {{ transfusion.result.createdAt }}</div>
@@ -214,7 +214,7 @@ const freeUnits = async () => {
                 </div>
               </div>
               <div class="grid grid-cols-1">
-                <div class="mt-2"><span class="font-medium">Nombre médico que realizo la transfusion: </span> {{ transfusion.result.transfusionDoctorName }}</div>
+                <div class="mt-2"><span class="font-medium">Enfemero responsable de transfusion: </span> {{ transfusion.result.transfusionDoctorName }}</div>
                 <div class="mt-2">
                   <span class="font-medium"> Presentó reacción advsersa: </span><span class="font-bold">{{ transfusion.result.reactionAdverse ? 'SI' : 'NO' }}</span>
                 </div>

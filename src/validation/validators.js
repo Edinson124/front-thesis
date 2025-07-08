@@ -17,3 +17,15 @@ export const requiredMessage = (message) => v.helpers.withMessage(message, v.req
 export const requiredIfMessage = (message, condition) => v.helpers.withMessage(message, v.requiredIf(condition));
 
 export const sameAs = (fieldName, compareWith, message) => v.helpers.withMessage(message || `El campo "${fieldName}" no coincide`, v.sameAs(compareWith));
+
+export const isAdult = (fieldName = 'Edad') =>
+  v.helpers.withMessage(
+    `El campo "${fieldName}" requiere al menos 18 años`,
+    v.helpers.withParams({}, (value) => {
+      if (!value) return true;
+      const today = new Date();
+      const eighteenYearsAgo = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+      const birth = new Date(value);
+      return birth <= eighteenYearsAgo;
+    })
+  );

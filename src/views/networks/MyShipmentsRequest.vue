@@ -1,5 +1,5 @@
 <script setup>
-import { shipmentStatusOptions } from '@/enums/Status';
+import { myShipmentStatusOptions } from '@/enums/Status';
 import { useBloodBanksStore } from '@/stores/admin/blodd-banks';
 import { useShipmentStore } from '@/stores/networks/shipments';
 import { onMounted, reactive, ref } from 'vue';
@@ -122,7 +122,7 @@ onMounted(async () => {
 
           <div>
             <FloatLabel variant="on">
-              <Select id="status" v-model="filters.status" :options="shipmentStatusOptions" optionLabel="label" optionValue="value" class="w-full" />
+              <Select id="status" v-model="filters.status" :options="myShipmentStatusOptions" optionLabel="label" optionValue="value" class="w-full" />
               <label for="status">Estado</label>
             </FloatLabel>
           </div>

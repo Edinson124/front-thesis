@@ -9,6 +9,17 @@ export const UnitTypes = {
   'Aféresis de plasma': 'Aféresis de plasma'
 };
 
+export const UnitTypesTranslate = {
+  'Sangre total': 'totalBlood',
+  'Concentrado de eritrocitos': 'erythrocyteConcentrate',
+  'Plasma fresco congelado': 'freshFrozenPlasma',
+  Crioprecipitados: 'cryoprecipitate',
+  Plaquetas: 'platelet',
+  'Aféresis de plaquetas': 'plateletApheresis',
+  'Aféresis de glóbulos rojos': 'redBloodCellsApheresis',
+  'Aféresis de plasma': 'plasmaApheresis'
+};
+
 export const UnitStatus = {
   Apto: 'Apto',
   Reservado: 'Reservado'

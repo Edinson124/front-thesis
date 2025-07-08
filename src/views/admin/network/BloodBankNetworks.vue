@@ -129,7 +129,7 @@ watchEffect(() => {
               v-if="network.bloodBankDetails.length > 0"
             >
               <Column field="id" header="ID" style="width: 10%"></Column>
-              <Column field="isInternal" header="Alcance" style="width: 10%">
+              <Column field="isInternal" header="Acceso" style="width: 10%">
                 <template #body="slotProps">{{ isInternalOptions.find((opt) => opt.value === slotProps.data.isInternal)?.label || '-' }} </template>
               </Column>
               <Column field="name" header="Nombre" style="width: 70%"></Column>

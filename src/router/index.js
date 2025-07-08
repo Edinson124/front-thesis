@@ -1,6 +1,7 @@
 import AppLayout from '@/layout/AppLayout.vue';
 import { useAuthStore } from '@/stores/auth';
 import { createRouter, createWebHistory } from 'vue-router';
+
 import adminRoutes from './admin';
 import authRoutes from './auth';
 import donationRoutes from './donations';
@@ -14,62 +15,38 @@ import transfusionRoutes from './transfusions';
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    ...authRoutes,
+    ...authRoutes, // rutas públicas como /login
+
     {
       path: '/',
       component: AppLayout,
-      children: adminRoutes,
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/',
-      component: AppLayout,
-      children: donationRoutes,
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/',
-      component: AppLayout,
-      children: laboratoryRoutes,
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/',
-      component: AppLayout,
-      children: storageRoutes,
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/',
-      component: AppLayout,
-      children: transfusionRoutes,
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/',
-      component: AppLayout,
-      children: netwroksRoutes,
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/',
-      component: AppLayout,
-      children: interoperabilityRoutes,
-      meta: { requiresAuth: true }
-    },
-    /**
-     * TODO: Borrar rutas de la plantilla
-     */
-    {
-      path: '/template',
-      component: AppLayout,
-      children: templateRoutes
+      meta: { requiresAuth: true },
+      children: [
+        {
+          path: '',
+          name: 'welcome',
+          component: () => import('@/views/Welcome.vue')
+        },
+        {
+          path: '/dashboards',
+          name: 'dashboards',
+          component: () => import('@/views/Dashboard.vue')
+        },
+        ...adminRoutes,
+        ...donationRoutes,
+        ...laboratoryRoutes,
+        ...storageRoutes,
+        ...transfusionRoutes,
+        ...netwroksRoutes,
+        ...interoperabilityRoutes,
+        ...templateRoutes // si aún deseas dejar la ruta /template
+      ]
     }
   ]
 });
 
-// eslint-disable-next-line no-unused-vars
-router.beforeEach((to, from) => {
+// Middleware de navegación
+router.beforeEach((to) => {
   const usersStore = useAuthStore();
 
   if (to.meta.requiresAuth && !usersStore.isLoggedIn) {

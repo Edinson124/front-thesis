@@ -6,11 +6,6 @@ import usersRoutes from './users';
 
 export default [
   {
-    path: '/',
-    name: 'dashboard',
-    component: () => import('@/views/Dashboard.vue')
-  },
-  {
     path: '/admin/variables',
     name: 'admin-variables',
     component: () => import('@/views/admin/GlobalVariables.vue')

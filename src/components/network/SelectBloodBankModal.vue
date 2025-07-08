@@ -60,7 +60,7 @@ const onPage = (event) => {
         <Column header="Ubicación" style="width: 30%">
           <template #body="slotProps"> {{ slotProps.data.region }} / {{ slotProps.data.province }} / {{ slotProps.data.district }} </template>
         </Column>
-        <Column header="Alcance" style="width: 10%">
+        <Column header="Acceso" style="width: 10%">
           <template #body="slotProps"> {{ isInternalOptions.find((opt) => opt.value === slotProps.data.isInternal)?.label || '-' }} </template>
         </Column>
         <Column header="Acciones" style="width: 10%">

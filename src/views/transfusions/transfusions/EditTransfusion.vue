@@ -5,6 +5,7 @@ import ErrorModal from '@/components/utils/ErrorModal.vue';
 import SuccessModal from '@/components/utils/SuccessModal.vue';
 import { bloodGroupOptions, rhFactorOptions } from '@/enums/BloodType';
 import { documentTypesPatientOptions } from '@/enums/DocumentTypes';
+import { transfusionPriorityOptions } from '@/enums/TransfusionPriority';
 import userService from '@/services/admin/users';
 import { usePatientStore } from '@/stores/transfusion/patient';
 import { useTransfusionStore } from '@/stores/transfusion/transfusions';
@@ -48,7 +49,7 @@ const transfusion = reactive({
   attendingDoctor: '',
   bed: '',
   medicalService: '',
-  // priority: '',
+  priority: '',
   hasCrossmatch: '',
   diagnosis: '',
   requestReason: '',
@@ -102,7 +103,7 @@ const rules = computed(() => ({
   attendingDoctor: { required: required('Médico') },
   bed: { required: required('Cama') },
   medicalService: { required: required('Servicio') },
-  // priority: { required: required('Prioridad') },
+  priority: { required: required('Prioridad') },
   hasCrossmatch: { required: required('Pruebas cruzadas') },
   diagnosis: { required: required('Diagnostico') },
   requestReason: { required: required('Motivo') },
@@ -272,13 +273,13 @@ const cancel = () => {
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <!-- <div>
+        <div>
           <FloatLabel variant="on">
-            <Select id="id_priority" v-model="transfusion.priority" :options="priorityOptions" optionLabel="label" optionValue="value" class="w-full" :invalid="v$.priority?.$error" />
+            <Select id="id_priority" v-model="transfusion.priority" :options="transfusionPriorityOptions" optionLabel="label" optionValue="value" class="w-full" :invalid="v$.priority?.$error" />
             <label for="id_priority">Prioridad</label>
           </FloatLabel>
           <Message v-if="v$.priority?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.priority.$errors[0].$message }}</Message>
-        </div> -->
+        </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-8">

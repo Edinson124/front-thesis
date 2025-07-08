@@ -7,12 +7,14 @@ import UnitSerologyTest from '@/components/unit/UnitSerologyTest.vue';
 import ErrorModal from '@/components/utils/ErrorModal.vue';
 import SuccessModal from '@/components/utils/SuccessModal.vue';
 import { discardReasonOptions } from '@/enums/Units';
+import { useHematologicalTestStore } from '@/stores/laboratory/hematologicalTest';
 import { useSerologyTestStore } from '@/stores/laboratory/serologyTest';
 import { useUnitStore } from '@/stores/storage/units';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const serologyStore = useSerologyTestStore();
+useHematologicalTestStore;
 const unitStore = useUnitStore();
 const route = useRoute();
 const router = useRouter();

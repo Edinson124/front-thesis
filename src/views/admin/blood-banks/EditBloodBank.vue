@@ -116,7 +116,7 @@ const rules = computed(() => ({
   province: { requiredIf: requiredIf('Provincia', () => bloodBank.region) },
   district: { requiredIf: requiredIf('Distrito', () => bloodBank.province) },
   idType: { required: required('Tipo de banco de sangre') },
-  isInternal: { required: required('Alcance') }
+  isInternal: { required: required('Acceso') }
 }));
 const v$ = useVuelidate(rules, bloodBank);
 
@@ -251,9 +251,9 @@ const handleSaveBloodBank = async () => {
             </div> -->
           </div>
           <div class="flex flex-col gap-4 w-full">
-            <div class="font-semibold text-xl">Alcance del banco de sangre</div>
+            <div class="font-semibold text-xl">Acceso del banco de sangre</div>
             <div class="grid grid-cols-12 gap-2">
-              <label for="name3" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Alcance en el sistema: </label>
+              <label for="name3" class="flex items-center col-span-12 mb-2 md:col-span-3 md:mb-0">Acceso al sistema: </label>
               <div class="col-span-12 md:col-span-4">
                 <Select class="" v-model="bloodBank.isInternal" :options="isInternalOptions" optionLabel="label" optionValue="value" :invalid="v$.isInternal?.$error" />
                 <Message v-if="v$.isInternal?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.isInternal.$errors[0].$message }}</Message>

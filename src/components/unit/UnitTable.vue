@@ -134,9 +134,6 @@ const openEditUnitModal = (unit, index) => {
 
 const emit = defineEmits(['edit', 'add', 'remove', 'result', 'stamp']);
 
-const emitRegisterStampModal = (unit) => {
-  emit('stamp', unit);
-};
 const removeItem = (index, assign) => {
   emit('remove', index, assign);
 };
@@ -201,7 +198,6 @@ const saveUnit = (unit) => {
                 <Button v-if="typeModal !== 'result'" class="h-8 w-[6rem] mr-1 my-1 btn-edit" label="Editar" @click="() => openEditUnitModal(slotProps.data, slotProps.index)" />
                 <Button v-if="typeModal === 'result' && !returnAction" class="h-8 w-[12rem] mr-1 my-1 btn-edit" label="Registrar resultado" @click="() => openRegisterResultModal(slotProps.data, slotProps.index)" />
                 <!-- <Button v-if="typeModal === 'result' && returnAction" class="h-8 w-[12rem] mr-1 my-1 btn-edit" label="Devolución" @click="() => openRegisterResultModal(slotProps.data, slotProps.index)" /> -->
-                <Button v-if="typeModal === 'transformation' && slotProps.data.stampPronahebas === null" class="h-8 w-[6rem] mr-1 my-1 btn-edit" label="Sellar" @click="() => emitRegisterStampModal(slotProps.data)" />
                 <Button v-if="!returnAction" class="h-8 w-[6rem] mr-1 my-1" label="Eliminar" severity="danger" @click="removeItem(slotProps.index, slotProps.data)" />
               </div>
             </template>

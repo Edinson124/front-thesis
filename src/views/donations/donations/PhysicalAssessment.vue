@@ -67,7 +67,7 @@ const v$ = useVuelidate(rules, physicalExam);
 const deferralDonor = async (deferral) => {
   const response = await donationStore.deferralDonor(donationId.value, deferral);
   if (response) {
-    router.push({ path: 'view', query: { donationId: donationId } });
+    router.push({ path: 'view', query: { donationId: donationId.value } });
   }
 };
 

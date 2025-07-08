@@ -5,8 +5,9 @@ import { computed } from 'vue';
 const props = defineProps({
   codeDonation: Number,
   status: String,
-  deferralEndDate: String,
-  deferralReason: String
+  deferralDuration: Number,
+  deferralReason: String,
+  dateDonation: String
 });
 
 const STATUS_STYLES = {
@@ -27,6 +28,28 @@ const STATUS_STYLES = {
     icon: 'mdi mdi-check-circle'
   }
 };
+
+const deferralEndDate = computed(() => {
+  console.log(props.dateDonation);
+  console.log(props.deferralDuration);
+  if (!props.dateDonation || !props.deferralDuration) return null;
+
+  // Separar día, mes, año de la fecha string "dd/MM/yyyy"
+  const [day, month, year] = props.dateDonation.split('/').map(Number);
+
+  // Crear objeto Date (nota: mes en JavaScript es base 0)
+  const date = new Date(year, month - 1, day);
+
+  // Sumar los días
+  date.setDate(date.getDate() + props.deferralDuration);
+
+  // Formatear la nueva fecha como "dd/MM/yyyy"
+  const endDay = String(date.getDate()).padStart(2, '0');
+  const endMonth = String(date.getMonth() + 1).padStart(2, '0');
+  const endYear = date.getFullYear();
+
+  return `${endDay}/${endMonth}/${endYear}`;
+});
 
 const enrichedStatus = computed(() => {
   return DonationStatus[props.status] || { label: props.status, edit: false };

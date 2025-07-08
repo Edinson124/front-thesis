@@ -50,9 +50,17 @@ export const ShipmentStatus = {
   Liberada: { label: 'Liberado', edit: false },
   Finalizado: { label: 'Finalizado', edit: false }
 };
+
 export const shipmentStatusAssignPermit = [ShipmentStatus.Solicitado.label];
 
-export const shipmentStatusOptions = Object.entries(ShipmentStatus).map(([value, data]) => ({
+export const myShipmentStatusOptions = Object.entries(ShipmentStatus).map(([value, data]) => ({
   value,
   label: data.label
 }));
+
+export const shipmentStatusOptions = Object.entries(ShipmentStatus)
+  .filter(([value]) => value !== 'Pendiente') // ❌ Excluir 'Pendiente'
+  .map(([value, data]) => ({
+    value,
+    label: data.label
+  }));

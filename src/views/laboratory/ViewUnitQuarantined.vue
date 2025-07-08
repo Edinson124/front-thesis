@@ -153,7 +153,7 @@ onMounted(async () => {
         </div>
       </Fieldset>
 
-      <UnitSerologyTest :serologyTest="serologyTest" :bloodType="bloodType" :showBloodType="true" />
+      <UnitSerologyTest :serologyTest="serologyTest" :bloodType="bloodType" :hematologicTest="hematologicTest" :showBloodType="true" />
 
       <div v-if="serologyTest" class="flex justify-center px-8 my-8 gap-4">
         <Button v-if="serologyTest.status != 'REACTIVO'" class="h-10 w-full md:max-w-[16rem]" label="Unidad Apta" severity="success" @click="openModalUnitSuitable" />

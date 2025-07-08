@@ -4,7 +4,8 @@ import { computed } from 'vue';
 const props = defineProps({
   serologyTest: Object,
   bloodType: String,
-  showBloodType: Boolean
+  showBloodType: Boolean,
+  hematologicTest: Object
 });
 const bloodLetter = computed(() => props.bloodType?.slice(0, -1)); // O, A, B, AB
 const rhSign = computed(() => props.bloodType?.slice(-1)); // + o -
@@ -88,6 +89,9 @@ const rhText = computed(() => {
           <div class="text-xl mb-2 font-medium">Grupo sanguíneo</div>
           <div class="text-4xl font-bold">{{ bloodLetter }}</div>
           <div class="text-xl font-semibold">Rh {{ rhText }}</div>
+          <div class="mt-1 text-l">Genotipo: {{ hematologicTest?.genotype || '-' }}</div>
+          <div class="text-l">Fenotipo: {{ hematologicTest?.phenotype || '-' }}</div>
+          <div class="text-l">Anitcuerpos irregulares {{ hematologicTest?.irregularAntibodies || '-' }}</div>
         </div>
       </div>
     </div>

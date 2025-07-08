@@ -145,14 +145,14 @@ onMounted(async () => {
             </div>
           </div>
 
-          <div>Médico transfusional:</div>
+          <div>Licenciado en enfermería responsable:</div>
           <!-- Médico transfusional -->
           <div class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 items-center">
             <div class="md:col-span-3">
               <div class="flex-grow mr-2">
                 <FloatLabel variant="on">
                   <InputText v-model="transfusionPerformed.transfusionDoctorLicenseNumber" id="transfusionDoctorLicenseNumber" class="w-full" :invalid="v$.transfusionDoctorLicenseNumber?.$error" />
-                  <label for="transfusionDoctorLicenseNumber">Nro Colegiatura</label>
+                  <label for="transfusionDoctorLicenseNumber">Nro Documento</label>
                 </FloatLabel>
                 <Message v-if="v$.transfusionDoctorLicenseNumber?.$error" severity="error" size="small" variant="simple" class="mt-2">{{ v$.transfusionDoctorLicenseNumber.$errors[0].$message }}</Message>
               </div>

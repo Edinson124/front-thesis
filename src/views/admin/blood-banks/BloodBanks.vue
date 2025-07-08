@@ -148,7 +148,7 @@ const reactivate = async () => {
           <div>
             <FloatLabel variant="on" class="w-full">
               <Select class="w-full" id="is_internal" v-model="filters.isInternal" :options="isInternalOptions" optionLabel="label" optionValue="value" showClear aria-describedby="name-help" />
-              <label for="is_internal">Alcance</label>
+              <label for="is_internal">Acceso</label>
             </FloatLabel>
           </div>
         </div>
@@ -204,7 +204,7 @@ const reactivate = async () => {
                   <p><strong>Coordinador:</strong> {{ item.fullNameCoordinator }}</p>
                   <p><strong>Tipo:</strong> {{ item.type }}</p>
                   <p>
-                    <strong>Alcance:</strong>
+                    <strong>Acceso:</strong>
                     {{ isInternalOptions.find((opt) => opt.value === item.isInternal)?.label || '-' }}
                   </p>
                 </div>

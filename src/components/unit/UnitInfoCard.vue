@@ -21,6 +21,11 @@ const rhText = computed(() => {
           </div>
 
           <div class="flex">
+            <div class="mr-2">Sello de Pronahebas:</div>
+            <div>{{ unit.stampPronahebas }}</div>
+          </div>
+
+          <div class="flex">
             <div class="font-medium">Tipo de unidad:</div>
             <div class="text-center ml-2">{{ unit.unitType }}</div>
           </div>
@@ -46,6 +51,9 @@ const rhText = computed(() => {
           <div class="text-xl mb-2 font-medium">Grupo sanguíneo</div>
           <div class="text-4xl font-bold">{{ bloodLetter }}</div>
           <div class="text-xl font-semibold">Rh {{ rhText }}</div>
+          <div class="mt-1 text-l">Genotipo: {{ unit.genotype }}</div>
+          <div class="text-l">Fenotipo: {{ unit.phenotype }}</div>
+          <div class="text-l">Anitcuerpos irregulares {{ unit.irregularAntibodies }}</div>
         </div>
       </div>
     </div>

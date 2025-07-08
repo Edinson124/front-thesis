@@ -87,7 +87,13 @@ onMounted(() => {
       <!-- Información de la donación -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-1 mb-4">
         <div class="md:col-span-3">
-          <DonationStatusCard :code-donation="donation.donation.id" :status="donation.donation.status" :deferral-end-date="donation.donor.deferralEndDate" :deferral-reason="donation.donor.deferralReason" />
+          <DonationStatusCard
+            :code-donation="donation.donation.id"
+            :status="donation.donation.status"
+            :deferral-duration="donation.donation.deferralDuration"
+            :date-donation="donation.donation.date"
+            :deferral-reason="donation.donation.deferralReason"
+          />
         </div>
         <div class="md:col-span-1 flex justify-end items-center">
           <Button v-if="editDonation" label="Diferir donante" class="h-8 w-full md:grow md:max-w-[16rem]" severity="danger" @click="openDeferralDonorModal" />
