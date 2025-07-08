@@ -12,7 +12,7 @@ const rhText = computed(() => {
 <template>
   <Fieldset legend="Datos de la unidad" class="mb-4">
     <div class="rounded-md px-5 pt-5 pb-2 bg-white">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+      <div class="grid grid-cols-1 md:grid-cols-2 print:grid-cols-2 gap-4 mt-2">
         <!-- Columna izquierda -->
         <div class="space-y-2">
           <div class="flex">

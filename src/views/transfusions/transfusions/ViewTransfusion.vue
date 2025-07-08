@@ -229,11 +229,11 @@ const freeUnits = async () => {
 
     <Dialog v-model:visible="showModalFreeUnits" header="Liberación de unidades" :modal="true" :closable="false" :style="{ width: '800px' }">
       <div>
-        <h6>Identificación médico que recibió las unidades</h6>
+        <h6>Identificación del personal médico que recibió las unidades</h6>
 
         <FloatLabel variant="on" class="mt-4 w-1/2">
           <InputText id="receivedByDocument" v-model="recieved.receivedByDocument" class="w-full" :invalid="v1$.receivedByDocument?.$error" />
-          <label for="receivedByDocument">Nro Colegiatura</label>
+          <label for="receivedByDocument">Nro Documento</label>
         </FloatLabel>
         <Message v-if="v1$.receivedByDocument?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v1$.receivedByDocument.$errors[0].$message }}</Message>
 

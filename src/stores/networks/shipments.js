@@ -127,6 +127,16 @@ export const useShipmentStore = defineStore('shipments', () => {
     }
   };
 
+  const declineShipment = async (idShipment) => {
+    try {
+      const response = await shipmentService.declineShipment(idShipment);
+      return response;
+    } catch (error) {
+      console.error('Error al rechazar solicitud de transferencia: ', error);
+      return false;
+    }
+  };
+
   return {
     shipments,
     totalRecords,
@@ -143,6 +153,7 @@ export const useShipmentStore = defineStore('shipments', () => {
     getShipmentWithAssignmentResponse,
     getShipmentWithAssignmentView,
     freeUnit,
-    confirmReception
+    confirmReception,
+    declineShipment
   };
 });

@@ -98,13 +98,15 @@ onMounted(async () => {
         <UnitCardStatus :codeUnit="unitId" :status="unit.status" />
       </div>
 
-      <UnitInfoCard :unit="unit" />
+      <div id="printSection">
+        <UnitInfoCard :unit="unit" />
 
-      <UnitSerologyTest :serologyTest="serologyTest" :bloodType="bloodType" :showBloodType="false" />
+        <UnitSerologyTest :serologyTest="serologyTest" :bloodType="bloodType" :showBloodType="false" />
+      </div>
 
       <div v-if="serologyTest" class="flex justify-center px-8 my-8 gap-4">
         <Button class="h-10 w-full md:max-w-[16rem]" label="Descartar Unidad" severity="danger" @click="openModalDiscard" />
-        <Button class="h-10 w-full md:max-w-[16rem]" label="Obtener Etiqueta" severity="success" />
+        <Button v-if="!isLoading" class="h-10 w-full md:max-w-[16rem]" label="Obtener Etiqueta" severity="success" v-print="'#printSection'" />
       </div>
     </div>
     <UnitDiscardModal v-model="showDiscardModal" :reasons="discardReasonOptions" @save="handleDiscardSave" />

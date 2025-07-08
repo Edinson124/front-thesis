@@ -1,5 +1,6 @@
 import { createPinia } from 'pinia';
 import { createApp } from 'vue';
+import Vue3Print from 'vue3-print-nb';
 import App from './App.vue';
 import router from './router';
 
@@ -33,6 +34,7 @@ const stylePreset = definePreset(Aura, {
 
 app.use(pinia);
 app.use(router);
+app.use(Vue3Print);
 app.use(PrimeVue, {
   theme: {
     preset: stylePreset,

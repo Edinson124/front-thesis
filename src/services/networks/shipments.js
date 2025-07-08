@@ -126,6 +126,16 @@ const confirmReception = async (idShipment) => {
   }
 };
 
+const declineShipment = async (idShipment) => {
+  try {
+    const response = await put(`/shipments/decline/${idShipment}`);
+    return response;
+  } catch (error) {
+    console.error('Error al rechazar la solicitud de transferencia: ', error);
+    return null;
+  }
+};
+
 export default {
   getShipments,
   getMyShipments,
@@ -137,5 +147,6 @@ export default {
   getShipmentWithAssignmentResponse,
   getShipmentWithAssignmentView,
   freeUnit,
-  confirmReception
+  confirmReception,
+  declineShipment
 };

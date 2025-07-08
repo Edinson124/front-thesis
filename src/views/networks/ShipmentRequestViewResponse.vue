@@ -7,6 +7,9 @@ import SuccessModal from '@/components/utils/SuccessModal.vue';
 import { shipmentStatusAssignPermit } from '@/enums/Status';
 import { useShipmentAssignmentStore } from '@/stores/networks/shipmentAssignment';
 import { useShipmentStore } from '@/stores/networks/shipments';
+import { required } from '@/validation/validators';
+import { useVuelidate } from '@vuelidate/core';
+import { Textarea } from 'primevue';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -33,6 +36,47 @@ const showErrorDeleteUnitAssignModal = ref(false);
 const showFreeUnitModal = ref(false);
 const showSuccessFreeUnitModal = ref(false);
 const showErrorFreeUnitModal = ref(false);
+
+const showValidationErrorDeclineModal = ref(false);
+const showDeclineModal = ref(false);
+const showConfirmDeclineModal = ref(false);
+const showSucessDeclineModal = ref(false);
+const showErrorDeclineModal = ref(false);
+
+const rulesDelcine = computed(() => ({
+  reasonDecline: { required: required('Motivo') }
+}));
+
+const reasonDecline = reactive({ reasonDecline: null });
+
+const v1$ = useVuelidate(rulesDelcine, reasonDecline, { $scope: false });
+
+const openConfirmDeclineModal = async () => {
+  const isValid = await v1$.value.$validate();
+  if (!isValid) return;
+  showConfirmDeclineModal.value = true;
+};
+const cancelModalDelcine = () => {
+  showDeclineModal.value = false;
+  reasonDecline.reasonDecline = null;
+};
+
+const openModalDecline = () => {
+  if (shipmentRequest.assignment.length > 0) {
+    showValidationErrorDeclineModal.value = true;
+  } else {
+    showDeclineModal.value = true;
+  }
+};
+
+const declineShipment = async () => {
+  const response = await shipmentStore.declineShipment(shipmentId.value);
+  if (response) {
+    showSucessDeclineModal.value = true;
+  } else {
+    showErrorDeclineModal.value = true;
+  }
+};
 
 const shipmentRequest = reactive({
   reason: null,
@@ -99,7 +143,7 @@ onMounted(async () => {
     shipmentRequest.assignment = response.assignment;
     shipment.value = response.shipmentRequest;
     assignPermit.value = shipmentStatusAssignPermit.includes(response.shipmentRequest.status);
-    readOnly.value = ['Liberado', 'Finalizado'].includes(response.shipmentRequest.status);
+    readOnly.value = ['Liberado', 'Finalizado', 'Rechazado'].includes(response.shipmentRequest.status);
   }
   isLoading.value = false;
 });
@@ -117,7 +161,7 @@ onMounted(async () => {
     <div v-else>
       <div class="mb-4 flex flex-wrap justify-between items-center gap-2">
         <h1 class="text-2xl font-bold mb-4">Visualizar solicitud de tranferencia</h1>
-        <Button v-if="!readOnly" class="h-8 w-full md:grow md:max-w-[16rem]" label="Rechazar solicitud" severity="danger" @click="openDeferralDonorModal()" />
+        <Button v-if="!readOnly" class="h-8 w-full md:grow md:max-w-[16rem]" label="Rechazar solicitud" severity="danger" @click="openModalDecline()" />
       </div>
 
       <!-- Campos de Red y Banco de sangre -->
@@ -188,4 +232,32 @@ onMounted(async () => {
   <ConfirmModal id="showFreeUnitModal" v-model="showFreeUnitModal" header="¿Estás seguro de confirmar el envió de las unidades hacia el banco de sangre destino?" accept-text="Guardar" @accept="freeUnit" />
   <SuccessModal id="showSuccessFreeUnitModal" v-model="showSuccessFreeUnitModal" message="El envío se ha guardado con éxito" @close="returnBack" />
   <ErrorModal id="showErrorFreeUnitModal" v-model="showErrorFreeUnitModal" />
+
+  <ConfirmModal id="showConfirmDeclineModal" severity="warn" v-model="showConfirmDeclineModal" header="¿Estás seguro de rechazar la solicitud?" accept-text="Guardar" @accept="declineShipment" />
+  <SuccessModal id="showSuccessDeclineModal" v-model="showSucessDeclineModal" message="El rechazo de la solicitud se ha guardado con éxito" @close="returnBack" />
+  <ErrorModal id="showErrorDeclineModal" v-model="showErrorDeclineModal" />
+
+  <Dialog v-model:visible="showDeclineModal" header="Rechazar solicitud" :modal="true" :closable="false" :style="{ width: '800px' }">
+    <div>
+      <h6>Motivo de rechazo</h6>
+      <FloatLabel variant="on" class="mt-4 w-full">
+        <Textarea id="reasonDecline" v-model="reasonDecline.reasonDecline" rows="3" class="w-full resize-none" :invalid="v1$.reasonDecline?.$error" />
+        <label for="reasonDecline">Motivo</label>
+      </FloatLabel>
+      <Message v-if="v1$.reasonDecline?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v1$.reasonDecline.$errors[0].$message }}</Message>
+    </div>
+    <template #footer>
+      <Button label="Cancelar" class="min-w-40 btn-clean" @click="cancelModalDelcine" />
+      <Button label="Aceptar" class="min-w-40 p-button-success" @click="openConfirmDeclineModal" />
+    </template>
+  </Dialog>
+  <Dialog v-model:visible="showValidationErrorDeclineModal" header="Rechazar solicitud" :modal="true" :closable="false" :style="{ width: '600px' }">
+    <div>
+      <h6>No puede rechazar la solicitud</h6>
+      <div>Para rechazar una solicitud de transferencia no debe tener Unidades asignadas</div>
+    </div>
+    <template #footer>
+      <Button label="Aceptar" class="min-w-40 p-button-success" @click="showValidationErrorDeclineModal = false" />
+    </template>
+  </Dialog>
 </template>
