@@ -4,10 +4,12 @@ import DonationStatusCard from '@/components/donation/DonationStatusCard.vue';
 import InfoDonation from '@/components/donation/InfoDonation.vue';
 import InfoDonor from '@/components/donation/InfoDonor.vue';
 import { deferralOptionsGrouped } from '@/enums/DeferralType';
+import { useAuthStore } from '@/stores/auth';
 import { useDonationStore } from '@/stores/donation/donations';
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
+const auth = useAuthStore();
 const donationStore = useDonationStore();
 const route = useRoute();
 const router = useRouter();
@@ -144,7 +146,7 @@ onMounted(() => {
           <div class="mb-1"><span class="font-medium">Registrado por : </span>{{ donation.donation.createdByNameInterviewAnswer ?? '-' }}</div>
           <div class="flex justify-center mt-3">
             <Button v-if="donation.donation.interviewAnswerId" class="h-8 btn-view" label="Visualizar" @click="redirectInterview" />
-            <Button v-else-if="donation.donation.status === 'En proceso'" label="Registrar entrevista" class="p-button-success p-button-sm" @click="redirectInterview" />
+            <Button v-else-if="auth.hasPermission('CREATE_INTERVIEW') && donation.donation.status === 'En proceso'" label="Registrar entrevista" class="p-button-success p-button-sm" @click="redirectInterview" />
           </div>
         </Fieldset>
 

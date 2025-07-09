@@ -33,6 +33,7 @@ onMounted(async () => {
     isNewRole.value = false;
     const roleResponse = await rolesStore.getRole(roleId);
     Object.assign(role, { ...role, ...roleResponse });
+    console.log(role);
   }
 
   loading.value = false;
@@ -52,7 +53,7 @@ const showSuccessModal = ref(false);
 const showErrorModal = ref(false);
 
 const saveRole = async () => {
-  const saveMethod = isNewRole.value ? rolesStore.editRole : rolesStore.editRole;
+  const saveMethod = rolesStore.editRole;
   const success = await saveMethod(role);
   if (success) {
     showSuccessModal.value = true;
@@ -112,7 +113,7 @@ const handleSaveRole = async () => {
             <div class="grid grid-cols-12 gap-4">
               <span class="w-full col-span-12 mb-2 md:col-span-12 md:mb-0">
                 <FloatLabel variant="on" class="w-full">
-                  <Textarea id="description" v-model="role.description" rows="10" aria-describedby="description" :invalid="v$.description?.$error" />
+                  <Textarea id="description" v-model="role.description" rows="10" class="resize-none" aria-describedby="description" :invalid="v$.description?.$error" />
                   <label for="description">Descripción</label>
                 </FloatLabel>
                 <Message v-if="v$.description?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v$.description.$errors[0].$message }}</Message>
@@ -143,7 +144,7 @@ const handleSaveRole = async () => {
               >
                 <div v-for="permission in rolesStore.allPermissions" :key="permission.id" class="mb-4">
                   <Checkbox class="mr-2" v-model="role.permissions" :inputId="'perm-' + permission.id" :value="permission.id" />
-                  <label :for="'perm-' + permission.id"> {{ permission.name }} </label>
+                  <label :for="'perm-' + permission.id"> {{ permission.description }} </label>
                 </div>
               </ScrollPanel>
             </Panel>

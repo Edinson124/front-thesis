@@ -4,6 +4,8 @@ import { computed, ref, watch } from 'vue';
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(getUserFromLocalStorage());
+  const permissions = ref(getPermissionsFromLocalStorage());
+  const bloodBankType = ref(getBloodBankTypeFromLocalStorage());
   const loading = ref(false);
   const error = ref(null);
 
@@ -72,9 +74,33 @@ export const useAuthStore = defineStore('auth', () => {
   const logout = async () => {
     await authService.logout();
     user.value = null;
+    permissions.value = [];
+    bloodBankType.value = null;
     localStorage.removeItem('user');
     localStorage.removeItem('session_time');
     localStorage.removeItem('fullName');
+    localStorage.removeItem('permissions');
+    localStorage.removeItem('role');
+    localStorage.removeItem('bloodBankName');
+    localStorage.removeItem('bloodBankType');
+  };
+
+  const mePermission = async () => {
+    loading.value = true;
+    const response = await authService.me();
+    permissions.value = response.permissions;
+    if (response && response.permissions) {
+      localStorage.setItem('permissions', JSON.stringify(response.permissions));
+    }
+    if (response && response.bloodBankName) {
+      localStorage.setItem('bloodBankName', response.bloodBankName);
+    }
+    if (response && response.bloodBankType) {
+      localStorage.setItem('bloodBankType', response.bloodBankType);
+    }
+    console.log(response);
+    loading.value = false;
+    return response;
   };
 
   watch(
@@ -90,6 +116,19 @@ export const useAuthStore = defineStore('auth', () => {
   function getUserFromLocalStorage() {
     return localStorage.getItem('fullName');
   }
+  function getPermissionsFromLocalStorage() {
+    const stored = localStorage.getItem('permissions');
+    return stored ? JSON.parse(stored) : [];
+  }
+  function getBloodBankTypeFromLocalStorage() {
+    return localStorage.getItem('bloodBankType') || null;
+  }
+  const hasPermission = (permission) => {
+    const perms = permissions.value || [];
+    console.log(perms);
+    console.log(permission);
+    return perms.includes(permission);
+  };
 
-  return { user, loading, error, isLoggedIn, login, register, logout };
+  return { user, loading, error, isLoggedIn, permissions, bloodBankType, login, register, logout, mePermission, hasPermission };
 });

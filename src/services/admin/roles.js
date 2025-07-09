@@ -50,14 +50,14 @@ const getAllPermissions = async () => {
 
 const getRole = async (roleId) => {
   try {
-    throw new Error('No get role implemented');
-    // const response = await get(`/roles/${roleId}`);
-    // return response;
+    // throw new Error('No get role implemented');
+    const response = await get(`/roles/${roleId}`);
+    return response;
   } catch (error) {
     if (FAKE_MODE) {
       return fakeService.getRole(roleId);
     }
-    console.error('Error al crear rol: ', error);
+    console.error('Error al Obtener rol: ', error);
     return null;
   }
 };

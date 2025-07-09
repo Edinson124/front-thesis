@@ -18,6 +18,7 @@ const login = async () => {
 
   const success = await authStore.login(userLogin.username, userLogin.password);
   if (success) {
+    await authStore.mePermission();
     router.push('/');
   } else {
     credentialsError.value = 'Credenciales no válidas. Por favor, inténtalo de nuevo.';

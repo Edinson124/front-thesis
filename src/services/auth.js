@@ -1,4 +1,4 @@
-import { post } from '@/api';
+import { get, post } from '@/api';
 
 const login = async (username, password) => {
   try {
@@ -24,8 +24,19 @@ const logout = async () => {
   await post('/auth/logout');
 };
 
+const me = async () => {
+  try {
+    const response = await get('/auth/me');
+    return response;
+  } catch (error) {
+    console.error('Error en servicio me: ', error);
+    return null;
+  }
+};
+
 export default {
   login,
   register,
-  logout
+  logout,
+  me
 };
