@@ -71,7 +71,7 @@ const getStatusColor = (status) => {
 
 <template>
   <div class="card p-6">
-    <h1 class="text-2xl font-bold mb-6 text-surface-900 dark:text-surface-0">Inventario de Unidades de Sangre</h1>
+    <h1 class="text-2xl font-bold mb-6 text-surface-900 dark:text-surface-0">Inventario de Unidades de Sangre Aptas</h1>
 
     <!-- Loading state -->
     <div v-if="loading" class="flex justify-center items-center h-64">

@@ -239,7 +239,7 @@ const freeUnits = async () => {
 
         <FloatLabel variant="on" class="mt-4 w-full">
           <InputText id="receivedByName" v-model="recieved.receivedByName" class="w-full" :invalid="v1$.receivedByName?.$error" />
-          <label for="receivedByName">Nombres del médico</label>
+          <label for="receivedByName">Nombres del personal médico</label>
         </FloatLabel>
         <Message v-if="v1$.receivedByName?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v1$.receivedByName.$errors[0].$message }}</Message>
       </div>
