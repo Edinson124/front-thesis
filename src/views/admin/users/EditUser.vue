@@ -20,6 +20,8 @@ const router = useRouter();
 const usersStore = useUsersStore();
 const rolesStore = useRolesStore();
 const bloodBanksStore = useBloodBanksStore();
+const errorMessage = ref(null);
+const errorMoreMessage = ref(null);
 
 const isNewUser = ref(true);
 const loadingUser = ref(false);
@@ -201,10 +203,19 @@ const showErrorModal = ref(false);
 
 const saveUser = async () => {
   const saveMethod = isNewUser.value ? usersStore.newUser : usersStore.editUser;
-  const success = await saveMethod(user);
-  if (success) {
+  const result = await saveMethod(user);
+
+  if (result.success) {
     showSuccessModal.value = true;
   } else {
+    if (result.error?.toLowerCase().includes('correo')) {
+      errorMessage.value = result.error;
+      errorMoreMessage.value = 'Por favor intente registrar al usuario con otro correo.';
+    } else {
+      errorMessage.value = undefined;
+      errorMoreMessage.value = undefined; // O NO pasar el prop
+    }
+
     showErrorModal.value = true;
   }
 };
@@ -418,5 +429,5 @@ const handleSaveUser = async () => {
 
   <ConfirmModal v-model="showConfirmModal" header="¿Estás seguro de guardar este usuario?" accept-text="Guardar" @accept="saveUser" />
   <SuccessModal v-model="showSuccessModal" message="El usuario fue guardado con éxito" @close="() => router.push('/admin/users')" />
-  <ErrorModal v-model="showErrorModal" />
+  <ErrorModal v-model="showErrorModal" v-bind:message="errorMessage" v-bind:more-message="errorMoreMessage" />
 </template>

@@ -41,13 +41,9 @@ export const useUsersStore = defineStore('users', () => {
   };
 
   const newUser = async (user) => {
-    try {
-      await usersService.newUser(user);
-      return true;
-    } catch (error) {
-      console.error('Error al crear usuario: ', error);
-      return false;
-    }
+    const result = await usersService.newUser(user);
+    console.log(result); // esto ya tiene success y error
+    return result;
   };
 
   const editUser = async (user) => {

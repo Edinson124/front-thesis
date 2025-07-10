@@ -42,10 +42,10 @@ const verifyUser = async (userId, documentNumber) => {
 const newUser = async (user) => {
   try {
     const response = await post('/users', user);
-    return response;
+    return { success: true, data: response };
   } catch (error) {
-    console.error('Error al crear usuario: ', error);
-    return null;
+    const message = error.message || 'Error al guardar el usuario.';
+    return { success: false, error: message };
   }
 };
 
