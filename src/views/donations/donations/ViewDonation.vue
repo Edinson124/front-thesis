@@ -66,7 +66,10 @@ const loadDonation = async () => {
   isLoading.value = true;
   const donationResponse = await donationStore.getDonation(donationId.value);
   donation.value = donationResponse;
-  editDonation.value = donationResponse.donation.status === 'En proceso';
+  if (donation.value.canViewDonation) {
+    editDonation.value = donationResponse.donation.status === 'En proceso';
+  }
+
   isLoading.value = false;
 };
 
