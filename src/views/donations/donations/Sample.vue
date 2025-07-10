@@ -130,7 +130,7 @@ watch(selectedSample2, (newVal) => {
           </FloatLabel>
           <Message v-if="v1$.selectedSample1?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v1$.selectedSample1.$errors[0].$message }}</Message>
         </div>
-        <div class="w-full md:w-auto md:grow"><Button label="Obtener etiqueta" class="min-w-40 p-button-success" /></div>
+        <!-- <div class="w-full md:w-auto md:grow"><Button label="Obtener etiqueta" class="min-w-40 p-button-success" /></div> -->
       </div>
       <div v-if="codeSample1 == null" class="flex justify-end mt-2">
         <div class="w-full md:w-auto"><Button label="Guardar" class="min-w-40 p-button-success" @click="saveSample(1)" /></div>
@@ -149,7 +149,7 @@ watch(selectedSample2, (newVal) => {
           </FloatLabel>
           <Message v-if="v2$.selectedSample2?.$error" severity="error" size="small" variant="simple" class="pt-1">{{ v2$.selectedSample2.$errors[0].$message }}</Message>
         </div>
-        <div class="w-full md:w-auto md:grow"><Button label="Obtener etiqueta" class="min-w-40 p-button-success" /></div>
+        <!-- <div class="w-full md:w-auto md:grow"><Button label="Obtener etiqueta" class="min-w-40 p-button-success" /></div> -->
       </div>
       <div v-if="codeSample2 == null" class="flex justify-end mt-2">
         <div class="w-full md:w-auto"><Button label="Guardar" class="min-w-40 p-button-success" @click="saveSample(2)" /></div>

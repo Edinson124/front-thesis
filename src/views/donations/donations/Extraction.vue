@@ -51,7 +51,7 @@ const rules = computed(() => ({
     startDate: { required: required('Fecha de Inicio') },
     startTime: { required: required('Hora de Inicio') },
     durationMinutes: { required: required('Duración') },
-    processedBloodVolumeMl: { required: required('Volumen total procesado') },
+    processedBloodVolumeMl: { required: required('Volumen total extraído') },
     arm: { required: required('Brazo de extracción') },
     adverseReactionOccurred: { required: required('¿Se presentó reacciones adversas?') },
     adverseReaction: {
@@ -207,7 +207,7 @@ onMounted(async () => {
           <div class="w-full flex items-center gap-4">
             <FloatLabel variant="on" class="w-full md:w-1/4">
               <InputText v-model="extraction.processedBloodVolumeMl" class="w-full" id="processedBloodVolumeMl" :disabled="!editDonation" />
-              <label for="processedBloodVolumeMl">Volumen total procesado</label>
+              <label for="processedBloodVolumeMl">Volumen total extraído</label>
             </FloatLabel>
             <span>ml</span>
           </div>

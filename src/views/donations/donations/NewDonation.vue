@@ -315,7 +315,7 @@ onMounted(async () => {
             <div class="mb-6">
               <FloatLabel variant="on">
                 <Textarea id="observation" v-model="donation.observation" rows="5" class="w-full resize-none" />
-                <label for="observation">Observacioness</label>
+                <label for="observation">Observaciones</label>
               </FloatLabel>
             </div>
 
